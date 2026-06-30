@@ -6,7 +6,7 @@ export function Footer() {
       <div className="lt-card grid gap-8 p-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <Image
-            src="/images/logo/logo.png"
+            src="/images/logo/logo-lifetopia-world.png"
             alt="Lifetopia World"
             width={150}
             height={80}
