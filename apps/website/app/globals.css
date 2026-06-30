@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fff7e8;
+  --foreground: #2f2418;
+
+  --sky: #7dd3fc;
+  --sky-soft: #e0f7ff;
+
+  --leaf: #6fa83a;
+  --leaf-dark: #3f6f22;
+  --leaf-soft: #edf7df;
+
+  --cream: #fff4dc;
+  --cream-soft: #fffaf0;
+
+  --wood: #9b6635;
+  --wood-dark: #5f3a1f;
+
+  --flower: #f6c453;
+  --border-soft: #ead9b8;
+
+  --shadow-soft: 0 18px 45px rgba(88, 60, 28, 0.12);
+  --shadow-button: 0 8px 0 #315719, 0 16px 26px rgba(49, 87, 25, 0.24);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--foreground);
+  background:
+    radial-gradient(circle at top left, rgba(125, 211, 252, 0.42), transparent 34%),
+    linear-gradient(180deg, #dff7ff 0%, #fff7e8 42%, #fff1d2 100%);
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--leaf);
+  color: white;
+}
+
+/* Lifetopia Design System */
+
+.lt-container {
+  width: min(1120px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.lt-section {
+  padding-block: 72px;
+}
+
+.lt-card {
+  background: rgba(255, 250, 240, 0.9);
+  border: 1px solid rgba(155, 102, 53, 0.18);
+  border-radius: 28px;
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(12px);
+}
+
+.lt-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #82b943 0%, #4f8124 100%);
+  color: white;
+  font-weight: 900;
+  box-shadow: var(--shadow-button);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+}
+
+.lt-button-primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+}
+
+.lt-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.92);
+  color: var(--wood-dark);
+  font-weight: 900;
+  border: 1px solid rgba(155, 102, 53, 0.18);
+  box-shadow: 0 12px 28px rgba(88, 60, 28, 0.12);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.lt-button-secondary:hover {
+  transform: translateY(-2px);
+}
+
+.lt-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.88);
+  color: var(--leaf-dark);
+  font-weight: 900;
+  border: 1px solid rgba(111, 168, 58, 0.18);
+  box-shadow: 0 10px 24px rgba(88, 60, 28, 0.1);
+}
+
+.lt-title {
+  color: var(--foreground);
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.lt-muted {
+  color: #6b5b4a;
+}
+
+@media (max-width: 768px) {
+  .lt-section {
+    padding-block: 48px;
+  }
+
+  .lt-container {
+    width: min(100% - 24px, 1120px);
+  }
+}
