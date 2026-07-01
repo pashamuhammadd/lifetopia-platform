@@ -4,19 +4,19 @@ export const mainNavigation = [
     href: "#home",
   },
   {
-    label: "Features",
-    href: "#features",
+    label: "Journey",
+    href: "#journey",
   },
   {
     label: "Roadmap",
     href: "#roadmap",
   },
   {
-    label: "News",
-    href: "#news",
-  },
-  {
     label: "Community",
     href: "#community",
+  },
+  {
+    label: "News",
+    href: "#news",
   },
 ];

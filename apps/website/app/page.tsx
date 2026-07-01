@@ -4,12 +4,14 @@ import { ExploreSection } from "@/components/home/ExploreSection";
 import { HeroSection } from "@/components/home/HeroSection";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { DevelopmentJourneySection } from "@/components/home/development-journey/DevelopmentJourneySection";
 
 export default function Home() {
   return (
     <main className="min-h-screen">
       <Navbar />
       <HeroSection />
+      <DevelopmentJourneySection />
       <ExploreSection />
       <AccountSection />
       <CommunitySection />
