@@ -33,7 +33,7 @@ export function DevelopmentJourneySection() {
   return (
     <section
       id="development"
-      className="relative overflow-hidden bg-[#fff8e8] px-[clamp(12px,5vw,80px)] py-[clamp(34px,6vw,88px)]"
+      className="relative overflow-hidden bg-[#fff8e8] px-[clamp(12px,5vw,80px)] pb-[clamp(34px,6vw,88px)] pt-[clamp(18px,3vw,44px)]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

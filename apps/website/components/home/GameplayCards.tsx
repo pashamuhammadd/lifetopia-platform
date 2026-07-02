@@ -41,7 +41,7 @@ export function GameplayCards() {
   return (
     <section
       id="journey"
-      className="relative z-20 bg-[#fff7e8] px-[clamp(14px,6vw,96px)] pb-[clamp(36px,5vw,72px)] pt-[clamp(28px,4vw,56px)]"
+      className="relative z-20 bg-[#fff7e8] px-[clamp(14px,6vw,96px)] pb-[clamp(18px,2.5vw,36px)] pt-[clamp(28px,4vw,56px)]"
     >
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
