@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { GameplayCards } from "@/components/home/GameplayCards";
 import { DevelopmentJourneySection } from "@/components/home/development-journey/DevelopmentJourneySection";
+import { RoadmapSection } from "@/components/home/RoadmapSection";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
       <AccountSection />
       <GameplayCards />
       <DevelopmentJourneySection />
+      <RoadmapSection />
       <CommunitySection />
       <Footer />
     </main>
