@@ -7,7 +7,7 @@ export function HeroSection() {
     <>
       <section
         id="home"
-        className="relative overflow-hidden rounded-b-[clamp(24px,3vw,36px)] bg-[#fff7e8]"
+        className="relative overflow-hidden bg-[#fff7e8]"
       >
         <HeroBackground />
 

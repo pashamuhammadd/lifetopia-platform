@@ -14,26 +14,26 @@ export function JourneyNavigation({
   onSelect,
 }: JourneyNavigationProps) {
   return (
-    <div className="mt-5 flex items-center justify-center gap-3">
+    <div className="mt-[clamp(12px,1.8vw,28px)] flex items-center justify-center gap-[clamp(7px,1vw,14px)]">
       <button
         type="button"
         onClick={onPrevious}
-        className="h-9 w-9 rounded-full border border-white/70 bg-white/90 text-xl font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105"
+        className="h-[clamp(24px,2.4vw,36px)] w-[clamp(24px,2.4vw,36px)] rounded-full border border-white/70 bg-white/90 text-[clamp(1rem,1.6vw,1.4rem)] font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105"
         aria-label="Previous journey milestone"
       >
         ‹
       </button>
 
-      <div className="flex items-center gap-2 rounded-full border border-white/70 bg-white/55 px-4 py-3 shadow-[0_8px_22px_rgba(88,60,28,0.12)] backdrop-blur-md">
+      <div className="flex items-center gap-[clamp(5px,0.6vw,8px)] rounded-full border border-white/70 bg-white/55 px-[clamp(10px,1vw,16px)] py-[clamp(7px,0.8vw,12px)] shadow-[0_8px_22px_rgba(88,60,28,0.12)] backdrop-blur-md">
         {Array.from({ length: total }).map((_, index) => (
           <button
             key={index}
             type="button"
             onClick={() => onSelect(index)}
-            className={`h-2 rounded-full transition-all duration-300 ${
+            className={`h-[clamp(5px,0.45vw,8px)] rounded-full transition-all duration-300 ${
               activeIndex === index
-                ? "w-8 bg-[#6fa83a]"
-                : "w-2 bg-[#d8c59f] hover:bg-[#b8a77d]"
+                ? "w-[clamp(18px,2vw,32px)] bg-[#6fa83a]"
+                : "w-[clamp(5px,0.45vw,8px)] bg-[#d8c59f] hover:bg-[#b8a77d]"
             }`}
             aria-label={`Go to journey milestone ${index + 1}`}
           />
@@ -43,7 +43,7 @@ export function JourneyNavigation({
       <button
         type="button"
         onClick={onNext}
-        className="h-9 w-9 rounded-full border border-white/70 bg-white/90 text-xl font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105"
+        className="h-[clamp(24px,2.4vw,36px)] w-[clamp(24px,2.4vw,36px)] rounded-full border border-white/70 bg-white/90 text-[clamp(1rem,1.6vw,1.4rem)] font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105"
         aria-label="Next journey milestone"
       >
         ›
