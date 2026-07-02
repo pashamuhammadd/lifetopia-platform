@@ -1,0 +1,88 @@
+name: Lifetopia Development Update
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  notify-development-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send development update to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_DEV }}
+          ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
+          RELEASE_NAME: ${{ github.event.release.name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          AUTHOR: ${{ github.event.release.author.login }}
+        run: |
+          NOTES=$(echo "$RELEASE_BODY" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')
+
+          PAYLOAD=$(cat <<EOF
+          {
+            "username": "🚀 Lifetopia Development",
+            "content": "<@&$ROLE_ID>",
+            "allowed_mentions": {
+              "roles": ["$ROLE_ID"]
+            },
+            "embeds": [
+              {
+                "title": "🚀 Lifetopia World Development Milestone",
+                "description": "A new official development update has been released.",
+                "color": 5763719,
+                "thumbnail": {
+                  "url": "https://lifetopiaworld.io/images/logo/logo-lifetopia-world.png"
+                },
+                "fields": [
+                  {
+                    "name": "Release",
+                    "value": "**$RELEASE_NAME**",
+                    "inline": false
+                  },
+                  {
+                    "name": "Version",
+                    "value": "\`$RELEASE_TAG\`",
+                    "inline": true
+                  },
+                  {
+                    "name": "Published By",
+                    "value": "$AUTHOR",
+                    "inline": true
+                  },
+                  {
+                    "name": "Release Notes",
+                    "value": "$NOTES",
+                    "inline": false
+                  },
+                  {
+                    "name": "Links",
+                    "value": "[View Release]($RELEASE_URL) • [Open Website](https://lifetopiaworld.io)",
+                    "inline": false
+                  }
+                ],
+                "footer": {
+                  "text": "🏡 Every release brings Lifetopia closer to Beta."
+                },
+                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+              }
+            ]
+          }
+          EOF
+          )
+
+          RESPONSE=$(curl -s -w "%{http_code}" -o response.txt \
+            -H "Content-Type: application/json" \
+            -X POST \
+            -d "$PAYLOAD" \
+            "$WEBHOOK")
+
+          cat response.txt
+
+          if [ "$RESPONSE" -lt 200 ] || [ "$RESPONSE" -ge 300 ]; then
+            echo "Discord webhook failed with status $RESPONSE"
+            exit 1
+          fi
