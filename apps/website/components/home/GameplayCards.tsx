@@ -15,127 +15,81 @@ function chunkArray<T>(array: T[], size: number): T[][] {
 }
 
 export function GameplayCards() {
-  const desktopSlides = useMemo(() => chunkArray(gameplayIcons, 5), []);
-  const mobileSlides = useMemo(() => chunkArray(gameplayIcons, 3), []);
-
-  const [desktopIndex, setDesktopIndex] = useState(0);
-  const [mobileIndex, setMobileIndex] = useState(0);
+  const slides = useMemo(() => chunkArray(gameplayIcons, 5), []);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
+    if (slides.length <= 1) return;
+
     const interval = setInterval(() => {
-      setDesktopIndex((current) => (current + 1) % desktopSlides.length);
-      setMobileIndex((current) => (current + 1) % mobileSlides.length);
+      setActiveIndex((current) => (current + 1) % slides.length);
     }, 7000);
 
     return () => clearInterval(interval);
-  }, [desktopSlides.length, mobileSlides.length]);
+  }, [slides.length]);
 
-  const nextDesktop = () =>
-    setDesktopIndex((current) => (current + 1) % desktopSlides.length);
+  const prevSlide = () => {
+    setActiveIndex((current) => (current - 1 + slides.length) % slides.length);
+  };
 
-  const prevDesktop = () =>
-    setDesktopIndex(
-      (current) => (current - 1 + desktopSlides.length) % desktopSlides.length,
-    );
-
-  const nextMobile = () =>
-    setMobileIndex((current) => (current + 1) % mobileSlides.length);
-
-  const prevMobile = () =>
-    setMobileIndex(
-      (current) => (current - 1 + mobileSlides.length) % mobileSlides.length,
-    );
+  const nextSlide = () => {
+    setActiveIndex((current) => (current + 1) % slides.length);
+  };
 
   return (
-    <div className="absolute inset-x-0 bottom-[3.2vw] z-20 mx-auto w-[86vw] max-w-6xl px-4">
-      <div className="overflow-hidden rounded-[28px] border border-white/80 bg-[#fffaf0]/86 shadow-[0_14px_38px_rgba(88,60,28,0.14)] backdrop-blur-xl">
-        <div
-          key={`desktop-${desktopIndex}`}
-          className="hidden animate-[lifetopiaSlideIn_450ms_ease_both] grid-cols-5 md:grid"
-        >
-          {(desktopSlides[desktopIndex] ?? []).map((item) => (
-            <GameplayCard key={item.title} item={item} />
-          ))}
+    <section
+      id="journey"
+      className="relative z-20 bg-[#fff7e8] px-[clamp(12px,6vw,96px)] pb-[clamp(24px,4vw,56px)] pt-[clamp(16px,3vw,36px)]"
+    >
+      <div className="mx-auto max-w-6xl">
+        <div className="overflow-hidden rounded-[clamp(16px,2vw,28px)] border border-white/80 bg-[#fffaf0]/88 shadow-[0_14px_38px_rgba(88,60,28,0.14)] backdrop-blur-xl">
+          <div
+            key={activeIndex}
+            className="grid animate-[lifetopiaSlideIn_450ms_ease_both] grid-cols-5"
+          >
+            {(slides[activeIndex] ?? []).map((item) => (
+              <GameplayCard key={item.title} item={item} />
+            ))}
+          </div>
         </div>
 
-        <div
-          key={`mobile-${mobileIndex}`}
-          className="grid animate-[lifetopiaSlideIn_450ms_ease_both] grid-cols-3 md:hidden"
-        >
-          {(mobileSlides[mobileIndex] ?? []).map((item) => (
-            <GameplayCard key={item.title} item={item} />
-          ))}
+        <div className="mt-[clamp(10px,1.4vw,18px)] flex items-center justify-center gap-[clamp(8px,1vw,14px)]">
+          <button
+            type="button"
+            onClick={prevSlide}
+            className="h-[clamp(22px,2.2vw,36px)] w-[clamp(22px,2.2vw,36px)] rounded-full border border-white/70 bg-white/90 text-[clamp(14px,1.6vw,22px)] font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105"
+            aria-label="Previous gameplay slide"
+          >
+            ‹
+          </button>
+
+          <div className="flex items-center gap-[clamp(5px,0.6vw,8px)] rounded-full border border-white/70 bg-white/55 px-[clamp(10px,1vw,16px)] py-[clamp(7px,0.8vw,12px)] shadow-[0_8px_22px_rgba(88,60,28,0.12)] backdrop-blur-md">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => setActiveIndex(index)}
+                className={`h-[clamp(5px,0.45vw,8px)] rounded-full transition-all duration-300 ${
+                  activeIndex === index
+                    ? "w-[clamp(18px,2vw,32px)] bg-[#6fa83a]"
+                    : "w-[clamp(5px,0.45vw,8px)] bg-[#d8c59f] hover:bg-[#b8a77d]"
+                }`}
+                aria-label={`Go to gameplay slide ${index + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={nextSlide}
+            className="h-[clamp(22px,2.2vw,36px)] w-[clamp(22px,2.2vw,36px)] rounded-full border border-white/70 bg-white/90 text-[clamp(14px,1.6vw,22px)] font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105"
+            aria-label="Next gameplay slide"
+          >
+            ›
+          </button>
         </div>
       </div>
-
-      <div className="mt-3 flex items-center justify-center gap-3">
-        <button
-          type="button"
-          onClick={prevDesktop}
-          className="hidden h-7 w-7 rounded-full border border-white/70 bg-white/90 text-lg font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105 md:block"
-          aria-label="Previous gameplay slide"
-        >
-          ‹
-        </button>
-
-        <button
-          type="button"
-          onClick={prevMobile}
-          className="h-7 w-7 rounded-full border border-white/70 bg-white/90 text-lg font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105 md:hidden"
-          aria-label="Previous gameplay slide"
-        >
-          ‹
-        </button>
-
-        <div className="hidden items-center gap-2 rounded-full border border-white/70 bg-white/55 px-3 py-2 shadow-[0_8px_22px_rgba(88,60,28,0.12)] backdrop-blur-md md:flex">
-          {desktopSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setDesktopIndex(index)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                desktopIndex === index
-                  ? "w-7 bg-[#6fa83a]"
-                  : "w-2 bg-[#d8c59f] hover:bg-[#b8a77d]"
-              }`}
-              aria-label={`Go to gameplay slide ${index + 1}`}
-            />
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2 rounded-full border border-white/70 bg-white/55 px-3 py-2 shadow-[0_8px_22px_rgba(88,60,28,0.12)] backdrop-blur-md md:hidden">
-          {mobileSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setMobileIndex(index)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                mobileIndex === index
-                  ? "w-7 bg-[#6fa83a]"
-                  : "w-2 bg-[#d8c59f] hover:bg-[#b8a77d]"
-              }`}
-              aria-label={`Go to gameplay slide ${index + 1}`}
-            />
-          ))}
-        </div>
-
-        <button
-          type="button"
-          onClick={nextDesktop}
-          className="hidden h-7 w-7 rounded-full border border-white/70 bg-white/90 text-lg font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105 md:block"
-          aria-label="Next gameplay slide"
-        >
-          ›
-        </button>
-
-        <button
-          type="button"
-          onClick={nextMobile}
-          className="h-7 w-7 rounded-full border border-white/70 bg-white/90 text-lg font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105 md:hidden"
-          aria-label="Next gameplay slide"
-        >
-          ›
-        </button>
-      </div>
-    </div>
+    </section>
   );
 }
 
@@ -149,20 +103,21 @@ type GameplayCardProps = {
 
 function GameplayCard({ item }: GameplayCardProps) {
   return (
-    <div className="group flex min-w-0 items-center justify-center gap-[0.55vw] border-r border-[#d8c59f]/55 px-[0.7vw] py-[0.65vw] text-center last:border-r-0 transition duration-300 hover:bg-white/55">
+    <div className="group flex min-w-0 items-center justify-center gap-[clamp(3px,0.55vw,9px)] border-r border-[#d8c59f]/55 px-[clamp(3px,0.75vw,12px)] py-[clamp(5px,0.8vw,13px)] text-center last:border-r-0 transition duration-300 hover:bg-white/55">
       <Image
         src={item.image}
         alt={item.title}
         width={72}
         height={72}
-        className="h-[clamp(22px,2.8vw,50px)] w-[clamp(22px,2.8vw,50px)] shrink-0 object-contain transition duration-300 group-hover:scale-105"
+        className="h-[clamp(16px,2.8vw,50px)] w-[clamp(16px,2.8vw,50px)] shrink-0 object-contain transition duration-300 group-hover:scale-105"
       />
 
-      <div className="hidden min-w-0 text-left sm:block">
-        <h3 className="truncate text-[clamp(0.52rem,0.78vw,0.86rem)] font-black leading-tight">
+      <div className="min-w-0 text-left">
+        <h3 className="truncate text-[clamp(0.35rem,0.78vw,0.86rem)] font-black leading-tight text-[#2f1b12]">
           {item.title}
         </h3>
-        <p className="mt-1 line-clamp-2 text-[clamp(0.44rem,0.58vw,0.68rem)] leading-tight text-[#6b5b4a]">
+
+        <p className="mt-[clamp(1px,0.25vw,4px)] line-clamp-2 text-[clamp(0.28rem,0.58vw,0.68rem)] leading-tight text-[#6b5b4a]">
           {item.desc}
         </p>
       </div>
