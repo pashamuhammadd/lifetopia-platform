@@ -1,0 +1,114 @@
+name: Lifetopia Build Log
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send build log to Discord
+        env:
+          DISCORD_WEBHOOK_BUILD: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_URL: ${{ github.event.head_commit.url }}
+          AUTHOR: ${{ github.event.head_commit.author.name }}
+          REPOSITORY: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+        run: |
+          SHORT_SHA="${SHA:0:7}"
+
+          COLOR=5763719
+          TYPE="🟢 Feature Update"
+
+          if [[ "$COMMIT_MESSAGE" == fix:* ]]; then
+            COLOR=3447003
+            TYPE="🔵 Bug Fix"
+          elif [[ "$COMMIT_MESSAGE" == docs:* ]]; then
+            COLOR=9807270
+            TYPE="⚪ Documentation"
+          elif [[ "$COMMIT_MESSAGE" == refactor:* ]]; then
+            COLOR=10181046
+            TYPE="🟣 Refactor"
+          elif [[ "$COMMIT_MESSAGE" == style:* ]]; then
+            COLOR=15844367
+            TYPE="🟡 UI / Style Update"
+          elif [[ "$COMMIT_MESSAGE" == chore:* ]]; then
+            COLOR=8359053
+            TYPE="⚫ Maintenance"
+          elif [[ "$COMMIT_MESSAGE" == release:* ]]; then
+            COLOR=16766720
+            TYPE="🚀 Release"
+          fi
+
+          PAYLOAD=$(cat <<EOF
+          {
+            "username": "🌿 Lifetopia Build System",
+            "embeds": [
+              {
+                "title": "🌿 Lifetopia World / Build Log",
+                "description": "A new change has entered the Lifetopia development pipeline.",
+                "color": $COLOR,
+                "thumbnail": {
+                  "url": "https://lifetopiaworld.io/images/logo/logo-lifetopia-world.png"
+                },
+                "fields": [
+                  {
+                    "name": "Update Type",
+                    "value": "$TYPE",
+                    "inline": true
+                  },
+                  {
+                    "name": "Branch",
+                    "value": "\`$BRANCH\`",
+                    "inline": true
+                  },
+                  {
+                    "name": "Author",
+                    "value": "$AUTHOR",
+                    "inline": true
+                  },
+                  {
+                    "name": "Repository",
+                    "value": "\`$REPOSITORY\`",
+                    "inline": false
+                  },
+                  {
+                    "name": "Commit",
+                    "value": "[$COMMIT_MESSAGE]($COMMIT_URL)",
+                    "inline": false
+                  },
+                  {
+                    "name": "SHA",
+                    "value": "\`$SHORT_SHA\`",
+                    "inline": true
+                  },
+                  {
+                    "name": "Environment",
+                    "value": "\`Production\`",
+                    "inline": true
+                  },
+                  {
+                    "name": "Website",
+                    "value": "https://lifetopiaworld.io",
+                    "inline": false
+                  }
+                ],
+                "footer": {
+                  "text": "🏡 Every commit builds a better Lifetopia."
+                },
+                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+              }
+            ]
+          }
+          EOF
+          )
+
+          curl -H "Content-Type: application/json" \
+            -X POST \
+            -d "$PAYLOAD" \
+            "$DISCORD_WEBHOOK_BUILD"
