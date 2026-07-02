@@ -10,6 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Calculate development stats
+        run: |
+          TOTAL_COMMITS=$(git rev-list --count HEAD)
+          TODAY=$(date -u +%F)
+          TODAY_COMMITS=$(git log --since="$TODAY 00:00:00 +0000" --pretty=oneline | wc -l | xargs)
+
+          STREAK=0
+          CURRENT_DATE="$TODAY"
+
+          while git log --since="$CURRENT_DATE 00:00:00 +0000" --until="$CURRENT_DATE 23:59:59 +0000" --pretty=oneline | grep -q .; do
+            STREAK=$((STREAK + 1))
+            CURRENT_DATE=$(date -u -d "$CURRENT_DATE -1 day" +%F)
+          done
+
+          echo "TOTAL_COMMITS=$TOTAL_COMMITS" >> $GITHUB_ENV
+          echo "TODAY_COMMITS=$TODAY_COMMITS" >> $GITHUB_ENV
+          echo "DEV_STREAK=$STREAK" >> $GITHUB_ENV
+
       - name: Send build log to Discord
         env:
           DISCORD_WEBHOOK_BUILD: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
@@ -19,96 +42,127 @@ jobs:
           REPOSITORY: ${{ github.repository }}
           BRANCH: ${{ github.ref_name }}
           SHA: ${{ github.sha }}
+          TOTAL_COMMITS: ${{ env.TOTAL_COMMITS }}
+          TODAY_COMMITS: ${{ env.TODAY_COMMITS }}
+          DEV_STREAK: ${{ env.DEV_STREAK }}
         run: |
-          SHORT_SHA="${SHA:0:7}"
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
 
-          COLOR=5763719
-          TYPE="🟢 Feature Update"
+          commit = os.environ["COMMIT_MESSAGE"]
+          color = 5763719
+          update_type = "🟢 Feature Update"
 
-          if [[ "$COMMIT_MESSAGE" == fix:* ]]; then
-            COLOR=3447003
-            TYPE="🔵 Bug Fix"
-          elif [[ "$COMMIT_MESSAGE" == docs:* ]]; then
-            COLOR=9807270
-            TYPE="⚪ Documentation"
-          elif [[ "$COMMIT_MESSAGE" == refactor:* ]]; then
-            COLOR=10181046
-            TYPE="🟣 Refactor"
-          elif [[ "$COMMIT_MESSAGE" == style:* ]]; then
-            COLOR=15844367
-            TYPE="🟡 UI / Style Update"
-          elif [[ "$COMMIT_MESSAGE" == chore:* ]]; then
-            COLOR=8359053
-            TYPE="⚫ Maintenance"
-          elif [[ "$COMMIT_MESSAGE" == release:* ]]; then
-            COLOR=16766720
-            TYPE="🚀 Release"
+          if commit.startswith("fix:"):
+              color = 3447003
+              update_type = "🔵 Bug Fix"
+          elif commit.startswith("docs:"):
+              color = 9807270
+              update_type = "⚪ Documentation"
+          elif commit.startswith("refactor:"):
+              color = 10181046
+              update_type = "🟣 Refactor"
+          elif commit.startswith("style:"):
+              color = 15844367
+              update_type = "🟡 UI / Style Update"
+          elif commit.startswith("chore:"):
+              color = 8359053
+              update_type = "⚫ Maintenance"
+          elif commit.startswith("release:"):
+              color = 16766720
+              update_type = "🚀 Release"
+
+          payload = {
+              "username": "🌿 Lifetopia Build System",
+              "embeds": [
+                  {
+                      "title": "🌿 Lifetopia World / Build Log",
+                      "description": "A new change has entered the Lifetopia development pipeline.",
+                      "color": color,
+                      "thumbnail": {
+                          "url": "https://lifetopiaworld.io/images/logo/logo-lifetopia-world.png"
+                      },
+                      "fields": [
+                          {"name": "Update Type", "value": update_type, "inline": True},
+                          {"name": "Branch", "value": f"`{os.environ['BRANCH']}`", "inline": True},
+                          {"name": "Author", "value": os.environ["AUTHOR"], "inline": True},
+                          {"name": "Commit", "value": f"[{commit}]({os.environ['COMMIT_URL']})", "inline": False},
+                          {"name": "SHA", "value": f"`{os.environ['SHA'][:7]}`", "inline": True},
+                          {"name": "Today’s Commits", "value": os.environ["TODAY_COMMITS"], "inline": True},
+                          {"name": "Development Streak", "value": f"{os.environ['DEV_STREAK']} day(s)", "inline": True},
+                          {"name": "Total Commits", "value": os.environ["TOTAL_COMMITS"], "inline": True},
+                          {"name": "Website", "value": "https://lifetopiaworld.io", "inline": False},
+                      ],
+                      "footer": {
+                          "text": "🏡 Every commit builds a better Lifetopia."
+                      },
+                  }
+              ],
+          }
+
+          data = json.dumps(payload).encode("utf-8")
+          request = urllib.request.Request(
+              os.environ["DISCORD_WEBHOOK_BUILD"],
+              data=data,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          urllib.request.urlopen(request)
+          PY
+
+      - name: Send milestone notification
+        if: ${{ env.TOTAL_COMMITS != '' }}
+        env:
+          DISCORD_WEBHOOK_DEV: ${{ secrets.DISCORD_WEBHOOK_DEV }}
+          DISCORD_ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
+          TOTAL_COMMITS: ${{ env.TOTAL_COMMITS }}
+        run: |
+          if [ $((TOTAL_COMMITS % 100)) -ne 0 ]; then
+            echo "Not a 100-commit milestone. Skipping."
+            exit 0
           fi
 
-          PAYLOAD=$(cat <<EOF
-          {
-            "username": "🌿 Lifetopia Build System",
-            "embeds": [
-              {
-                "title": "🌿 Lifetopia World / Build Log",
-                "description": "A new change has entered the Lifetopia development pipeline.",
-                "color": $COLOR,
-                "thumbnail": {
-                  "url": "https://lifetopiaworld.io/images/logo/logo-lifetopia-world.png"
-                },
-                "fields": [
-                  {
-                    "name": "Update Type",
-                    "value": "$TYPE",
-                    "inline": true
-                  },
-                  {
-                    "name": "Branch",
-                    "value": "\`$BRANCH\`",
-                    "inline": true
-                  },
-                  {
-                    "name": "Author",
-                    "value": "$AUTHOR",
-                    "inline": true
-                  },
-                  {
-                    "name": "Repository",
-                    "value": "\`$REPOSITORY\`",
-                    "inline": false
-                  },
-                  {
-                    "name": "Commit",
-                    "value": "[$COMMIT_MESSAGE]($COMMIT_URL)",
-                    "inline": false
-                  },
-                  {
-                    "name": "SHA",
-                    "value": "\`$SHORT_SHA\`",
-                    "inline": true
-                  },
-                  {
-                    "name": "Environment",
-                    "value": "\`Production\`",
-                    "inline": true
-                  },
-                  {
-                    "name": "Website",
-                    "value": "https://lifetopiaworld.io",
-                    "inline": false
-                  }
-                ],
-                "footer": {
-                  "text": "🏡 Every commit builds a better Lifetopia."
-                },
-                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-              }
-            ]
-          }
-          EOF
-          )
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
 
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d "$PAYLOAD" \
-            "$DISCORD_WEBHOOK_BUILD"
+          role_id = os.environ["DISCORD_ROLE_ID"]
+          total = os.environ["TOTAL_COMMITS"]
+
+          payload = {
+              "username": "🚀 Lifetopia Development",
+              "content": f"<@&{role_id}>",
+              "embeds": [
+                  {
+                      "title": "🎉 Lifetopia World Commit Milestone",
+                      "description": f"🌿 **{total} commits reached!**\n\nAnother major step in the Lifetopia World development journey.",
+                      "color": 5763719,
+                      "thumbnail": {
+                          "url": "https://lifetopiaworld.io/images/logo/logo-lifetopia-world.png"
+                      },
+                      "fields": [
+                          {"name": "Milestone", "value": f"`{total} commits`", "inline": True},
+                          {"name": "Website", "value": "https://lifetopiaworld.io", "inline": True},
+                      ],
+                      "footer": {
+                          "text": "🏡 Every commit builds a better Lifetopia."
+                      },
+                  }
+              ],
+              "allowed_mentions": {
+                  "roles": [role_id]
+              }
+          }
+
+          data = json.dumps(payload).encode("utf-8")
+          request = urllib.request.Request(
+              os.environ["DISCORD_WEBHOOK_DEV"],
+              data=data,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          urllib.request.urlopen(request)
+          PY
