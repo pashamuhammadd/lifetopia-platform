@@ -6,15 +6,26 @@ export function HeroSection() {
   return (
     <section
       id="home"
-      className="relative h-[100svh] min-h-[680px] overflow-hidden rounded-b-[36px]"
+      className="relative overflow-hidden rounded-b-[clamp(24px,3vw,36px)] bg-[#fff7e8]"
     >
       <HeroBackground />
 
-      <div className="relative z-10 flex h-full items-start px-[8vw] pt-[8vw]">
-        <HeroContent />
-      </div>
+      <div className="absolute inset-0 z-10 px-[8vw] pt-[8vw]">
+  <div className="origin-top-left scale-[clamp(0.42,1vw,1)]">
+    <HeroContent />
+  </div>
+</div>
 
-      <GameplayCards />
+     <div
+  className="
+    relative z-20
+    px-[clamp(16px,5vw,96px)]
+    mt-[clamp(20px,4vw,40px)]
+    md:-mt-[clamp(28px,5vw,82px)]
+  "
+>
+  <GameplayCards />
+</div>
     </section>
   );
 }
