@@ -1,6 +1,5 @@
 import { AccountSection } from "@/components/home/account/AccountSection";
-import { CommunitySection } from "@/components/home/CommunitySection";
-import { ExploreSection } from "@/components/home/ExploreSection";
+import { CommunitySection } from "@/components/home/community/CommunitySection";
 import { HeroSection } from "@/components/home/HeroSection";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
