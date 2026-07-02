@@ -1,7 +1,7 @@
 import { AccountSection } from "@/components/home/account/AccountSection";
 import { CommunitySection } from "@/components/home/community/CommunitySection";
 import { HeroSection } from "@/components/home/HeroSection";
-import { Footer } from "@/components/layout/Footer";
+import { Footer } from "@/components/home/footer/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { GameplayCards } from "@/components/home/GameplayCards";
 import { DevelopmentJourneySection } from "@/components/home/development-journey/DevelopmentJourneySection";
