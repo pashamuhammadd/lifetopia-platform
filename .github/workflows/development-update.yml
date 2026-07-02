@@ -20,69 +20,85 @@ jobs:
           RELEASE_URL: ${{ github.event.release.html_url }}
           AUTHOR: ${{ github.event.release.author.login }}
         run: |
-          NOTES=$(echo "$RELEASE_BODY" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+          import urllib.error
 
-          PAYLOAD=$(cat <<EOF
-          {
-            "username": "🚀 Lifetopia Development",
-            "content": "<@&$ROLE_ID>",
-            "allowed_mentions": {
-              "roles": ["$ROLE_ID"]
-            },
-            "embeds": [
-              {
-                "title": "🚀 Lifetopia World Development Milestone",
-                "description": "A new official development update has been released.",
-                "color": 5763719,
-                "thumbnail": {
-                  "url": "https://lifetopiaworld.io/images/logo/logo-lifetopia-world.png"
-                },
-                "fields": [
+          webhook = os.environ["WEBHOOK"]
+          role_id = os.environ["ROLE_ID"]
+
+          release_name = os.environ.get("RELEASE_NAME") or "Lifetopia Development Update"
+          release_tag = os.environ.get("RELEASE_TAG") or "unknown"
+          release_body = os.environ.get("RELEASE_BODY") or "No release notes provided."
+          release_url = os.environ.get("RELEASE_URL") or "https://github.com"
+          author = os.environ.get("AUTHOR") or "Nimia Games"
+
+          if len(release_body) > 900:
+              release_body = release_body[:900] + "\n\n...read more on GitHub Release."
+
+          payload = {
+              "username": "🚀 Lifetopia Development",
+              "content": f"<@&{role_id}>",
+              "allowed_mentions": {
+                  "roles": [role_id]
+              },
+              "embeds": [
                   {
-                    "name": "Release",
-                    "value": "**$RELEASE_NAME**",
-                    "inline": false
-                  },
-                  {
-                    "name": "Version",
-                    "value": "\`$RELEASE_TAG\`",
-                    "inline": true
-                  },
-                  {
-                    "name": "Published By",
-                    "value": "$AUTHOR",
-                    "inline": true
-                  },
-                  {
-                    "name": "Release Notes",
-                    "value": "$NOTES",
-                    "inline": false
-                  },
-                  {
-                    "name": "Links",
-                    "value": "[View Release]($RELEASE_URL) • [Open Website](https://lifetopiaworld.io)",
-                    "inline": false
+                      "title": "🚀 Lifetopia World Development Milestone",
+                      "description": "A new official development update has been released.",
+                      "color": 5763719,
+                      "thumbnail": {
+                          "url": "https://lifetopiaworld.io/images/logo/logo-lifetopia-world.png"
+                      },
+                      "fields": [
+                          {
+                              "name": "Release",
+                              "value": f"**{release_name}**",
+                              "inline": False
+                          },
+                          {
+                              "name": "Version",
+                              "value": f"`{release_tag}`",
+                              "inline": True
+                          },
+                          {
+                              "name": "Published By",
+                              "value": author,
+                              "inline": True
+                          },
+                          {
+                              "name": "Release Notes",
+                              "value": release_body,
+                              "inline": False
+                          },
+                          {
+                              "name": "Links",
+                              "value": f"[View Release]({release_url}) • [Open Website](https://lifetopiaworld.io)",
+                              "inline": False
+                          }
+                      ],
+                      "footer": {
+                          "text": "🏡 Every release brings Lifetopia closer to Beta."
+                      }
                   }
-                ],
-                "footer": {
-                  "text": "🏡 Every release brings Lifetopia closer to Beta."
-                },
-                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-              }
-            ]
+              ]
           }
-          EOF
+
+          data = json.dumps(payload).encode("utf-8")
+          req = urllib.request.Request(
+              webhook,
+              data=data,
+              headers={"Content-Type": "application/json"},
+              method="POST",
           )
 
-          RESPONSE=$(curl -s -w "%{http_code}" -o response.txt \
-            -H "Content-Type: application/json" \
-            -X POST \
-            -d "$PAYLOAD" \
-            "$WEBHOOK")
-
-          cat response.txt
-
-          if [ "$RESPONSE" -lt 200 ] || [ "$RESPONSE" -ge 300 ]; then
-            echo "Discord webhook failed with status $RESPONSE"
-            exit 1
-          fi
+          try:
+              with urllib.request.urlopen(req) as response:
+                  print("Discord response:", response.status)
+          except urllib.error.HTTPError as e:
+              print("Discord HTTP error:", e.code)
+              print(e.read().decode("utf-8"))
+              raise
+          PY
