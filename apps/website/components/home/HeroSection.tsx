@@ -1,4 +1,3 @@
-import { GameplayCards } from "@/components/home/GameplayCards";
 import { HeroBackground } from "@/components/home/HeroBackground";
 import { HeroContent } from "@/components/home/HeroContent";
 
@@ -15,8 +14,6 @@ export function HeroSection() {
           <HeroContent />
         </div>
       </section>
-
-      <GameplayCards />
     </>
   );
 }
