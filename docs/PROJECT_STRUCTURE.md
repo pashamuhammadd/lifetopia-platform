@@ -179,11 +179,18 @@ lifetopia-platform
 │       ├── postcss.config.mjs
 │       ├── README.md
 │       └── tsconfig.json
+├── config
+│   └── project.json
 ├── docs
 │   ├── api
 │   ├── architecture
 │   ├── design-system
-│   └── roadmap
+│   ├── roadmap
+│   ├── CODING_GUIDE.md
+│   ├── DESIGN_SYSTEM.md
+│   ├── PROJECT_CONTEXT.md
+│   ├── PROJECT_STRUCTURE.md
+│   └── ROADMAP.md
 ├── packages
 │   ├── config
 │   ├── eslint-config
@@ -217,7 +224,14 @@ lifetopia-platform
 │   │   └── tsconfig.json
 │   └── utils
 ├── scripts
-│   └── generate-docs.mjs
+│   ├── generate-coding-guide.mjs
+│   ├── generate-context.mjs
+│   ├── generate-design-system.mjs
+│   ├── generate-docs.mjs
+│   ├── generate-roadmap.mjs
+│   ├── generate-structure.mjs
+│   ├── project-status.mjs
+│   └── project-update.mjs
 ├── .gitignore
 ├── .npmrc
 ├── package.json

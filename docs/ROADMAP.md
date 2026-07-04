@@ -1,43 +1,31 @@
 # Lifetopia World — Roadmap
 
 ## Current Phase
-Landing Page Completion
+Landing Page
+
+## Current Priority
+Finish News v2
 
 ## Completed
-- Hero section
-- Account section
-- Gameplay cards
+- Hero
+- Account
+- Gameplay
 - Development Journey
-- Roadmap section
-- Community section
+- Roadmap
+- Community
 - Footer
-- Technical SEO
-- Google Search Console
-- Discord DevOps notifications
-- Vercel deployment
-
-## In Progress
-- News section
 
 ## Next
-1. Authentication
-2. Register
-3. Login
-4. Dashboard
-5. Profile
-6. Settings
-7. Wallet
-8. Inventory
-9. Community Platform
-10. Game Integration
+- News
+- Authentication
+- Dashboard
+- Profile
+- Wallet
+- Inventory
 
-## Long-Term
-- Supabase backend
-- Player database
-- Mission system
-- Harmony Points
-- Wallet integration
-- NFT support
-- GOLD integration
-- Marketplace
-- Beta preparation
+## Progress
+- landing Page: ██████████████████░░ 92%
+- authentication: ░░░░░░░░░░░░░░░░░░░░ 0%
+- dashboard: ░░░░░░░░░░░░░░░░░░░░ 0%
+- backend: ░░░░░░░░░░░░░░░░░░░░ 0%
+- game Integration: ░░░░░░░░░░░░░░░░░░░░ 0%

@@ -3,23 +3,26 @@
 ## Project
 Lifetopia World is a cozy fantasy life simulation, social sandbox, and Web3 game platform powered by Solana.
 
-## Main App
-`apps/website`
+## Version
+0.1.0
 
 ## Website
 https://lifetopiaworld.io
 
+## Current Phase
+Landing Page
+
+## Current Priority
+Finish News v2
+
 ## Tech Stack
-- Next.js App Router
+- Next.js
 - TypeScript
 - TailwindCSS
 - Turborepo
-- pnpm workspace
-- Vercel
-- GitHub Actions
-- Discord DevOps notifications
+- pnpm
 
-## Current Landing Page Sections
+## Completed
 - Hero ✅
 - Account ✅
 - Gameplay ✅
@@ -27,10 +30,14 @@ https://lifetopiaworld.io
 - Roadmap ✅
 - Community ✅
 - Footer ✅
-- News ⏳
 
-## Current Priority
-Finish the News section, then move to Authentication and Dashboard.
+## Next
+- News
+- Authentication
+- Dashboard
+- Profile
+- Wallet
+- Inventory
 
 ## Important Rule
 Do not redesign existing sections unless explicitly requested.

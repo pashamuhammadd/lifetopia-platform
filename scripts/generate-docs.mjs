@@ -3,6 +3,16 @@ import path from "path";
 
 const root = process.cwd();
 const docsDir = path.join(root, "docs");
+const configPath = path.join(root, "config", "project.json");
+
+function readProject() {
+  if (!fs.existsSync(configPath)) {
+    console.error("❌ config/project.json not found.");
+    process.exit(1);
+  }
+
+  return JSON.parse(fs.readFileSync(configPath, "utf8"));
+}
 
 function writeDoc(fileName, content) {
   fs.mkdirSync(docsDir, { recursive: true });
@@ -11,8 +21,6 @@ function writeDoc(fileName, content) {
 }
 
 function walk(dir, prefix = "") {
-  if (!fs.existsSync(dir)) return "";
-
   const ignored = new Set([
     "node_modules",
     ".next",
@@ -49,45 +57,45 @@ function walk(dir, prefix = "") {
   return output;
 }
 
-const projectContext = `# Lifetopia World — Project Context
+function progressBar(value) {
+  const total = 20;
+  const filled = Math.round((value / 100) * total);
+  return "█".repeat(filled) + "░".repeat(total - filled);
+}
+
+const project = readProject();
+
+const projectContext = `# ${project.name} — Project Context
 
 ## Project
-Lifetopia World is a cozy fantasy life simulation, social sandbox, and Web3 game platform powered by Solana.
+${project.name} is a cozy fantasy life simulation, social sandbox, and Web3 game platform powered by Solana.
 
-## Main App
-\`apps/website\`
+## Version
+${project.version}
 
 ## Website
-https://lifetopiaworld.io
+${project.website}
 
-## Tech Stack
-- Next.js App Router
-- TypeScript
-- TailwindCSS
-- Turborepo
-- pnpm workspace
-- Vercel
-- GitHub Actions
-- Discord DevOps notifications
-
-## Current Landing Page Sections
-- Hero ✅
-- Account ✅
-- Gameplay ✅
-- Development Journey ✅
-- Roadmap ✅
-- Community ✅
-- Footer ✅
-- News ⏳
+## Current Phase
+${project.phase}
 
 ## Current Priority
-Finish the News section, then move to Authentication and Dashboard.
+${project.priority}
+
+## Tech Stack
+${project.tech.map((item) => `- ${item}`).join("\n")}
+
+## Completed
+${project.completed.map((item) => `- ${item} ✅`).join("\n")}
+
+## Next
+${project.next.map((item) => `- ${item}`).join("\n")}
 
 ## Important Rule
 Do not redesign existing sections unless explicitly requested.
 `;
 
-const codingGuide = `# Lifetopia World — Coding Guide
+const codingGuide = `# ${project.name} — Coding Guide
 
 ## Core Rule
 Always keep the project scalable, readable, maintainable, and future-backend-ready.
@@ -152,7 +160,7 @@ release:
 \`\`\`
 `;
 
-const designSystem = `# Lifetopia World — Design System
+const designSystem = `# ${project.name} — Design System
 
 ## Visual Direction
 - Cozy fantasy
@@ -207,52 +215,30 @@ Do not create a totally different mobile design.
 Mobile should preserve the same visual composition and scale proportionally.
 `;
 
-const roadmap = `# Lifetopia World — Roadmap
+const roadmap = `# ${project.name} — Roadmap
 
 ## Current Phase
-Landing Page Completion
+${project.phase}
+
+## Current Priority
+${project.priority}
 
 ## Completed
-- Hero section
-- Account section
-- Gameplay cards
-- Development Journey
-- Roadmap section
-- Community section
-- Footer
-- Technical SEO
-- Google Search Console
-- Discord DevOps notifications
-- Vercel deployment
-
-## In Progress
-- News section
+${project.completed.map((item) => `- ${item}`).join("\n")}
 
 ## Next
-1. Authentication
-2. Register
-3. Login
-4. Dashboard
-5. Profile
-6. Settings
-7. Wallet
-8. Inventory
-9. Community Platform
-10. Game Integration
+${project.next.map((item) => `- ${item}`).join("\n")}
 
-## Long-Term
-- Supabase backend
-- Player database
-- Mission system
-- Harmony Points
-- Wallet integration
-- NFT support
-- GOLD integration
-- Marketplace
-- Beta preparation
+## Progress
+${Object.entries(project.progress)
+  .map(([key, value]) => {
+    const label = key.replace(/([A-Z])/g, " $1");
+    return `- ${label}: ${progressBar(value)} ${value}%`;
+  })
+  .join("\n")}
 `;
 
-const structure = `# Lifetopia World — Project Structure
+const structure = `# ${project.name} — Project Structure
 
 Generated automatically.
 

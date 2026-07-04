@@ -1,0 +1,38 @@
+{
+  "name": "Lifetopia World",
+  "version": "0.1.0",
+  "phase": "Landing Page",
+  "priority": "Finish News v2",
+  "website": "https://lifetopiaworld.io",
+  "tech": [
+    "Next.js",
+    "TypeScript",
+    "TailwindCSS",
+    "Turborepo",
+    "pnpm"
+  ],
+  "completed": [
+    "Hero",
+    "Account",
+    "Gameplay",
+    "Development Journey",
+    "Roadmap",
+    "Community",
+    "Footer"
+  ],
+  "next": [
+    "News",
+    "Authentication",
+    "Dashboard",
+    "Profile",
+    "Wallet",
+    "Inventory"
+  ],
+  "progress": {
+    "landingPage": 92,
+    "authentication": 0,
+    "dashboard": 0,
+    "backend": 0,
+    "gameIntegration": 0
+  }
+}
