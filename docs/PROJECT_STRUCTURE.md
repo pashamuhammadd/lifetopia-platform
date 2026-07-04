@@ -145,15 +145,17 @@ lifetopia-platform
 │       │   │   │   └── JourneyVision.tsx
 │       │   │   ├── footer
 │       │   │   │   └── Footer.tsx
+│       │   │   ├── gameplay
+│       │   │   │   ├── GameplayCards.tsx
+│       │   │   │   └── GameplaySection.tsx
+│       │   │   ├── hero
+│       │   │   │   ├── HeroBackground.tsx
+│       │   │   │   ├── HeroButtons.tsx
+│       │   │   │   ├── HeroContent.tsx
+│       │   │   │   ├── HeroPartner.tsx
+│       │   │   │   └── HeroSection.tsx
 │       │   │   ├── news
 │       │   │   │   └── NewsSection.tsx
-│       │   │   ├── GameplayCards.tsx
-│       │   │   ├── GameplaySection.tsx
-│       │   │   ├── HeroBackground.tsx
-│       │   │   ├── HeroButtons.tsx
-│       │   │   ├── HeroContent.tsx
-│       │   │   ├── HeroPartner.tsx
-│       │   │   ├── HeroSection.tsx
 │       │   │   └── RoadmapSection.tsx
 │       │   ├── layout
 │       │   │   └── Navbar.tsx
