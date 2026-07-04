@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AvatarPicker } from "@/components/auth/AvatarPicker";
 import { CountryPicker } from "@/components/auth/CountryPicker";
 import { playerAvatars } from "@/data/auth";
 import { createClient } from "@/lib/supabase/client";
 import type { RegisterStep } from "@/types/auth";
+import { checkUsernameAvailability } from "@/services/auth";
+
 
 const steps: RegisterStep[] = ["avatar", "identity", "security", "terms"];
 
@@ -19,6 +21,11 @@ export function RegisterForm() {
 
   const [avatarId, setAvatarId] = useState(playerAvatars[0]?.id ?? "");
   const [username, setUsername] = useState("");
+  const [usernameStatus, setUsernameStatus] = useState<
+  "idle" | "checking" | "available" | "taken" | "invalid" | "error"
+>("idle");
+
+const [usernameMessage, setUsernameMessage] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [gender, setGender] = useState<Gender>("male");
   const [country, setCountry] = useState("");
@@ -40,6 +47,26 @@ export function RegisterForm() {
   const usernamePattern = /^[a-zA-Z0-9_]{4,10}$/;
   const isUsernameFilled = username.length > 0;
   const isUsernameFormatValid = usernamePattern.test(username);
+  useEffect(() => {
+  const normalizedUsername = username.trim();
+
+  if (!normalizedUsername) {
+    setUsernameStatus("idle");
+    setUsernameMessage("");
+    return;
+  }
+
+  const timeout = setTimeout(async () => {
+    setUsernameStatus("checking");
+
+    const result = await checkUsernameAvailability(normalizedUsername);
+
+    setUsernameStatus(result.status);
+    setUsernameMessage(result.message);
+  }, 400);
+
+  return () => clearTimeout(timeout);
+}, [username]);
 
   function goToNextStep() {
     setMessage("");
@@ -73,6 +100,11 @@ export function RegisterForm() {
         setMessage("Please choose your gender, country, and date of birth.");
         return;
       }
+
+      if (usernameStatus !== "available") {
+  setMessage("Please choose an available username.");
+  return;
+    }
 
       setCurrentStep("security");
       return;
@@ -213,17 +245,21 @@ export function RegisterForm() {
               className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)] text-[clamp(0.8rem,1vw,1rem)] text-[#2f1b12] outline-none transition placeholder:text-[#7a5635]/50 focus:border-[#4f8124]"
             />
 
-            {isUsernameFilled ? (
-              <p
-                className={`text-[clamp(0.65rem,0.9vw,0.85rem)] font-semibold ${
-                  isUsernameFormatValid ? "text-[#4f8124]" : "text-red-600"
-                }`}
-              >
-                {isUsernameFormatValid
-                  ? "Username format is valid. Availability check will activate after the player profile database is ready."
-                  : "Use 4-10 characters. Only letters, numbers, and underscore are allowed."}
-              </p>
-            ) : null}
+            {usernameStatus !== "idle" && (
+  <p
+    className={`text-[clamp(0.65rem,0.9vw,0.85rem)] font-semibold ${
+      usernameStatus === "available"
+        ? "text-[#4f8124]"
+        : usernameStatus === "checking"
+          ? "text-[#7a5635]"
+          : "text-red-600"
+    }`}
+  >
+    {usernameStatus === "checking"
+      ? "Checking username..."
+      : usernameMessage}
+  </p>
+)}
           </label>
 
           <label className="flex flex-col gap-[clamp(0.35rem,0.8vw,0.6rem)]">
