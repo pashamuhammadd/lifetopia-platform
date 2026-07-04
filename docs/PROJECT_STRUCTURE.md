@@ -1,83 +1,6 @@
-# Lifetopia World Project Structure
+# Lifetopia World — Project Structure
 
-Generated automatically from the current project folder.
-
-## Project Summary
-
-- Root: `lifetopia-platform`
-- Apps: 2
-- Packages: 8
-- Components: 26
-- Pages: 2
-- Data Files: 8
-- Type Files: 5
-- Hooks: 0
-- Services: 0
-
-## Important Folders
-
-### apps
-
-- apps
-
-### packages
-
-- packages
-
-### components
-
-- apps/website/components
-- packages/ui/src/components
-
-### app
-
-- apps/docs/app
-- apps/website/app
-
-### data
-
-- apps/website/data
-
-### types
-
-- apps/website/types
-- packages/types
-
-### lib
-
-- apps/website/lib
-- packages/lib
-- packages/ui/src/lib
-
-### hooks
-
-- apps/website/hooks
-- packages/hooks
-- packages/ui/src/hooks
-
-### services
-
-- apps/website/services
-
-### providers
-
-- apps/website/providers
-
-### public
-
-- apps/docs/public
-- apps/website/public
-
-### scripts
-
-- scripts
-
-### docs
-
-- apps/docs
-- docs
-
-## Full Folder Tree
+Generated automatically.
 
 ```text
 lifetopia-platform
@@ -294,11 +217,13 @@ lifetopia-platform
 │   │   └── tsconfig.json
 │   └── utils
 ├── scripts
-│   └── generate-structure.mjs
+│   └── generate-docs.mjs
 ├── .gitignore
 ├── .npmrc
 ├── package.json
+├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
 ├── README.md
 └── turbo.json
+
 ```
