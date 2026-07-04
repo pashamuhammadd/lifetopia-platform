@@ -1,5 +1,5 @@
-import { HeroButtons } from "@/components/home/HeroButtons";
-import { HeroPartner } from "@/components/home/HeroPartner";
+import { HeroButtons } from "@/components/home/hero/HeroButtons";
+import { HeroPartner } from "@/components/home/hero/HeroPartner";
 
 export function HeroContent() {
   return (

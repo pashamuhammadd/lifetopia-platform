@@ -1,5 +1,5 @@
-import { HeroBackground } from "@/components/home/HeroBackground";
-import { HeroContent } from "@/components/home/HeroContent";
+import { HeroBackground } from "@/components/home/hero/HeroBackground";
+import { HeroContent } from "@/components/home/hero/HeroContent";
 
 export function HeroSection() {
   return (
