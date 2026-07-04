@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { getLatestNews } from "@/data/news";
 
@@ -9,13 +8,11 @@ export function NewsSection() {
     <section className="bg-[#fff7e8] px-[clamp(0.75rem,4vw,5rem)] py-[clamp(3rem,8vw,7rem)]">
       <div className="mx-auto flex max-w-7xl flex-col gap-[clamp(1.5rem,4vw,3.5rem)]">
         <div className="flex flex-col gap-[clamp(0.9rem,2vw,1.5rem)]">
-          <span className="w-fit rounded-full border border-[#d9c99f] bg-white/75 px-[clamp(0.65rem,1.4vw,1.2rem)] py-[clamp(0.28rem,0.7vw,0.5rem)] text-[clamp(0.62rem,0.9vw,0.9rem)] font-semibold text-[#4f8124]">
-            Latest News
-          </span>
+          <span className="lt-badge w-fit">Latest News</span>
 
           <div className="flex flex-col justify-between gap-[clamp(0.9rem,2vw,1.5rem)] md:flex-row md:items-end">
             <div className="max-w-[clamp(20rem,50vw,44rem)]">
-              <h2 className="text-[clamp(1.6rem,4.5vw,4.25rem)] font-black leading-[1.05] tracking-[-0.04em] text-[#2f1b12]">
+              <h2 className="lt-title">
                 Fresh stories from Lifetopia World.
               </h2>
 
@@ -25,10 +22,7 @@ export function NewsSection() {
               </p>
             </div>
 
-            <Link
-              href="/notes"
-              className="inline-flex w-fit items-center justify-center rounded-[clamp(999px,2vw,999px)] border border-[#d9c99f] bg-white/75 px-[clamp(0.75rem,1.7vw,1.5rem)] py-[clamp(0.55rem,1vw,0.95rem)] text-[clamp(0.62rem,1vw,0.95rem)] font-bold text-[#2f1b12] transition hover:-translate-y-0.5 hover:bg-white"
-            >
+            <Link href="/notes" className="lt-button-secondary w-fit">
               View All Notes
             </Link>
           </div>
@@ -38,7 +32,7 @@ export function NewsSection() {
           {newsItems.map((item) => (
             <article
               key={item.id}
-              className="group overflow-hidden rounded-[clamp(0.75rem,2.4vw,2rem)] border border-[#d9c99f] bg-white/75 shadow-sm transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-xl"
+              className="group overflow-hidden rounded-[clamp(0.75rem,2.4vw,2rem)] border border-white/80 bg-white/75 shadow-sm transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-xl"
             >
               <div className="aspect-[4/3] overflow-hidden bg-[#fff8e8]">
                 <img
@@ -64,7 +58,10 @@ export function NewsSection() {
                 </div>
 
                 <div className="flex items-center justify-between gap-[clamp(0.35rem,1vw,1rem)] pt-[clamp(0.1rem,0.5vw,0.4rem)]">
-                  <time className="text-[clamp(0.46rem,0.9vw,0.85rem)] font-medium text-[#7a5635]/75">
+                  <time
+                    dateTime={item.publishedAt}
+                    className="text-[clamp(0.46rem,0.9vw,0.85rem)] font-medium text-[#7a5635]/75"
+                  >
                     {new Date(item.publishedAt).toLocaleDateString("en", {
                       month: "short",
                       day: "numeric",
