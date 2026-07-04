@@ -3,51 +3,39 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
   const router = useRouter();
-  const supabase = createClient();
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     setIsLoading(true);
     setMessage("");
 
-    if (!identifier || !password) {
-      setMessage("Please enter your username/email and password.");
-      setIsLoading(false);
-      return;
-    }
-
-    const isEmail = identifier.includes("@");
-
-    if (!isEmail) {
-      setMessage(
-        "Username login needs the profiles database. For now, use email login until we create the profiles table.",
-      );
-      setIsLoading(false);
-      return;
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email: identifier,
-      password,
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ identifier, password }),
     });
 
-    if (error) {
-      setMessage(error.message);
+    const result = await response.json();
+
+    if (!response.ok) {
+      setMessage(result.error ?? "Login failed.");
       setIsLoading(false);
       return;
     }
 
     router.push("/dashboard");
+    router.refresh();
   }
 
   return (
@@ -63,7 +51,7 @@ export function LoginForm() {
         <input
           type="text"
           required
-          placeholder="Bent"
+          placeholder="Bent or player@email.com"
           value={identifier}
           onChange={(event) => setIdentifier(event.target.value)}
           className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)] text-[clamp(0.8rem,1vw,1rem)] text-[#2f1b12] outline-none transition placeholder:text-[#7a5635]/50 focus:border-[#4f8124]"
@@ -85,14 +73,12 @@ export function LoginForm() {
         />
       </label>
 
-      <div className="flex items-center justify-end">
-        <Link
-          href="/forgot-password"
-          className="text-[clamp(0.7rem,0.95vw,0.9rem)] font-bold text-[#4f8124] hover:text-[#2f1b12]"
-        >
-          Forgot Password?
-        </Link>
-      </div>
+      <Link
+        href="/forgot-password"
+        className="text-right text-[clamp(0.7rem,0.95vw,0.9rem)] font-bold text-[#4f8124] hover:text-[#2f1b12]"
+      >
+        Forgot Password?
+      </Link>
 
       {message ? (
         <p className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-[#fff8e8] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1vw,0.8rem)] text-[clamp(0.7rem,0.95vw,0.9rem)] font-medium text-[#7a5635]">
