@@ -1,4 +1,4 @@
-import type { NewsItem } from "@/types/news";
+import type { NewsItem } from "@repo/types/news";
 
 export const newsItems: NewsItem[] = [
   {

@@ -1,4 +1,4 @@
-import type { AccountFeature, AccountPreviewUser } from "@/types/account";
+import type { AccountFeature, AccountPreviewUser } from "@repo/types/account";
 
 export const mockAccountUser: AccountPreviewUser = {
   displayName: "Lifetopian",

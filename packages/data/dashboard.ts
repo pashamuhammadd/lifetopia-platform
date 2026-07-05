@@ -1,4 +1,4 @@
-import type { DashboardStat, QuickAction } from "@/types/dashboard";
+import type { DashboardStat, QuickAction } from "@repo/types/dashboard";
 
 export const dashboardStats: DashboardStat[] = [
   {

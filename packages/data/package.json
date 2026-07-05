@@ -8,6 +8,7 @@
     "./*": "./*.ts"
   },
   "dependencies": {
+    "@repo/types": "workspace:*",
     "react-icons": "^5.5.0"
   }
 }

@@ -1,4 +1,4 @@
-import type { RoadmapItem } from "@/types/roadmap";
+import type { RoadmapItem } from "@repo/types/roadmap";
 
 export const roadmapItems: RoadmapItem[] = [
   {

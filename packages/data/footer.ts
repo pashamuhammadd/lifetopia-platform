@@ -1,4 +1,4 @@
-import type { FooterLinkGroup, FooterSocialLink } from "@/types/footer";
+import type { FooterLinkGroup, FooterSocialLink } from "@repo/types/footer";
 
 export const footerLinkGroups: FooterLinkGroup[] = [
   {

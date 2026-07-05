@@ -1,7 +1,19 @@
 import Image from "next/image";
 import { footerLinkGroups } from "@repo/data/footer";
 
+type FooterLink = {
+  label: string;
+  href: string;
+};
+
+type FooterLinkGroup = {
+  title: string;
+  links: FooterLink[];
+};
+
 export function Footer() {
+  const groups = footerLinkGroups as FooterLinkGroup[];
+
   return (
     <footer className="relative overflow-hidden border-t border-[#d9c99f] bg-[#fff8e8] px-[clamp(14px,6vw,96px)] py-[clamp(28px,5vw,72px)]">
       <div className="absolute left-0 top-0 h-[clamp(120px,18vw,260px)] w-[clamp(120px,18vw,260px)] rounded-br-full bg-[#8cc84b]/16 blur-2xl" />
@@ -36,14 +48,14 @@ export function Footer() {
           </div>
 
           <div className="grid grid-cols-3 gap-[clamp(12px,2vw,34px)]">
-            {footerLinkGroups.map((group) => (
+            {groups.map((group) => (
               <div key={group.title}>
                 <h3 className="text-[clamp(0.55rem,1vw,1rem)] font-black text-[#2f1b12]">
                   {group.title}
                 </h3>
 
                 <div className="mt-[clamp(8px,1vw,16px)] grid gap-[clamp(5px,0.7vw,10px)]">
-                  {group.links.map((link) => (
+                  {group.links.map((link: FooterLink) => (
                     <a
                       key={link.label}
                       href={link.href}

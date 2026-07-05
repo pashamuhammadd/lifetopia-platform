@@ -1,4 +1,4 @@
-import type { PlayerAvatar } from "@/types/auth";
+import type { PlayerAvatar } from "@repo/types/auth";
 
 export const playerAvatars: PlayerAvatar[] = [
   {

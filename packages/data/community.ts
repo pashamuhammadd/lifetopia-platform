@@ -5,7 +5,7 @@ import {
   FaXTwitter,
 } from "react-icons/fa6";
 
-import type { CommunityLink, CommunityStat } from "@/types/community";
+import type { CommunityLink, CommunityStat } from "@repo/types/community";
 
 export const communityStats: CommunityStat[] = [
   {
