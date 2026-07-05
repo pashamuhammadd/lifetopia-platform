@@ -9,7 +9,8 @@
     "check-types": "turbo run check-types",
     "docs:generate": "node scripts/generate-docs.mjs",
     "project:status": "node scripts/project-status.mjs",
-    "project:update": "node scripts/project-update.mjs"
+    "project:update": "node scripts/project-update.mjs",
+    "sync:public": "node scripts/sync-public.mjs"
   },
   "devDependencies": {
     "prettier": "^3.7.4",

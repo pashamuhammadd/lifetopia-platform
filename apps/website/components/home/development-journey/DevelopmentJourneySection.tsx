@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { journeyMilestones } from "@/data/journey";
+import { journeyMilestones } from "@repo/data/journey";
 import { JourneyContent } from "@/components/home/development-journey/JourneyContent";
 import { JourneyHeader } from "@/components/home/development-journey/JourneyHeader";
 import { JourneyNavigation } from "@/components/home/development-journey/JourneyNavigation";

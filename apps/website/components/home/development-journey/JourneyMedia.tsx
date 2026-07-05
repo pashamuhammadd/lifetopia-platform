@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { JourneyMilestone } from "@/data/journey";
+import type { JourneyMilestone } from "@repo/data/journey";
 
 type JourneyMediaProps = {
   milestone: JourneyMilestone;

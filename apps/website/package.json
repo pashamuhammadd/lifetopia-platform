@@ -22,7 +22,11 @@
     "react-country-flag": "^3.1.0",
     "react-dom": "^19.2.0",
     "react-icons": "^5.7.0",
-    "react-select": "^5.10.2"
+    "react-select": "^5.10.2",
+    "@repo/data": "workspace:*",
+    "@repo/types": "workspace:*",
+    "@repo/lib": "workspace:*",
+    "@repo/services": "workspace:*"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

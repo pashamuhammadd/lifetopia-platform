@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { QuickAction } from "@/types/dashboard";
+import type { QuickAction } from "@repo/types/dashboard";
 
 type QuickActionsProps = {
   actions: QuickAction[];

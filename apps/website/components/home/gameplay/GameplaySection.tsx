@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { gameplayIcons } from "@/data/homepage";
+import { gameplayIcons } from "@repo/data/homepage";
 
 export function GameplaySection() {
   return (

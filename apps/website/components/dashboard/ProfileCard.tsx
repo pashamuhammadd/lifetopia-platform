@@ -1,4 +1,4 @@
-import type { DashboardProfile } from "@/types/dashboard";
+import type { DashboardProfile } from "@repo/types/dashboard";
 
 type ProfileCardProps = {
   profile: DashboardProfile;

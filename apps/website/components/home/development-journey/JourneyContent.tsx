@@ -1,4 +1,4 @@
-import type { JourneyMilestone } from "@/data/journey";
+import type { JourneyMilestone } from "@repo/data/journey";
 import { JourneyGrant } from "@/components/home/development-journey/JourneyGrant";
 import { JourneyMedia } from "@/components/home/development-journey/JourneyMedia";
 import { JourneyProgress } from "@/components/home/development-journey/JourneyProgress";

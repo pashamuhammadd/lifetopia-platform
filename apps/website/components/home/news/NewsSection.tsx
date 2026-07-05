@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getLatestNews } from "@/data/news";
+import { getLatestNews } from "@repo/data/news";
 
 export function NewsSection() {
   const newsItems = getLatestNews(3);

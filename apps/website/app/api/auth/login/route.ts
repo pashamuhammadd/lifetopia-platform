@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@repo/lib/supabase/admin";
 
 export async function POST(request: Request) {
   const { identifier, password } = await request.json();

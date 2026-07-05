@@ -1,4 +1,4 @@
-import type { AccountFeature } from "@/types/account";
+import type { AccountFeature } from "@repo/types/account";
 
 type AccountFeatureGridProps = {
   features: AccountFeature[];

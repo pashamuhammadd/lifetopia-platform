@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { mainNavigation } from "@/data/navigation";
+import { mainNavigation } from "@repo/data/navigation";
 
 export function Navbar() {
   return (

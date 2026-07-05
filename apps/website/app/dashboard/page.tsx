@@ -4,9 +4,9 @@ import { ProfileCard } from "@/components/dashboard/ProfileCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { StatsGrid } from "@/components/dashboard/StatsGrid";
 import { VerifyEmailBanner } from "@/components/dashboard/VerifyEmailBanner";
-import { dashboardStats, quickActions } from "@/data/dashboard";
-import { createClient } from "@/lib/supabase/server";
-import type { DashboardProfile } from "@/types/dashboard";
+import { dashboardStats, quickActions } from "@repo/data/dashboard";
+import { createClient } from "@repo/lib/supabase/server";
+import type { DashboardProfile } from "@repo/types/dashboard";
 
 export default async function DashboardPage() {
   const supabase = await createClient();

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { gameplayIcons } from "@/data/homepage";
+import { gameplayIcons } from "@repo/data/homepage";
 
 function chunkArray<T>(array: T[], size: number): T[][] {
   const chunks: T[][] = [];

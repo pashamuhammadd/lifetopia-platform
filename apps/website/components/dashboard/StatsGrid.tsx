@@ -1,4 +1,4 @@
-import type { DashboardStat } from "@/types/dashboard";
+import type { DashboardStat } from "@repo/types/dashboard";
 
 type StatsGridProps = {
   stats: DashboardStat[];

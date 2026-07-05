@@ -1,4 +1,4 @@
-import { accountFeatures, mockAccountUser } from "@/data/account";
+import { accountFeatures, mockAccountUser } from "@repo/data/account";
 import { AccountFeatureGrid } from "@/components/home/account/AccountFeatureGrid";
 import { AccountPreviewCard } from "@/components/home/account/AccountPreviewCard";
 

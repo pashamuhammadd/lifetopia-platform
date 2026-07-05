@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { communityLinks, communityStats } from "@/data/community";
+import { communityLinks, communityStats } from "@repo/data/community";
 
 export function CommunitySection() {
   return (

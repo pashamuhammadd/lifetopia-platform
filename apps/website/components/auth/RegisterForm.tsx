@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AvatarPicker } from "@/components/auth/AvatarPicker";
 import { CountryPicker } from "@/components/auth/CountryPicker";
-import { playerAvatars } from "@/data/auth";
-import { createClient } from "@/lib/supabase/client";
-import type { RegisterStep } from "@/types/auth";
-import { checkUsernameAvailability } from "@/services/auth";
+import { playerAvatars } from "@repo/data/auth";
+import { createClient } from "@repo/lib/supabase/client";
+import type { RegisterStep } from "@repo/types/auth";
+import { checkUsernameAvailability } from "@repo/services/auth";
 
 
 const steps: RegisterStep[] = ["avatar", "identity", "security", "terms"];

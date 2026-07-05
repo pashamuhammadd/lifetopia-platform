@@ -1,7 +1,7 @@
 # Lifetopia World — Roadmap
 
 ## Current Phase
-Landing Page
+Authentication
 
 ## Current Priority
 Finish News v2
@@ -14,9 +14,9 @@ Finish News v2
 - Roadmap
 - Community
 - Footer
+- News
 
 ## Next
-- News
 - Authentication
 - Dashboard
 - Profile
@@ -24,8 +24,8 @@ Finish News v2
 - Inventory
 
 ## Progress
-- landing Page: ██████████████████░░ 92%
-- authentication: ░░░░░░░░░░░░░░░░░░░░ 0%
+- landing Page: ████████████████████ 100%
+- authentication: ██████░░░░░░░░░░░░░░ 30%
 - dashboard: ░░░░░░░░░░░░░░░░░░░░ 0%
 - backend: ░░░░░░░░░░░░░░░░░░░░ 0%
 - game Integration: ░░░░░░░░░░░░░░░░░░░░ 0%

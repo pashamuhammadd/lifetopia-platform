@@ -1,4 +1,4 @@
-import type { JourneyMilestone } from "@/data/journey";
+import type { JourneyMilestone } from "@repo/data/journey";
 
 type JourneyTimelineProps = {
   milestones: JourneyMilestone[];

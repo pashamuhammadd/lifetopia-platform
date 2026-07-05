@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { footerLinkGroups } from "@/data/footer";
+import { footerLinkGroups } from "@repo/data/footer";
 
 export function Footer() {
   return (

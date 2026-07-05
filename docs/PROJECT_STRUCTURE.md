@@ -36,9 +36,19 @@ lifetopia-platform
 │   │   └── tsconfig.json
 │   └── website
 │       ├── app
+│       │   ├── api
+│       │   │   └── auth
+│       │   │       └── login
+│       │   │           └── route.ts
+│       │   ├── dashboard
+│       │   │   └── page.tsx
 │       │   ├── fonts
 │       │   │   ├── GeistMonoVF.woff
 │       │   │   └── GeistVF.woff
+│       │   ├── login
+│       │   │   └── page.tsx
+│       │   ├── register
+│       │   │   └── page.tsx
 │       │   ├── favicon.ico
 │       │   ├── globals.css
 │       │   ├── layout.tsx
@@ -48,6 +58,18 @@ lifetopia-platform
 │       │   ├── robots.ts
 │       │   └── sitemap.ts
 │       ├── components
+│       │   ├── auth
+│       │   │   ├── AuthCard.tsx
+│       │   │   ├── AvatarPicker.tsx
+│       │   │   ├── CountryPicker.tsx
+│       │   │   ├── LoginForm.tsx
+│       │   │   └── RegisterForm.tsx
+│       │   ├── dashboard
+│       │   │   ├── DashboardHeader.tsx
+│       │   │   ├── ProfileCard.tsx
+│       │   │   ├── QuickActions.tsx
+│       │   │   ├── StatsGrid.tsx
+│       │   │   └── VerifyEmailBanner.tsx
 │       │   ├── home
 │       │   │   ├── account
 │       │   │   │   ├── AccountFeatureGrid.tsx
@@ -92,7 +114,9 @@ lifetopia-platform
 │       ├── constants
 │       ├── data
 │       │   ├── account.ts
+│       │   ├── auth.ts
 │       │   ├── community.ts
+│       │   ├── dashboard.ts
 │       │   ├── footer.ts
 │       │   ├── homepage.ts
 │       │   ├── journey.ts
@@ -101,76 +125,28 @@ lifetopia-platform
 │       │   └── roadmap.ts
 │       ├── hooks
 │       ├── lib
+│       │   ├── supabase
+│       │   │   ├── admin.ts
+│       │   │   ├── client.ts
+│       │   │   └── server.ts
 │       │   └── format.ts
 │       ├── providers
-│       ├── public
-│       │   ├── audio
-│       │   ├── fonts
-│       │   ├── images
-│       │   │   ├── backgrounds
-│       │   │   ├── characters
-│       │   │   ├── community
-│       │   │   │   └── community-preview.png
-│       │   │   ├── decorations
-│       │   │   ├── hero
-│       │   │   │   └── LT-011-hero-village.png
-│       │   │   ├── icons
-│       │   │   │   ├── gameplay
-│       │   │   │   │   ├── LT-001-farm-harvest.png
-│       │   │   │   │   ├── LT-002-fish-explore.png
-│       │   │   │   │   ├── LT-003-craft-create.png
-│       │   │   │   │   ├── LT-004-build-decorate.png
-│       │   │   │   │   ├── LT-005-play-together.png
-│       │   │   │   │   ├── LT-006-cooking-baking.png
-│       │   │   │   │   ├── LT-007-mining.png
-│       │   │   │   │   ├── LT-008-woodcutting.png
-│       │   │   │   │   ├── LT-009-animal-care.png
-│       │   │   │   │   └── LT-010-gathering-foraging.png
-│       │   │   │   └── navigation
-│       │   │   ├── journey
-│       │   │   │   ├── alpha
-│       │   │   │   │   ├── alpha-01.png
-│       │   │   │   │   ├── alpha-02.png
-│       │   │   │   │   ├── alpha-03.png
-│       │   │   │   │   ├── alpha-04.png
-│       │   │   │   │   ├── alpha-05.png
-│       │   │   │   │   ├── alpha-06.png
-│       │   │   │   │   ├── alpha-07.png
-│       │   │   │   │   ├── alpha-08.png
-│       │   │   │   │   └── alpha-09.png
-│       │   │   │   └── mvp
-│       │   │   │       ├── mvp-01.gif
-│       │   │   │       ├── mvp-02.gif
-│       │   │   │       ├── mvp-03.gif
-│       │   │   │       ├── mvp-04.gif
-│       │   │   │       └── mvp-05.gif
-│       │   │   ├── locations
-│       │   │   ├── logo
-│       │   │   │   ├── logo-lifetopia-world.png
-│       │   │   │   └── logo-superteam-id.jpg
-│       │   │   ├── og
-│       │   │   │   └── lifetopia-og.png
-│       │   │   └── ui
-│       │   ├── file-text.svg
-│       │   ├── globe.svg
-│       │   ├── googlebb55aabac16671b7.html
-│       │   ├── next.svg
-│       │   ├── turborepo-dark.svg
-│       │   ├── turborepo-light.svg
-│       │   ├── vercel.svg
-│       │   └── window.svg
 │       ├── services
+│       │   └── auth.ts
 │       ├── styles
 │       │   └── .gitkeep
 │       ├── types
 │       │   ├── .gitkeep
 │       │   ├── account.ts
+│       │   ├── auth.ts
 │       │   ├── community.ts
+│       │   ├── dashboard.ts
 │       │   ├── footer.ts
 │       │   ├── news.ts
 │       │   └── roadmap.ts
 │       ├── utils
 │       │   └── .gitkeep
+│       ├── .env.local
 │       ├── .gitignore
 │       ├── eslint.config.js
 │       ├── next-env.d.ts
@@ -186,6 +162,7 @@ lifetopia-platform
 │   ├── architecture
 │   ├── design-system
 │   ├── roadmap
+│   ├── ARCHITECTURE.md
 │   ├── CODING_GUIDE.md
 │   ├── DESIGN_SYSTEM.md
 │   ├── PROJECT_CONTEXT.md
@@ -193,6 +170,20 @@ lifetopia-platform
 │   └── ROADMAP.md
 ├── packages
 │   ├── config
+│   ├── data
+│   │   ├── account.ts
+│   │   ├── auth.ts
+│   │   ├── community.ts
+│   │   ├── dashboard.ts
+│   │   ├── footer.ts
+│   │   ├── homepage.ts
+│   │   ├── index.ts
+│   │   ├── journey.ts
+│   │   ├── navigation.ts
+│   │   ├── news.ts
+│   │   ├── package.json
+│   │   ├── roadmap.ts
+│   │   └── tsconfig.json
 │   ├── eslint-config
 │   │   ├── base.js
 │   │   ├── next.js
@@ -201,7 +192,22 @@ lifetopia-platform
 │   │   └── README.md
 │   ├── hooks
 │   ├── lib
+│   │   ├── supabase
+│   │   │   ├── admin.ts
+│   │   │   ├── client.ts
+│   │   │   └── server.ts
+│   │   └── format.ts
+│   ├── services
+│   │   └── auth.ts
 │   ├── types
+│   │   ├── .gitkeep
+│   │   ├── account.ts
+│   │   ├── auth.ts
+│   │   ├── community.ts
+│   │   ├── dashboard.ts
+│   │   ├── footer.ts
+│   │   ├── news.ts
+│   │   └── roadmap.ts
 │   ├── typescript-config
 │   │   ├── base.json
 │   │   ├── nextjs.json
@@ -223,6 +229,60 @@ lifetopia-platform
 │   │   ├── package.json
 │   │   └── tsconfig.json
 │   └── utils
+│       └── .gitkeep
+├── public
+│   ├── audio
+│   ├── fonts
+│   └── images
+│       ├── avatars
+│       │   ├── avatar-01.jpg
+│       │   ├── avatar-02.jpg
+│       │   ├── avatar-03.jpg
+│       │   └── avatar-04.jpg
+│       ├── backgrounds
+│       ├── characters
+│       ├── community
+│       │   └── community-preview.png
+│       ├── decorations
+│       ├── hero
+│       │   └── LT-011-hero-village.png
+│       ├── icons
+│       │   ├── gameplay
+│       │   │   ├── LT-001-farm-harvest.png
+│       │   │   ├── LT-002-fish-explore.png
+│       │   │   ├── LT-003-craft-create.png
+│       │   │   ├── LT-004-build-decorate.png
+│       │   │   ├── LT-005-play-together.png
+│       │   │   ├── LT-006-cooking-baking.png
+│       │   │   ├── LT-007-mining.png
+│       │   │   ├── LT-008-woodcutting.png
+│       │   │   ├── LT-009-animal-care.png
+│       │   │   └── LT-010-gathering-foraging.png
+│       │   └── navigation
+│       ├── journey
+│       │   ├── alpha
+│       │   │   ├── alpha-01.png
+│       │   │   ├── alpha-02.png
+│       │   │   ├── alpha-03.png
+│       │   │   ├── alpha-04.png
+│       │   │   ├── alpha-05.png
+│       │   │   ├── alpha-06.png
+│       │   │   ├── alpha-07.png
+│       │   │   ├── alpha-08.png
+│       │   │   └── alpha-09.png
+│       │   └── mvp
+│       │       ├── mvp-01.gif
+│       │       ├── mvp-02.gif
+│       │       ├── mvp-03.gif
+│       │       ├── mvp-04.gif
+│       │       └── mvp-05.gif
+│       ├── locations
+│       ├── logo
+│       │   ├── logo-lifetopia-world.png
+│       │   └── logo-superteam-id.jpg
+│       ├── og
+│       │   └── lifetopia-og.png
+│       └── ui
 ├── scripts
 │   ├── generate-coding-guide.mjs
 │   ├── generate-context.mjs
@@ -231,7 +291,8 @@ lifetopia-platform
 │   ├── generate-roadmap.mjs
 │   ├── generate-structure.mjs
 │   ├── project-status.mjs
-│   └── project-update.mjs
+│   ├── project-update.mjs
+│   └── sync-public.mjs
 ├── .gitignore
 ├── .npmrc
 ├── package.json

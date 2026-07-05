@@ -1,6 +1,6 @@
 import Image from "next/image";
-import type { AccountPreviewUser } from "@/types/account";
-import { formatPercent } from "@/lib/format";
+import type { AccountPreviewUser } from "@repo/types/account";
+import { formatPercent } from "@repo/lib/format";
 
 type AccountPreviewCardProps = {
   user: AccountPreviewUser;

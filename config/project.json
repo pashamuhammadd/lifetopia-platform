@@ -1,7 +1,7 @@
 {
   "name": "Lifetopia World",
   "version": "0.1.0",
-  "phase": "Landing Page",
+  "phase": "Authentication",
   "priority": "Finish News v2",
   "website": "https://lifetopiaworld.io",
   "tech": [
@@ -18,10 +18,10 @@
     "Development Journey",
     "Roadmap",
     "Community",
-    "Footer"
+    "Footer",
+    "News"
   ],
   "next": [
-    "News",
     "Authentication",
     "Dashboard",
     "Profile",
@@ -29,8 +29,8 @@
     "Inventory"
   ],
   "progress": {
-    "landingPage": 92,
-    "authentication": 0,
+    "landingPage": 100,
+    "authentication": 30,
     "dashboard": 0,
     "backend": 0,
     "gameIntegration": 0

@@ -1,4 +1,4 @@
-import { roadmapItems } from "@/data/roadmap";
+import { roadmapItems } from "@repo/data/roadmap";
 
 const statusStyles = {
   Completed: "bg-[#edf7df] text-[#4f8124] border-[#b8dd87]",
