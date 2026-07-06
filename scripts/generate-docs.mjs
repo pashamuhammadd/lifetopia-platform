@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+import { execSync } from "child_process";
+
 
 const root = process.cwd();
 const docsDir = path.join(root, "docs");
@@ -254,4 +256,47 @@ writeDoc("DESIGN_SYSTEM.md", designSystem);
 writeDoc("ROADMAP.md", roadmap);
 writeDoc("PROJECT_STRUCTURE.md", structure);
 
-console.log("🌿 Lifetopia docs generated successfully.");
+console.log("📚 Generating database schema...");
+
+try {
+  execSync("node scripts/generate-database-schema.mjs", {
+    stdio: "inherit",
+  });
+} catch (error) {
+  console.warn("⚠️ Failed to generate DATABASE_SCHEMA.md");
+}
+
+console.log("🤖 Generating AI instructions...");
+
+execSync("node scripts/generate-ai-instructions.mjs", {
+  stdio: "inherit",
+});
+
+console.log("🧠 Generating AI context...");
+
+execSync("node scripts/generate-ai-context.mjs", {
+  stdio: "inherit",
+});
+
+console.log("🛣️ Generating routes...");
+
+execSync("node scripts/generate-routes.mjs", {
+  stdio: "inherit",
+});
+
+console.log("🔌 Generating API reference...");
+
+execSync("node scripts/generate-api-reference.mjs", {
+  stdio: "inherit",
+});
+
+console.log("🧩 Generating component tree...");
+
+execSync("node scripts/generate-component-tree.mjs", {
+  stdio: "inherit",
+});
+
+
+
+console.log("");
+console.log("🌿 Lifetopia documentation generated successfully.");

@@ -10,9 +10,11 @@
     "docs:generate": "node scripts/generate-docs.mjs",
     "project:status": "node scripts/project-status.mjs",
     "project:update": "node scripts/project-update.mjs",
-    "sync:public": "node scripts/sync-public.mjs"
+    "sync:public": "node scripts/sync-public.mjs",
+    "project:doctor": "node scripts/project-doctor.mjs"
   },
   "devDependencies": {
+    "pg": "^8.22.0",
     "prettier": "^3.7.4",
     "turbo": "^2.10.0",
     "typescript": "5.9.2"

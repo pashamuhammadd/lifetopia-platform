@@ -98,7 +98,8 @@ lifetopia-platform
 │       │   │   │   ├── HeroButtons.tsx
 │       │   │   │   ├── HeroContent.tsx
 │       │   │   │   ├── HeroPartner.tsx
-│       │   │   │   └── HeroSection.tsx
+│       │   │   │   ├── HeroSection.tsx
+│       │   │   │   └── PlayWarningModal.tsx
 │       │   │   ├── news
 │       │   │   │   └── NewsSection.tsx
 │       │   │   └── RoadmapSection.tsx
@@ -135,12 +136,19 @@ lifetopia-platform
 │   ├── architecture
 │   ├── design-system
 │   ├── roadmap
+│   ├── AI_INSTRUCTIONS.md
+│   ├── API_REFERENCE.md
 │   ├── ARCHITECTURE.md
 │   ├── CODING_GUIDE.md
+│   ├── COMPONENT_TREE.md
+│   ├── DATABASE_RELATIONS.md
+│   ├── DATABASE_SCHEMA.md
+│   ├── DATABASE_TYPES.md
 │   ├── DESIGN_SYSTEM.md
 │   ├── PROJECT_CONTEXT.md
 │   ├── PROJECT_STRUCTURE.md
-│   └── ROADMAP.md
+│   ├── ROADMAP.md
+│   └── ROUTES.md
 ├── packages
 │   ├── config
 │   ├── data
@@ -266,11 +274,17 @@ lifetopia-platform
 │       │   └── lifetopia-og.png
 │       └── ui
 ├── scripts
+│   ├── generate-ai-context.mjs
+│   ├── generate-ai-instructions.mjs
+│   ├── generate-api-reference.mjs
 │   ├── generate-coding-guide.mjs
+│   ├── generate-component-tree.mjs
 │   ├── generate-context.mjs
+│   ├── generate-database-schema.mjs
 │   ├── generate-design-system.mjs
 │   ├── generate-docs.mjs
 │   ├── generate-roadmap.mjs
+│   ├── generate-routes.mjs
 │   ├── generate-structure.mjs
 │   ├── project-status.mjs
 │   ├── project-update.mjs
