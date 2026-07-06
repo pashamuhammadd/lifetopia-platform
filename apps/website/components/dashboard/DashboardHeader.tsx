@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { DashboardProfile } from "@repo/types/dashboard";
+import { LogoutButton } from "@/components/dashboard/LogoutButton";
 
 type DashboardHeaderProps = {
   profile: DashboardProfile;
@@ -25,12 +26,16 @@ export function DashboardHeader({ profile }: DashboardHeaderProps) {
           </p>
         </div>
 
-        <Link
-          href="/"
-          className="lt-button-secondary px-[clamp(14px,1.5vw,24px)] py-[clamp(8px,0.9vw,13px)] text-[clamp(0.62rem,0.85vw,0.92rem)]"
-        >
-          Back to Home
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/"
+            className="lt-button-secondary px-[clamp(14px,1.5vw,24px)] py-[clamp(8px,0.9vw,13px)] text-[clamp(0.62rem,0.85vw,0.92rem)]"
+          >
+            Back to Home
+          </Link>
+
+          <LogoutButton />
+        </div>
       </div>
     </header>
   );

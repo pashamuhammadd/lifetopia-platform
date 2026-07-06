@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import type { DashboardProfile } from "@repo/types/dashboard";
 
 type ProfileCardProps = {
@@ -42,7 +41,7 @@ export function ProfileCard({ profile, email }: ProfileCardProps) {
           />
 
           <div className="min-w-0">
-            <p className="text-[clamp(0.58rem,0.8vw,0.85rem)] font-black uppercase tracking-[0.16em] text-[#6fa83a]">
+            <p className="text-[clamp(0.56rem,0.78vw,0.82rem)] font-black uppercase tracking-[0.16em] text-[#6fa83a]">
               Player Identity
             </p>
 
@@ -57,7 +56,7 @@ export function ProfileCard({ profile, email }: ProfileCardProps) {
         </div>
 
         <div className="mt-[clamp(14px,1.8vw,24px)] grid grid-cols-2 gap-[clamp(8px,1.1vw,14px)]">
-          <InfoItem label="Country" value={profile.country_name || "Not set"} />
+          <InfoItem label="Country" value={profile.country_name} />
           <InfoItem label="Gender" value={formatGender(profile.gender)} />
           <InfoItem label="Email" value={maskEmail(email)} wide />
           <InfoItem
@@ -71,12 +70,16 @@ export function ProfileCard({ profile, email }: ProfileCardProps) {
           />
         </div>
 
-        <Link
-          href="/dashboard/profile"
-          className="mt-[clamp(14px,1.8vw,22px)] inline-flex rounded-full bg-[#4f8124] px-[clamp(14px,1.5vw,22px)] py-[clamp(8px,0.85vw,12px)] text-[clamp(0.62rem,0.85vw,0.9rem)] font-black text-white shadow-[0_14px_28px_rgba(79,129,36,0.25)] transition hover:-translate-y-0.5 hover:bg-[#416c1d]"
-        >
-          Edit Profile Soon
-        </Link>
+        <div className="mt-[clamp(14px,1.8vw,22px)] rounded-[clamp(14px,1.6vw,22px)] border border-[#d9c99f] bg-[#fff8e8]/80 p-[clamp(10px,1.3vw,16px)]">
+          <p className="text-[clamp(0.7rem,0.9vw,0.95rem)] font-black text-[#2f1b12]">
+            Profile Editor Coming Soon
+          </p>
+
+          <p className="mt-1 text-[clamp(0.56rem,0.78vw,0.82rem)] font-semibold leading-[1.55] text-[#7a5635]">
+            Soon you will be able to update your avatar, display name, and
+            player identity directly from this dashboard.
+          </p>
+        </div>
       </div>
     </section>
   );
