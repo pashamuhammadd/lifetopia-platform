@@ -112,38 +112,10 @@ lifetopia-platform
 │       │       └── .gitkeep
 │       ├── config
 │       ├── constants
-│       ├── data
-│       │   ├── account.ts
-│       │   ├── auth.ts
-│       │   ├── community.ts
-│       │   ├── dashboard.ts
-│       │   ├── footer.ts
-│       │   ├── homepage.ts
-│       │   ├── journey.ts
-│       │   ├── navigation.ts
-│       │   ├── news.ts
-│       │   └── roadmap.ts
 │       ├── hooks
-│       ├── lib
-│       │   ├── supabase
-│       │   │   ├── admin.ts
-│       │   │   ├── client.ts
-│       │   │   └── server.ts
-│       │   └── format.ts
 │       ├── providers
-│       ├── services
-│       │   └── auth.ts
 │       ├── styles
 │       │   └── .gitkeep
-│       ├── types
-│       │   ├── .gitkeep
-│       │   ├── account.ts
-│       │   ├── auth.ts
-│       │   ├── community.ts
-│       │   ├── dashboard.ts
-│       │   ├── footer.ts
-│       │   ├── news.ts
-│       │   └── roadmap.ts
 │       ├── utils
 │       │   └── .gitkeep
 │       ├── .env.local
@@ -153,6 +125,7 @@ lifetopia-platform
 │       ├── next.config.js
 │       ├── package.json
 │       ├── postcss.config.mjs
+│       ├── public
 │       ├── README.md
 │       └── tsconfig.json
 ├── config
@@ -196,9 +169,15 @@ lifetopia-platform
 │   │   │   ├── admin.ts
 │   │   │   ├── client.ts
 │   │   │   └── server.ts
-│   │   └── format.ts
+│   │   ├── format.ts
+│   │   ├── index.ts
+│   │   ├── package.json
+│   │   └── tsconfig.json
 │   ├── services
-│   │   └── auth.ts
+│   │   ├── auth.ts
+│   │   ├── index.ts
+│   │   ├── package.json
+│   │   └── tsconfig.json
 │   ├── types
 │   │   ├── .gitkeep
 │   │   ├── account.ts
@@ -206,8 +185,11 @@ lifetopia-platform
 │   │   ├── community.ts
 │   │   ├── dashboard.ts
 │   │   ├── footer.ts
+│   │   ├── index.ts
 │   │   ├── news.ts
-│   │   └── roadmap.ts
+│   │   ├── package.json
+│   │   ├── roadmap.ts
+│   │   └── tsconfig.json
 │   ├── typescript-config
 │   │   ├── base.json
 │   │   ├── nextjs.json
