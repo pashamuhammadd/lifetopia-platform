@@ -17,12 +17,14 @@ export function HeroButtons() {
           Play Game 🍃
         </button>
 
-        <button
-          type="button"
-          className="lt-button-secondary px-[2vw] py-[0.9vw] text-[clamp(0.36rem,1.15vw,1.15rem)]"
+        <a
+        href="https://youtu.be/i9tl4hjukVo?si=VhGO9fihftxXIDDO"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="lt-button-secondary px-[2vw] py-[0.9vw] text-[clamp(0.36rem,1.15vw,1.15rem)]"
         >
-          Watch Trailer ▶
-        </button>
+        Watch Tutorial 📖
+        </a>
       </div>
 
       <PlayWarningModal
