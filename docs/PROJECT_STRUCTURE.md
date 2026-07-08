@@ -65,11 +65,20 @@ lifetopia-platform
 │       │   │   ├── LoginForm.tsx
 │       │   │   └── RegisterForm.tsx
 │       │   ├── dashboard
+│       │   │   ├── ComingSoonFeatures.tsx
+│       │   │   ├── CommunityActivity.tsx
+│       │   │   ├── DailyQuestCard.tsx
 │       │   │   ├── DashboardHeader.tsx
+│       │   │   ├── InventoryPreview.tsx
+│       │   │   ├── LatestNewsPreview.tsx
+│       │   │   ├── LogoutButton.tsx
+│       │   │   ├── PlayerHero.tsx
 │       │   │   ├── ProfileCard.tsx
 │       │   │   ├── QuickActions.tsx
+│       │   │   ├── SettingsCard.tsx
 │       │   │   ├── StatsGrid.tsx
-│       │   │   └── VerifyEmailBanner.tsx
+│       │   │   ├── VerifyEmailBanner.tsx
+│       │   │   └── WalletOverview.tsx
 │       │   ├── home
 │       │   │   ├── account
 │       │   │   │   ├── AccountFeatureGrid.tsx
@@ -136,6 +145,7 @@ lifetopia-platform
 │   ├── architecture
 │   ├── design-system
 │   ├── roadmap
+│   ├── AI_CONTEXT.md
 │   ├── AI_INSTRUCTIONS.md
 │   ├── API_REFERENCE.md
 │   ├── ARCHITECTURE.md
@@ -286,6 +296,7 @@ lifetopia-platform
 │   ├── generate-roadmap.mjs
 │   ├── generate-routes.mjs
 │   ├── generate-structure.mjs
+│   ├── project-doctor.mjs
 │   ├── project-status.mjs
 │   ├── project-update.mjs
 │   └── sync-public.mjs

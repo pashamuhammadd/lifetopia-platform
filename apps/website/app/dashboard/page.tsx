@@ -12,6 +12,7 @@ import { InventoryPreview } from "@/components/dashboard/InventoryPreview";
 import { WalletOverview } from "@/components/dashboard/WalletOverview";
 import { LatestNewsPreview } from "@/components/dashboard/LatestNewsPreview";
 import { ComingSoonFeatures } from "@/components/dashboard/ComingSoonFeatures";
+import { SettingsCard } from "@/components/dashboard/SettingsCard";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -51,6 +52,7 @@ export default async function DashboardPage() {
            <InventoryPreview />
           <WalletOverview />
           <ComingSoonFeatures />
+          <SettingsCard />
         </div>
 
         <LatestNewsPreview />
