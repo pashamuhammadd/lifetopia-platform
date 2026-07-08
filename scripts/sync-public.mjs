@@ -1,33 +1,41 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const root = process.cwd();
+const rootDir = process.cwd();
 
-const sharedPublic = path.join(root, "public");
+const sourcePublic = path.join(rootDir, "public");
 
-const apps = [
-  "website",
-  "grants"
-];
+const targetApps = ["website", "community"];
 
-for (const app of apps) {
+function copyDir(source, target) {
+  if (!fs.existsSync(source)) {
+    console.error(`Source not found: ${source}`);
+    process.exit(1);
+  }
 
-  const target = path.join(
-    root,
-    "apps",
-    app,
-    "public"
-  );
+  fs.mkdirSync(target, { recursive: true });
 
-  fs.rmSync(target, {
-    recursive: true,
-    force: true
-  });
+  const entries = fs.readdirSync(source, { withFileTypes: true });
 
-  fs.cpSync(sharedPublic, target, {
-    recursive: true
-  });
+  for (const entry of entries) {
+    const sourcePath = path.join(source, entry.name);
+    const targetPath = path.join(target, entry.name);
 
-  console.log(`✓ Synced public -> ${app}`);
+    if (entry.isDirectory()) {
+      copyDir(sourcePath, targetPath);
+      continue;
+    }
 
+    fs.copyFileSync(sourcePath, targetPath);
+  }
 }
+
+for (const appName of targetApps) {
+  const appPublic = path.join(rootDir, "apps", appName, "public");
+
+  console.log(`Syncing public assets to apps/${appName}/public...`);
+
+  copyDir(sourcePublic, appPublic);
+}
+
+console.log("Public assets synced successfully.");
