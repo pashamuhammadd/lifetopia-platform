@@ -1,21 +1,28 @@
-import { Progress } from "@/components/ui/Progress";
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { usePathname } from "next/navigation";
+
+import { Progress } from "@/components/ui/Progress";
 import { navigationGroups } from "@/data/navigation";
 
 export function Sidebar() {
+  const pathname = usePathname();
+
   return (
     <aside className="hidden rounded-[28px] border border-[#ead9b8] bg-white/80 p-5 shadow-[0_18px_45px_rgba(88,60,28,0.12)] backdrop-blur md:block">
       <div className="flex items-center justify-center px-3 pb-4 pt-1">
-  <Image
-    src="/images/logo/logo-lifetopia-world.png"
-    alt="Lifetopia World"
-    width={132}
-    height={88}
-    priority
-    className="h-auto w-[132px] object-contain drop-shadow-[0_8px_16px_rgba(47,36,24,0.16)]"
-  />
-</div>
+        <Image
+          src="/images/logo/logo-lifetopia-world.png"
+          alt="Lifetopia World"
+          width={132}
+          height={88}
+          priority
+          className="h-auto w-[132px] object-contain drop-shadow-[0_8px_16px_rgba(47,36,24,0.16)]"
+        />
+      </div>
 
       <div className="mt-5 rounded-[26px] border border-[#ead9b8] bg-[#fffaf0] p-4">
         <div className="flex items-center gap-3">
@@ -35,9 +42,9 @@ export function Sidebar() {
             <span>240 / 500 XP</span>
           </div>
 
-         <div className="mt-2">
-  <Progress value={48} />
-</div>
+          <div className="mt-2">
+            <Progress value={48} />
+          </div>
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2">
@@ -60,12 +67,17 @@ export function Sidebar() {
             <div className="space-y-1">
               {group.items.map((item) => {
                 const Icon = item.icon;
+                const isActive =
+                  item.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(item.href);
 
                 return (
-                  <button
+                  <Link
                     key={item.label}
+                    href={item.href}
                     className={`group flex w-full items-center justify-between rounded-[18px] px-3 py-3 text-left text-sm font-black transition ${
-                      item.isActive
+                      isActive
                         ? "bg-[#edf7df] text-[#4f8124] shadow-[0_10px_24px_rgba(111,168,58,0.16)]"
                         : "text-[#7a5635] hover:bg-[#fff7e8]"
                     }`}
@@ -75,10 +87,10 @@ export function Sidebar() {
                       <span>{item.label}</span>
                     </span>
 
-                    {item.isActive ? (
+                    {isActive ? (
                       <ChevronRight size={16} strokeWidth={2.7} />
                     ) : null}
-                  </button>
+                  </Link>
                 );
               })}
             </div>

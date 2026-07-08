@@ -16,28 +16,28 @@ export const navigationGroups: NavigationGroup[] = [
   {
     label: "Home",
     items: [
-      { label: "Home", icon: Home, isActive: true },
-      { label: "Explore", icon: Compass },
+      { label: "Home", href: "/", icon: Home,},
+      { label: "Explore", href: "/explore", icon: Compass },
     ],
   },
   {
     label: "Community",
     items: [
-      { label: "Create Post", icon: PenLine },
-      { label: "Messages", icon: MessageCircle },
-      { label: "Notifications", icon: Bell },
+      { label: "Create Post", href: "/", icon: PenLine },
+      { label: "Messages", href: "/messages", icon: MessageCircle },
+      { label: "Notifications", href: "/notifications", icon: Bell },
     ],
   },
   {
     label: "Player",
     items: [
-      { label: "My World", icon: UserRound },
-      { label: "Quest", icon: Sparkles },
-      { label: "Guild", icon: Shield },
+      { label: "My World", href: "/my-world", icon: UserRound },
+      { label: "Quest", href: "/quest", icon: Sparkles },
+      { label: "Guild", href: "/guild", icon: Shield },
     ],
   },
   {
     label: "System",
-    items: [{ label: "Settings", icon: Settings }],
+    items: [{ label: "Settings", href: "/settings", icon: Settings }],
   },
 ];
