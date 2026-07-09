@@ -1,3 +1,6 @@
+import { GuestAuthModal } from "@/components/auth/GuestAuthModal";
+import { getCurrentProfile } from "@/data/profile/current-profile";
+
 import { BottomNavigation } from "./BottomNavigation";
 import { RightSidebar } from "./RightSidebar";
 import { Sidebar } from "./Sidebar";
@@ -9,11 +12,13 @@ type AppLayoutProps = {
   showTopNavbar?: boolean;
 };
 
-export function AppLayout({
+export async function AppLayout({
   children,
   showRightSidebar = true,
   showTopNavbar = true,
 }: AppLayoutProps) {
+  const profile = await getCurrentProfile();
+
   return (
     <main className="min-h-screen px-4 py-4 text-[#2f1b12] md:px-6">
       <div
@@ -34,6 +39,8 @@ export function AppLayout({
       </div>
 
       <BottomNavigation />
+
+      <GuestAuthModal open={!profile} />
     </main>
   );
 }

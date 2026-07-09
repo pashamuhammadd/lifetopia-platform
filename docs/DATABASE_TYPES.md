@@ -8,6 +8,36 @@
 
 ## TypeScript Interfaces
 
+export type CommunityBookmark = {
+  post_id: string;
+  user_id: string;
+  created_at: string;
+};
+
+export type CommunityComment = {
+  id: string;
+  post_id: string;
+  author_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CommunityLike = {
+  post_id: string;
+  user_id: string;
+  created_at: string;
+};
+
+export type CommunityPost = {
+  id: string;
+  author_id: string;
+  content: string;
+  category: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Profile = {
   id: string;
   username: string;

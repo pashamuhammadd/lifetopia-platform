@@ -28,6 +28,44 @@ Incorrect:
 
 ---
 
+## Table: `public.community_bookmarks`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `post_id` | `uuid` | NO | PK, FK → community_posts.id | `` |
+| `user_id` | `uuid` | NO | PK, FK → profiles.id | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.community_comments`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `gen_random_uuid()` |
+| `post_id` | `uuid` | NO | FK → community_posts.id | `` |
+| `author_id` | `uuid` | NO | FK → profiles.id | `` |
+| `content` | `text` | NO |  | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+| `updated_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.community_likes`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `post_id` | `uuid` | NO | PK, FK → community_posts.id | `` |
+| `user_id` | `uuid` | NO | PK, FK → profiles.id | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.community_posts`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `gen_random_uuid()` |
+| `author_id` | `uuid` | NO | FK → profiles.id | `` |
+| `content` | `text` | NO |  | `` |
+| `category` | `text` | NO |  | `'General'::text` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+| `updated_at` | `timestamp with time zone` | NO |  | `now()` |
+
 ## Table: `public.profiles`
 
 | Column | Type | Nullable | Key | Default |

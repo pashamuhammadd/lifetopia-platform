@@ -1,11 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+
+function getSafeNextUrl(next: string | null) {
+  if (!next) return "/dashboard";
+
+  try {
+    const url = new URL(next, window.location.origin);
+
+    const isLocalhost =
+      url.hostname === "localhost" || url.hostname === "127.0.0.1";
+
+    const isLifetopiaDomain =
+      url.hostname === "lifetopiaworld.io" ||
+      url.hostname.endsWith(".lifetopiaworld.io");
+
+    if (!isLocalhost && !isLifetopiaDomain) {
+      return "/dashboard";
+    }
+
+    if (url.origin === window.location.origin) {
+      return `${url.pathname}${url.search}${url.hash}`;
+    }
+
+    return url.href;
+  } catch {
+    return "/dashboard";
+  }
+}
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const next = searchParams.get("next");
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -34,9 +64,20 @@ export function LoginForm() {
       return;
     }
 
-    router.push("/dashboard");
+    const safeNextUrl = getSafeNextUrl(next);
+
+    if (safeNextUrl.startsWith("http")) {
+      window.location.href = safeNextUrl;
+      return;
+    }
+
+    router.push(safeNextUrl);
     router.refresh();
   }
+
+  const registerHref = next
+    ? `/register?next=${encodeURIComponent(next)}`
+    : "/register";
 
   return (
     <form
@@ -97,7 +138,7 @@ export function LoginForm() {
       <p className="text-center text-[clamp(0.72rem,0.95vw,0.9rem)] text-[#7a5635]">
         New to Lifetopia?{" "}
         <Link
-          href="/register"
+          href={registerHref}
           className="font-bold text-[#4f8124] hover:text-[#2f1b12]"
         >
           Create Lifetopia Account

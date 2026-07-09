@@ -11,6 +11,13 @@ lifetopia-platform
 ├── apps
 │   ├── community
 │   │   ├── app
+│   │   │   ├── actions
+│   │   │   │   ├── community
+│   │   │   │   │   ├── bookmarks.ts
+│   │   │   │   │   ├── comments.ts
+│   │   │   │   │   ├── likes.ts
+│   │   │   │   │   └── posts.ts
+│   │   │   │   └── auth.ts
 │   │   │   ├── explore
 │   │   │   │   └── page.tsx
 │   │   │   ├── fonts
@@ -36,6 +43,8 @@ lifetopia-platform
 │   │   │   ├── layout.tsx
 │   │   │   └── page.tsx
 │   │   ├── components
+│   │   │   ├── auth
+│   │   │   │   └── GuestAuthModal.tsx
 │   │   │   ├── explore
 │   │   │   │   ├── Explore.tsx
 │   │   │   │   ├── SuggestedLifetopians.tsx
@@ -43,6 +52,7 @@ lifetopia-platform
 │   │   │   │   └── TrendingTopics.tsx
 │   │   │   ├── feed
 │   │   │   │   ├── CreatePost.tsx
+│   │   │   │   ├── CreatePostForm.tsx
 │   │   │   │   ├── Feed.tsx
 │   │   │   │   └── PostCard.tsx
 │   │   │   ├── guild
@@ -56,6 +66,7 @@ lifetopia-platform
 │   │   │   │   ├── BottomNavigation.tsx
 │   │   │   │   ├── RightSidebar.tsx
 │   │   │   │   ├── Sidebar.tsx
+│   │   │   │   ├── SidebarNav.tsx
 │   │   │   │   └── TopNavbar.tsx
 │   │   │   ├── messages
 │   │   │   │   ├── ChatWindow.tsx
@@ -78,7 +89,8 @@ lifetopia-platform
 │   │   │   │   ├── CommentComposer.tsx
 │   │   │   │   ├── CommentItem.tsx
 │   │   │   │   ├── CommentsSection.tsx
-│   │   │   │   └── PostActions.tsx
+│   │   │   │   ├── PostActions.tsx
+│   │   │   │   └── PostMenu.tsx
 │   │   │   ├── profile
 │   │   │   │   ├── ProfileHero.tsx
 │   │   │   │   ├── ProfilePosts.tsx
@@ -108,6 +120,14 @@ lifetopia-platform
 │   │   │       ├── SectionCard.tsx
 │   │   │       └── StatCard.tsx
 │   │   ├── data
+│   │   │   ├── community
+│   │   │   │   ├── bookmarks.ts
+│   │   │   │   ├── comments.ts
+│   │   │   │   ├── likes.ts
+│   │   │   │   └── posts.ts
+│   │   │   ├── profile
+│   │   │   │   ├── current-profile.ts
+│   │   │   │   └── public-profile.ts
 │   │   │   ├── comments.ts
 │   │   │   ├── explore.ts
 │   │   │   ├── guild.ts
@@ -118,7 +138,6 @@ lifetopia-platform
 │   │   │   ├── navigation.ts
 │   │   │   ├── notifications.ts
 │   │   │   ├── posts.ts
-│   │   │   ├── profile.ts
 │   │   │   ├── quest.ts
 │   │   │   └── sidebar.ts
 │   │   ├── public
@@ -180,6 +199,7 @@ lifetopia-platform
 │   │   │   ├── vercel.svg
 │   │   │   └── window.svg
 │   │   ├── types
+│   │   │   ├── community-post.ts
 │   │   │   ├── my-world.ts
 │   │   │   ├── navigation.ts
 │   │   │   ├── post.ts
