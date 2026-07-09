@@ -1,5 +1,7 @@
-import { Bookmark, Heart, MessageCircle, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 
+import { CommentsSection } from "@/components/post/CommentsSection";
+import { PostActions } from "@/components/post/PostActions";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
 import { categoryStyles, roleStyles, titleStyles } from "@/data/identity";
@@ -14,8 +16,9 @@ export function PostCard({ post }: PostCardProps) {
   const RoleIcon = roleStyle.icon;
 
   const titleStyle = post.title ? titleStyles[post.title] : null;
-  const categoryStyle = categoryStyles[post.category];
   const TitleIcon = titleStyle?.icon;
+
+  const categoryStyle = categoryStyles[post.category];
 
   return (
     <Card className="p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(88,60,28,0.16)]">
@@ -61,14 +64,14 @@ export function PostCard({ post }: PostCardProps) {
                 ) : null}
 
                 <span
-  className={`inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-black ${categoryStyle.className}`}
->
-  {post.category}
-</span>
+                  className={`inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-black ${categoryStyle.className}`}
+                >
+                  {post.category}
+                </span>
               </div>
             </div>
 
-            <button className="grid size-9 place-items-center rounded-full text-[#8a6b47] transition hover:bg-[#fff4dc]">
+            <button className="grid size-9 shrink-0 place-items-center rounded-full text-[#8a6b47] transition hover:bg-[#fff4dc]">
               <MoreHorizontal size={18} />
             </button>
           </div>
@@ -77,22 +80,12 @@ export function PostCard({ post }: PostCardProps) {
             {post.content}
           </p>
 
-          <div className="mt-6 flex items-center gap-6 border-t border-[#f2e7c8] pt-4">
-            <button className="flex items-center gap-2 text-sm font-black text-[#7a5635] transition hover:text-[#4f8124]">
-              <Heart size={18} />
-              <span>{post.likes}</span>
-            </button>
+          <PostActions
+            likes={post.likes}
+            comments={post.comments}
+          />
 
-            <button className="flex items-center gap-2 text-sm font-black text-[#7a5635] transition hover:text-[#4f8124]">
-              <MessageCircle size={18} />
-              <span>{post.comments}</span>
-            </button>
-
-            <button className="ml-auto flex items-center gap-2 text-sm font-black text-[#7a5635] transition hover:text-[#4f8124]">
-              <Bookmark size={18} />
-              <span>Save</span>
-            </button>
-          </div>
+          <CommentsSection />
         </div>
       </div>
     </Card>
