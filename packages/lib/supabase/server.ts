@@ -4,10 +4,18 @@ import { cookies } from "next/headers";
 export async function createClient() {
   const cookieStore = await cookies();
 
+  const cookieDomain = process.env.SUPABASE_COOKIE_DOMAIN;
+
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      cookieOptions: {
+        domain: cookieDomain || undefined,
+        path: "/",
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      },
       cookies: {
         getAll() {
           return cookieStore.getAll();
@@ -15,7 +23,14 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options);
+              cookieStore.set(name, value, {
+                ...options,
+                domain: cookieDomain || options.domain,
+                path: options.path ?? "/",
+                sameSite: options.sameSite ?? "lax",
+                secure:
+                  options.secure ?? process.env.NODE_ENV === "production",
+              });
             });
           } catch {
             // Server Components cannot always set cookies directly.
