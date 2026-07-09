@@ -10,6 +10,11 @@
   },
   "dependencies": {
     "@fontsource/baloo-2": "^5.2.7",
+    "@repo/lib": "workspace:^",
+    "@repo/services": "workspace:^",
+    "@repo/types": "workspace:^",
+    "@supabase/ssr": "^0.12.0",
+    "@supabase/supabase-js": "^2.110.2",
     "lucide-react": "^1.23.0",
     "next": "16.2.10",
     "react": "19.2.4",

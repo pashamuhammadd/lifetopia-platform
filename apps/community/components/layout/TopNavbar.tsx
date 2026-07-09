@@ -1,8 +1,16 @@
-import { Bell, MessageCircle, Search, Zap } from "lucide-react";
 import Image from "next/image";
-import { Avatar } from "@/components/ui/Avatar";
+import Link from "next/link";
+import { Bell, MessageCircle, Search, Zap } from "lucide-react";
 
-export function TopNavbar() {
+import { getCurrentProfile } from "@/data/profile/current-profile";
+
+export async function TopNavbar() {
+  const profile = await getCurrentProfile();
+
+  const displayName = profile?.displayName ?? "Guest";
+  const avatarSrc = profile?.avatarSrc;
+  const profileHref = profile ? `/user/${profile.username}` : "/login";
+
   return (
     <header className="sticky top-4 z-10 mb-4 rounded-[24px] border border-[#ead9b8] bg-white/85 p-4 shadow-[0_18px_45px_rgba(88,60,28,0.10)] backdrop-blur">
       <div className="flex items-center gap-3">
@@ -14,16 +22,16 @@ export function TopNavbar() {
           />
         </label>
 
-       <div className="md:hidden">
-  <Image
-    src="/images/logo/logo-lifetopia-world.png"
-    alt="Lifetopia World"
-    width={76}
-    height={50}
-    priority
-    className="h-auto w-[76px] object-contain"
-  />
-</div>
+        <div className="md:hidden">
+          <Image
+            src="/images/logo/logo-lifetopia-world.png"
+            alt="Lifetopia World"
+            width={76}
+            height={50}
+            priority
+            className="h-auto w-[76px] object-contain"
+          />
+        </div>
 
         <div className="ml-auto hidden items-center gap-2 rounded-full border border-[#dfeec9] bg-[#edf7df] px-4 py-2 text-sm font-black text-[#4f8124] md:flex">
           <Zap size={16} />
@@ -45,9 +53,21 @@ export function TopNavbar() {
             </span>
           </button>
 
-          <button className="rounded-full transition hover:scale-105">
-            <Avatar initials="P" size={44} />
-          </button>
+          <Link href={profileHref} className="rounded-full transition hover:scale-105">
+            {avatarSrc ? (
+              <Image
+                src={avatarSrc}
+                alt={displayName}
+                width={44}
+                height={44}
+                className="size-11 rounded-full object-cover ring-2 ring-white/80"
+              />
+            ) : (
+              <div className="grid size-11 place-items-center rounded-full bg-gradient-to-br from-[#8bc34a] to-[#4f8124] font-black text-white">
+                {displayName.charAt(0).toUpperCase()}
+              </div>
+            )}
+          </Link>
         </div>
       </div>
     </header>

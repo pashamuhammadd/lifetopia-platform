@@ -1,44 +1,50 @@
+import Link from "next/link";
+
+import type { CommunityComment } from "@/data/community/comments";
+
 import { Avatar } from "@/components/ui/Avatar";
 
-type Props = {
-  author: string;
-  username: string;
-  avatar: string;
-  content: string;
-  createdAt: string;
+type CommentItemProps = {
+  comment: CommunityComment;
 };
 
-export function CommentItem({
-  author,
-  username,
-  avatar,
-  content,
-  createdAt,
-}: Props) {
+export function CommentItem({ comment }: CommentItemProps) {
+  const profileHref = `/user/${comment.author.username}`;
+
   return (
     <div className="flex gap-3">
-      <Avatar
-        src={avatar}
-        initials={author.charAt(0)}
-        alt={author}
-        size={40}
-      />
+      <Link href={profileHref} className="shrink-0">
+        <Avatar
+          src={comment.author.avatarSrc}
+          initials={comment.author.displayName.charAt(0)}
+          alt={comment.author.displayName}
+          size={40}
+        />
+      </Link>
 
       <div className="min-w-0 flex-1 rounded-2xl bg-[#fffaf0] p-3">
-        <div className="flex items-center gap-2">
-          <p className="font-black text-[#2f2418]">{author}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href={profileHref}
+            className="font-black text-[#2f2418] hover:text-[#4f8124]"
+          >
+            {comment.author.displayName}
+          </Link>
 
-          <span className="text-xs font-bold text-[#9b6635]">
-            {username}
-          </span>
+          <Link
+            href={profileHref}
+            className="text-xs font-bold text-[#9b6635] hover:text-[#4f8124]"
+          >
+            @{comment.author.username}
+          </Link>
 
           <span className="ml-auto text-xs font-bold text-[#9b6635]">
-            {createdAt}
+            {comment.createdAt}
           </span>
         </div>
 
         <p className="mt-1 text-sm font-bold leading-6 text-[#7a5635]">
-          {content}
+          {comment.content}
         </p>
       </div>
     </div>

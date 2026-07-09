@@ -1,21 +1,24 @@
-import { MoreHorizontal } from "lucide-react";
+import Link from "next/link";
+import { PostMenu } from "@/components/post/PostMenu";
 
 import { CommentsSection } from "@/components/post/CommentsSection";
 import { PostActions } from "@/components/post/PostActions";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
 import { categoryStyles, roleStyles, titleStyles } from "@/data/identity";
-import type { Post } from "@/types/post";
+import type { CommunityPost } from "@/types/community-post";
 
 type PostCardProps = {
-  post: Post;
+  post: CommunityPost;
 };
 
 export function PostCard({ post }: PostCardProps) {
-  const roleStyle = roleStyles[post.role];
+  const profileHref = `/user/${post.author.username}`;
+
+  const roleStyle = roleStyles[post.author.role];
   const RoleIcon = roleStyle.icon;
 
-  const titleStyle = post.title ? titleStyles[post.title] : null;
+  const titleStyle = post.author.title ? titleStyles[post.author.title] : null;
   const TitleIcon = titleStyle?.icon;
 
   const categoryStyle = categoryStyles[post.category];
@@ -23,23 +26,31 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <Card className="p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(88,60,28,0.16)]">
       <div className="flex items-start gap-4">
-        <Avatar
-          initials={post.displayName.charAt(0)}
-          src={post.avatarSrc}
-          alt={post.displayName}
-        />
+        <Link href={profileHref} className="shrink-0">
+          <Avatar
+            initials={post.author.displayName.charAt(0)}
+            src={post.author.avatarSrc}
+            alt={post.author.displayName}
+          />
+        </Link>
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="font-black text-[#2f2418]">
-                  {post.displayName}
-                </h3>
+                <Link
+                  href={profileHref}
+                  className="font-black text-[#2f2418] hover:text-[#4f8124]"
+                >
+                  {post.author.displayName}
+                </Link>
 
-                <span className="text-sm font-semibold text-[#7a5635]">
-                  {post.username}
-                </span>
+                <Link
+                  href={profileHref}
+                  className="text-sm font-semibold text-[#7a5635] hover:text-[#4f8124]"
+                >
+                  @{post.author.username}
+                </Link>
 
                 <span className="text-xs font-semibold text-[#9b6635]">
                   • {post.createdAt}
@@ -51,15 +62,15 @@ export function PostCard({ post }: PostCardProps) {
                   className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-black ${roleStyle.className}`}
                 >
                   <RoleIcon size={12} />
-                  {post.role}
+                  {post.author.role}
                 </span>
 
-                {post.title && titleStyle && TitleIcon ? (
+                {post.author.title && titleStyle && TitleIcon ? (
                   <span
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-black ${titleStyle.className}`}
                   >
                     <TitleIcon size={12} />
-                    {post.title}
+                    {post.author.title}
                   </span>
                 ) : null}
 
@@ -71,21 +82,26 @@ export function PostCard({ post }: PostCardProps) {
               </div>
             </div>
 
-            <button className="grid size-9 shrink-0 place-items-center rounded-full text-[#8a6b47] transition hover:bg-[#fff4dc]">
-              <MoreHorizontal size={18} />
-            </button>
+            <PostMenu
+  postId={post.id}
+  content={post.content}
+  isOwner={post.isOwner}
+/>
           </div>
 
           <p className="mt-4 whitespace-pre-line text-[15px] font-semibold leading-7 text-[#2f2418]">
             {post.content}
           </p>
 
-          <PostActions
-            likes={post.likes}
-            comments={post.comments}
-          />
+        <PostActions
+  postId={post.id}
+  likes={post.likes}
+  comments={post.comments}
+  isLiked={post.isLiked}
+  isBookmarked={post.isBookmarked}
+/>
 
-          <CommentsSection />
+            <CommentsSection postId={post.id} comments={post.commentItems} />
         </div>
       </div>
     </Card>

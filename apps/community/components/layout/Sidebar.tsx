@@ -1,15 +1,26 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
-import { usePathname } from "next/navigation";
 
 import { Progress } from "@/components/ui/Progress";
-import { navigationGroups } from "@/data/navigation";
+import { getCurrentProfile } from "@/data/profile/current-profile";
+import { SidebarNav } from "./SidebarNav";
 
-export function Sidebar() {
-  const pathname = usePathname();
+function formatRole(role: string) {
+  if (role === "admin") return "World Creator";
+  if (role === "developer") return "World Builder";
+  if (role === "moderator") return "Guardian";
+  return "Lifetopian";
+}
+
+export async function Sidebar() {
+  const profile = await getCurrentProfile();
+
+  const displayName = profile?.displayName ?? "Guest";
+  const username = profile?.username ? `@${profile.username}` : "Not logged in";
+  const avatarSrc = profile?.avatarSrc;
+  const initials = displayName.charAt(0).toUpperCase();
+  const role = profile ? formatRole(profile.role) : "Visitor";
+  const profileHref = profile ? `/user/${profile.username}` : "/login";
 
   return (
     <aside className="hidden rounded-[28px] border border-[#ead9b8] bg-white/80 p-5 shadow-[0_18px_45px_rgba(88,60,28,0.12)] backdrop-blur md:block">
@@ -25,16 +36,30 @@ export function Sidebar() {
       </div>
 
       <div className="mt-5 rounded-[26px] border border-[#ead9b8] bg-[#fffaf0] p-4">
-        <div className="flex items-center gap-3">
-          <div className="grid size-14 place-items-center rounded-full bg-gradient-to-br from-[#8bc34a] to-[#4f8124] text-lg font-black text-white">
-            P
-          </div>
+        <Link href={profileHref} className="flex items-center gap-3">
+          {avatarSrc ? (
+            <Image
+              src={avatarSrc}
+              alt={displayName}
+              width={56}
+              height={56}
+              className="size-14 rounded-full object-cover ring-2 ring-white/80"
+            />
+          ) : (
+            <div className="grid size-14 place-items-center rounded-full bg-gradient-to-br from-[#8bc34a] to-[#4f8124] text-lg font-black text-white">
+              {initials}
+            </div>
+          )}
 
           <div className="min-w-0">
-            <p className="truncate text-lg font-black text-[#2f2418]">Pasha</p>
-            <p className="text-xs font-bold text-[#7a5635]">Founder</p>
+            <p className="truncate text-lg font-black text-[#2f2418] transition hover:text-[#4f8124]">
+              {displayName}
+            </p>
+            <p className="truncate text-xs font-bold text-[#7a5635]">
+              {username}
+            </p>
           </div>
-        </div>
+        </Link>
 
         <div className="mt-4 rounded-[18px] bg-white/70 p-3">
           <div className="flex items-center justify-between text-xs font-black text-[#7a5635]">
@@ -49,54 +74,15 @@ export function Sidebar() {
 
         <div className="mt-3 flex flex-wrap gap-2">
           <span className="rounded-full border border-[#dfeec9] bg-[#edf7df] px-3 py-1 text-[11px] font-black text-[#4f8124]">
-            Alpha Tester
+            Alpha Pioneer
           </span>
           <span className="rounded-full border border-[#ead9b8] bg-white/80 px-3 py-1 text-[11px] font-black text-[#9b6635]">
-            Lifetopian
+            {role}
           </span>
         </div>
       </div>
 
-      <nav className="mt-5 space-y-5">
-        {navigationGroups.map((group) => (
-          <div key={group.label}>
-            <p className="mb-2 px-3 text-[11px] font-black uppercase tracking-[0.18em] text-[#9b6635]/70">
-              {group.label}
-            </p>
-
-            <div className="space-y-1">
-              {group.items.map((item) => {
-                const Icon = item.icon;
-                const isActive =
-                  item.href === "/"
-                    ? pathname === "/"
-                    : pathname.startsWith(item.href);
-
-                return (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className={`group flex w-full items-center justify-between rounded-[18px] px-3 py-3 text-left text-sm font-black transition ${
-                      isActive
-                        ? "bg-[#edf7df] text-[#4f8124] shadow-[0_10px_24px_rgba(111,168,58,0.16)]"
-                        : "text-[#7a5635] hover:bg-[#fff7e8]"
-                    }`}
-                  >
-                    <span className="flex items-center gap-3">
-                      <Icon size={18} strokeWidth={2.5} />
-                      <span>{item.label}</span>
-                    </span>
-
-                    {isActive ? (
-                      <ChevronRight size={16} strokeWidth={2.7} />
-                    ) : null}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </nav>
+      <SidebarNav />
 
       <div className="mt-5 rounded-[24px] border border-[#ead9b8] bg-gradient-to-br from-[#fff7e8] to-[#fff1d2] p-4">
         <p className="text-sm font-black text-[#2f2418]">Guild Spotlight</p>

@@ -28,34 +28,98 @@ lifetopia-platform
 │   │   │   │   └── page.tsx
 │   │   │   ├── settings
 │   │   │   │   └── page.tsx
+│   │   │   ├── user
+│   │   │   │   └── [username]
+│   │   │   │       └── page.tsx
 │   │   │   ├── favicon.ico
 │   │   │   ├── globals.css
 │   │   │   ├── layout.tsx
 │   │   │   └── page.tsx
 │   │   ├── components
+│   │   │   ├── explore
+│   │   │   │   ├── Explore.tsx
+│   │   │   │   ├── SuggestedLifetopians.tsx
+│   │   │   │   ├── TrendingPosts.tsx
+│   │   │   │   └── TrendingTopics.tsx
 │   │   │   ├── feed
 │   │   │   │   ├── CreatePost.tsx
 │   │   │   │   ├── Feed.tsx
 │   │   │   │   └── PostCard.tsx
+│   │   │   ├── guild
+│   │   │   │   ├── Guild.tsx
+│   │   │   │   ├── GuildActivity.tsx
+│   │   │   │   ├── GuildHero.tsx
+│   │   │   │   ├── GuildLeaderboard.tsx
+│   │   │   │   └── GuildMembers.tsx
 │   │   │   ├── layout
 │   │   │   │   ├── AppLayout.tsx
 │   │   │   │   ├── BottomNavigation.tsx
 │   │   │   │   ├── RightSidebar.tsx
 │   │   │   │   ├── Sidebar.tsx
 │   │   │   │   └── TopNavbar.tsx
+│   │   │   ├── messages
+│   │   │   │   ├── ChatWindow.tsx
+│   │   │   │   ├── ConversationList.tsx
+│   │   │   │   ├── MessageBubble.tsx
+│   │   │   │   └── Messages.tsx
 │   │   │   ├── my-world
-│   │   │   │   └── MyWorld.tsx
+│   │   │   │   ├── MyWorld.tsx
+│   │   │   │   ├── MyWorldCommunityStats.tsx
+│   │   │   │   ├── MyWorldHeader.tsx
+│   │   │   │   ├── MyWorldHero.tsx
+│   │   │   │   ├── MyWorldMainGrid.tsx
+│   │   │   │   ├── MyWorldRightSidebar.tsx
+│   │   │   │   ├── MyWorldSectionCard.tsx
+│   │   │   │   └── MyWorldStatCard.tsx
+│   │   │   ├── notifications
+│   │   │   │   ├── NotificationItem.tsx
+│   │   │   │   └── Notifications.tsx
+│   │   │   ├── post
+│   │   │   │   ├── CommentComposer.tsx
+│   │   │   │   ├── CommentItem.tsx
+│   │   │   │   ├── CommentsSection.tsx
+│   │   │   │   └── PostActions.tsx
+│   │   │   ├── profile
+│   │   │   │   ├── ProfileHero.tsx
+│   │   │   │   ├── ProfilePosts.tsx
+│   │   │   │   ├── ProfileStats.tsx
+│   │   │   │   └── PublicProfile.tsx
+│   │   │   ├── quest
+│   │   │   │   ├── CompletedQuestSection.tsx
+│   │   │   │   ├── DailyQuestSection.tsx
+│   │   │   │   ├── Quest.tsx
+│   │   │   │   ├── SeasonQuestSection.tsx
+│   │   │   │   └── WeeklyQuestSection.tsx
+│   │   │   ├── settings
+│   │   │   │   ├── LogoutSection.tsx
+│   │   │   │   ├── NotificationSettings.tsx
+│   │   │   │   ├── ProfileSettings.tsx
+│   │   │   │   ├── SecuritySettings.tsx
+│   │   │   │   └── Settings.tsx
 │   │   │   └── ui
 │   │   │       ├── Avatar.tsx
 │   │   │       ├── Badge.tsx
 │   │   │       ├── Button.tsx
 │   │   │       ├── Card.tsx
-│   │   │       └── Progress.tsx
+│   │   │       ├── EmptyState.tsx
+│   │   │       ├── InfoCard.tsx
+│   │   │       ├── PageHeader.tsx
+│   │   │       ├── Progress.tsx
+│   │   │       ├── SectionCard.tsx
+│   │   │       └── StatCard.tsx
 │   │   ├── data
+│   │   │   ├── comments.ts
+│   │   │   ├── explore.ts
+│   │   │   ├── guild.ts
 │   │   │   ├── identity.ts
+│   │   │   ├── messages.ts
+│   │   │   ├── my-world-layout.ts
 │   │   │   ├── my-world.ts
 │   │   │   ├── navigation.ts
+│   │   │   ├── notifications.ts
 │   │   │   ├── posts.ts
+│   │   │   ├── profile.ts
+│   │   │   ├── quest.ts
 │   │   │   └── sidebar.ts
 │   │   ├── public
 │   │   │   ├── audio
@@ -120,6 +184,7 @@ lifetopia-platform
 │   │   │   ├── navigation.ts
 │   │   │   ├── post.ts
 │   │   │   └── sidebar.ts
+│   │   ├── .env.local
 │   │   ├── .gitignore
 │   │   ├── eslint.config.mjs
 │   │   ├── next-env.d.ts
