@@ -1,42 +1,31 @@
+
 "use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import {
+  isAbsoluteAuthRedirect,
+  sanitizeAuthRedirect,
+} from "@repo/lib/auth-redirect";
 
 type LoginFormProps = {
   nextUrl?: string;
 };
 
-function getSafeNextUrl(next: string | undefined) {
-  if (!next) return "/dashboard";
+type LoginResponse = {
+  error?: string;
+};
 
-  try {
-    const url = new URL(next, window.location.origin);
-
-    const isLocalhost =
-      url.hostname === "localhost" || url.hostname === "127.0.0.1";
-
-    const isLifetopiaDomain =
-      url.hostname === "lifetopiaworld.io" ||
-      url.hostname.endsWith(".lifetopiaworld.io");
-
-    if (!isLocalhost && !isLifetopiaDomain) {
-      return "/dashboard";
-    }
-
-    if (url.origin === window.location.origin) {
-      return `${url.pathname}${url.search}${url.hash}`;
-    }
-
-    return url.href;
-  } catch {
-    return "/dashboard";
-  }
-}
-
-export function LoginForm({ nextUrl }: LoginFormProps) {
+export function LoginForm({ nextUrl = "/dashboard" }: LoginFormProps) {
   const router = useRouter();
+
+  const redirectTo = useMemo(() => sanitizeAuthRedirect(nextUrl), [nextUrl]);
+
+  const registerHref =
+    redirectTo === "/dashboard"
+      ? "/register"
+      : `/register?next=${encodeURIComponent(redirectTo)}`;
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -57,7 +46,7 @@ export function LoginForm({ nextUrl }: LoginFormProps) {
       body: JSON.stringify({ identifier, password }),
     });
 
-    const result = await response.json();
+    const result = (await response.json().catch(() => ({}))) as LoginResponse;
 
     if (!response.ok) {
       setMessage(result.error ?? "Login failed.");
@@ -65,20 +54,14 @@ export function LoginForm({ nextUrl }: LoginFormProps) {
       return;
     }
 
-    const safeNextUrl = getSafeNextUrl(nextUrl);
-
-    if (safeNextUrl.startsWith("http")) {
-      window.location.href = safeNextUrl;
+    if (isAbsoluteAuthRedirect(redirectTo)) {
+      window.location.assign(redirectTo);
       return;
     }
 
-    router.push(safeNextUrl);
+    router.replace(redirectTo);
     router.refresh();
   }
-
-  const registerHref = nextUrl
-    ? `/register?next=${encodeURIComponent(nextUrl)}`
-    : "/register";
 
   return (
     <form

@@ -1,8 +1,8 @@
 {
   "name": "Lifetopia World",
   "version": "0.1.0",
-  "phase": "Community Platform",
-  "priority": "Community Platform",
+  "phase": "Auth Community Platform",
+  "priority": "Auth community platform",
   "website": "https://lifetopiaworld.io",
   "tech": [
     "Next.js",
@@ -20,18 +20,19 @@
     "Community",
     "Footer",
     "News",
-    "Profile"
+    "Profile",
+    "Community Platform"
   ],
   "next": [
     "Authentication",
     "Dashboard",
     "Wallet",
     "Inventory",
-    "Community Platform"
+    "Auth Community Platform"
   ],
   "progress": {
     "landingPage": 100,
-    "authentication": 30,
+    "authentication": 50,
     "dashboard": 40,
     "backend": 0,
     "gameIntegration": 0
