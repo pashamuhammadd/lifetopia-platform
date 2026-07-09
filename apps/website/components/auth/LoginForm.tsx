@@ -1,10 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-function getSafeNextUrl(next: string | null) {
+type LoginFormProps = {
+  nextUrl?: string;
+};
+
+function getSafeNextUrl(next: string | undefined) {
   if (!next) return "/dashboard";
 
   try {
@@ -31,11 +35,8 @@ function getSafeNextUrl(next: string | null) {
   }
 }
 
-export function LoginForm() {
+export function LoginForm({ nextUrl }: LoginFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const next = searchParams.get("next");
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -64,7 +65,7 @@ export function LoginForm() {
       return;
     }
 
-    const safeNextUrl = getSafeNextUrl(next);
+    const safeNextUrl = getSafeNextUrl(nextUrl);
 
     if (safeNextUrl.startsWith("http")) {
       window.location.href = safeNextUrl;
@@ -75,8 +76,8 @@ export function LoginForm() {
     router.refresh();
   }
 
-  const registerHref = next
-    ? `/register?next=${encodeURIComponent(next)}`
+  const registerHref = nextUrl
+    ? `/register?next=${encodeURIComponent(nextUrl)}`
     : "/register";
 
   return (
