@@ -1,3 +1,5 @@
+// apps/website/app/page.tsx
+
 import { AccountSection } from "@/components/home/account/AccountSection";
 import { CommunitySection } from "@/components/home/community/CommunitySection";
 import { HeroSection } from "@/components/home/hero/HeroSection";
@@ -5,6 +7,7 @@ import { Footer } from "@/components/home/footer/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { GameplayCards } from "@/components/home/gameplay/GameplayCards";
 import { DevelopmentJourneySection } from "@/components/home/development-journey/DevelopmentJourneySection";
+import { LiveDevelopmentLogSection } from "@/components/home/development-log/LiveDevelopmentLogSection";
 import { RoadmapSection } from "@/components/home/RoadmapSection";
 import { NewsSection } from "@/components/home/news/NewsSection";
 
@@ -16,6 +19,7 @@ export default function Home() {
       <AccountSection />
       <GameplayCards />
       <DevelopmentJourneySection />
+      <LiveDevelopmentLogSection />
       <RoadmapSection />
       <CommunitySection />
       <NewsSection />
