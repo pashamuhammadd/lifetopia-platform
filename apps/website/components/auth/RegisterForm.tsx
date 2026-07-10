@@ -1,31 +1,54 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { AvatarPicker } from "@/components/auth/AvatarPicker";
 import { CountryPicker } from "@/components/auth/CountryPicker";
 import { playerAvatars } from "@repo/data/auth";
+import {
+  isAbsoluteAuthRedirect,
+  sanitizeAuthRedirect,
+} from "@repo/lib/auth-redirect";
 import { createClient } from "@repo/lib/supabase/client";
-import type { RegisterStep } from "@repo/types/auth";
 import { checkUsernameAvailability } from "@repo/services/auth";
-
+import type { RegisterStep } from "@repo/types/auth";
 
 const steps: RegisterStep[] = ["avatar", "identity", "security", "terms"];
 
 type Gender = "male" | "female";
 
-export function RegisterForm() {
+type UsernameStatus =
+  | "idle"
+  | "checking"
+  | "available"
+  | "taken"
+  | "invalid"
+  | "error";
+
+type RegisterFormProps = {
+  nextUrl?: string;
+};
+
+export function RegisterForm({ nextUrl = "/dashboard" }: RegisterFormProps) {
+  const router = useRouter();
   const supabase = createClient();
+
+  const redirectTo = useMemo(() => sanitizeAuthRedirect(nextUrl), [nextUrl]);
+
+  const loginHref =
+    redirectTo === "/dashboard"
+      ? "/login"
+      : `/login?next=${encodeURIComponent(redirectTo)}`;
 
   const [currentStep, setCurrentStep] = useState<RegisterStep>("avatar");
 
   const [avatarId, setAvatarId] = useState(playerAvatars[0]?.id ?? "");
   const [username, setUsername] = useState("");
-  const [usernameStatus, setUsernameStatus] = useState<
-  "idle" | "checking" | "available" | "taken" | "invalid" | "error"
->("idle");
+  const [usernameStatus, setUsernameStatus] =
+    useState<UsernameStatus>("idle");
+  const [usernameMessage, setUsernameMessage] = useState("");
 
-const [usernameMessage, setUsernameMessage] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [gender, setGender] = useState<Gender>("male");
   const [country, setCountry] = useState("");
@@ -43,30 +66,28 @@ const [usernameMessage, setUsernameMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const currentStepIndex = steps.indexOf(currentStep);
-
   const usernamePattern = /^[a-zA-Z0-9_]{4,10}$/;
-  const isUsernameFilled = username.length > 0;
-  const isUsernameFormatValid = usernamePattern.test(username);
+
   useEffect(() => {
-  const normalizedUsername = username.trim();
+    const normalizedUsername = username.trim();
 
-  if (!normalizedUsername) {
-    setUsernameStatus("idle");
-    setUsernameMessage("");
-    return;
-  }
+    if (!normalizedUsername) {
+      setUsernameStatus("idle");
+      setUsernameMessage("");
+      return;
+    }
 
-  const timeout = setTimeout(async () => {
-    setUsernameStatus("checking");
+    const timeout = setTimeout(async () => {
+      setUsernameStatus("checking");
 
-    const result = await checkUsernameAvailability(normalizedUsername);
+      const result = await checkUsernameAvailability(normalizedUsername);
 
-    setUsernameStatus(result.status);
-    setUsernameMessage(result.message);
-  }, 400);
+      setUsernameStatus(result.status);
+      setUsernameMessage(result.message);
+    }, 400);
 
-  return () => clearTimeout(timeout);
-}, [username]);
+    return () => clearTimeout(timeout);
+  }, [username]);
 
   function goToNextStep() {
     setMessage("");
@@ -82,16 +103,18 @@ const [usernameMessage, setUsernameMessage] = useState("");
     }
 
     if (currentStep === "identity") {
+      const normalizedUsername = username.trim();
+      const normalizedDisplayName = displayName.trim();
       const displayNamePattern = /^.{4,10}$/;
 
-      if (!usernamePattern.test(username)) {
+      if (!usernamePattern.test(normalizedUsername)) {
         setMessage(
           "Username must be 4-10 characters and only use letters, numbers, or underscore.",
         );
         return;
       }
 
-      if (!displayNamePattern.test(displayName)) {
+      if (!displayNamePattern.test(normalizedDisplayName)) {
         setMessage("Display Name must be 4-10 characters.");
         return;
       }
@@ -102,10 +125,12 @@ const [usernameMessage, setUsernameMessage] = useState("");
       }
 
       if (usernameStatus !== "available") {
-  setMessage("Please choose an available username.");
-  return;
-    }
+        setMessage("Please choose an available username.");
+        return;
+      }
 
+      setUsername(normalizedUsername);
+      setDisplayName(normalizedDisplayName);
       setCurrentStep("security");
       return;
     }
@@ -145,6 +170,7 @@ const [usernameMessage, setUsernameMessage] = useState("");
 
   async function handleRegister(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     setIsLoading(true);
     setMessage("");
 
@@ -154,14 +180,22 @@ const [usernameMessage, setUsernameMessage] = useState("");
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
-      email,
+    const emailRedirectTo =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/login?next=${encodeURIComponent(
+            redirectTo,
+          )}`
+        : undefined;
+
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
       password,
       options: {
+        emailRedirectTo,
         data: {
           account_type: "player",
-          username,
-          display_name: displayName,
+          username: username.trim(),
+          display_name: displayName.trim(),
           gender,
           avatar_id: avatarId,
           country,
@@ -177,8 +211,19 @@ const [usernameMessage, setUsernameMessage] = useState("");
       return;
     }
 
+    if (data.session) {
+      if (isAbsoluteAuthRedirect(redirectTo)) {
+        window.location.assign(redirectTo);
+        return;
+      }
+
+      router.replace(redirectTo);
+      router.refresh();
+      return;
+    }
+
     setMessage(
-      "Account created successfully. You can continue to your dashboard after login.",
+      "Account created successfully. Please check your email or login to continue.",
     );
     setIsLoading(false);
   }
@@ -245,27 +290,28 @@ const [usernameMessage, setUsernameMessage] = useState("");
               className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)] text-[clamp(0.8rem,1vw,1rem)] text-[#2f1b12] outline-none transition placeholder:text-[#7a5635]/50 focus:border-[#4f8124]"
             />
 
-            {usernameStatus !== "idle" && (
-  <p
-    className={`text-[clamp(0.65rem,0.9vw,0.85rem)] font-semibold ${
-      usernameStatus === "available"
-        ? "text-[#4f8124]"
-        : usernameStatus === "checking"
-          ? "text-[#7a5635]"
-          : "text-red-600"
-    }`}
-  >
-    {usernameStatus === "checking"
-      ? "Checking username..."
-      : usernameMessage}
-  </p>
-)}
+            {usernameStatus !== "idle" ? (
+              <p
+                className={`text-[clamp(0.65rem,0.9vw,0.85rem)] font-semibold ${
+                  usernameStatus === "available"
+                    ? "text-[#4f8124]"
+                    : usernameStatus === "checking"
+                      ? "text-[#7a5635]"
+                      : "text-red-600"
+                }`}
+              >
+                {usernameStatus === "checking"
+                  ? "Checking username..."
+                  : usernameMessage}
+              </p>
+            ) : null}
           </label>
 
           <label className="flex flex-col gap-[clamp(0.35rem,0.8vw,0.6rem)]">
             <span className="text-[clamp(0.72rem,0.95vw,0.9rem)] font-bold text-[#2f1b12]">
               Display Name
             </span>
+
             <input
               type="text"
               required
@@ -329,6 +375,7 @@ const [usernameMessage, setUsernameMessage] = useState("");
               <span className="text-[clamp(0.72rem,0.95vw,0.9rem)] font-bold text-[#2f1b12]">
                 Date of Birth
               </span>
+
               <input
                 type="date"
                 required
@@ -475,7 +522,7 @@ const [usernameMessage, setUsernameMessage] = useState("");
       <p className="text-center text-[clamp(0.72rem,0.95vw,0.9rem)] text-[#7a5635]">
         Already have an account?{" "}
         <Link
-          href="/login"
+          href={loginHref}
           className="font-bold text-[#4f8124] hover:text-[#2f1b12]"
         >
           Login

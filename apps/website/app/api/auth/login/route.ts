@@ -1,10 +1,25 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createAdminClient } from "@repo/lib/supabase/admin";
+import { createClient as createSupabaseServerClient } from "@repo/lib/supabase/server";
+
+type LoginRequestBody = {
+  identifier?: string;
+  password?: string;
+};
 
 export async function POST(request: Request) {
-  const { identifier, password } = await request.json();
+  let body: LoginRequestBody;
+
+  try {
+    body = (await request.json()) as LoginRequestBody;
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid request body." },
+      { status: 400 },
+    );
+  }
+
+  const { identifier, password } = body;
 
   if (!identifier || !password) {
     return NextResponse.json(
@@ -21,22 +36,23 @@ export async function POST(request: Request) {
   if (!isEmail) {
     const admin = createAdminClient();
 
-    const { data: profile } = await admin
+    const { data: profile, error: profileError } = await admin
       .from("profiles")
       .select("id")
       .eq("username", trimmedIdentifier)
       .maybeSingle();
 
-    if (!profile) {
+    if (profileError || !profile) {
       return NextResponse.json(
         { error: "Invalid login credentials." },
         { status: 401 },
       );
     }
 
-    const { data: userData } = await admin.auth.admin.getUserById(profile.id);
+    const { data: userData, error: userError } =
+      await admin.auth.admin.getUserById(profile.id);
 
-    if (!userData.user?.email) {
+    if (userError || !userData.user?.email) {
       return NextResponse.json(
         { error: "Invalid login credentials." },
         { status: 401 },
@@ -46,24 +62,7 @@ export async function POST(request: Request) {
     email = userData.user.email;
   }
 
-  const cookieStore = await cookies();
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
-        },
-      },
-    },
-  );
+  const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
