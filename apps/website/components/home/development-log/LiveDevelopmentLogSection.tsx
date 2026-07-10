@@ -1,5 +1,3 @@
-// apps/website/components/home/development-log/LiveDevelopmentLogSection.tsx
-
 import Link from "next/link";
 import { createClient } from "@repo/lib/supabase/server";
 
@@ -25,19 +23,13 @@ function formatRelativeTime(dateString: string) {
   if (diffInSeconds < 60) return "just now";
 
   const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes}m ago`;
-  }
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
 
   const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) {
-    return `${diffInHours}h ago`;
-  }
+  if (diffInHours < 24) return `${diffInHours}h ago`;
 
   const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 30) {
-    return `${diffInDays}d ago`;
-  }
+  if (diffInDays < 30) return `${diffInDays}d ago`;
 
   return new Intl.DateTimeFormat("en", {
     month: "short",
@@ -58,6 +50,8 @@ function getCategoryTone(category: string) {
   if (normalizedCategory === "security") return "text-[#ff9b7a]";
   if (normalizedCategory === "docs") return "text-[#8fd8ff]";
   if (normalizedCategory === "infrastructure") return "text-[#c6a7ff]";
+  if (normalizedCategory === "refactor") return "text-[#f6a7ff]";
+  if (normalizedCategory === "chore") return "text-[#d7f5bd]";
 
   return "text-[#d7f5bd]";
 }
@@ -84,7 +78,7 @@ async function getLatestDevelopmentLogs() {
     )
     .eq("is_public", true)
     .order("pushed_at", { ascending: false })
-    .limit(6);
+    .limit(5);
 
   if (error || !data) {
     return [];
@@ -98,83 +92,73 @@ export async function LiveDevelopmentLogSection() {
   const latestLog = logs[0];
 
   return (
-    <section className="relative overflow-hidden bg-[#fff8e8] px-[clamp(1rem,5vw,5rem)] py-[clamp(4rem,8vw,7rem)]">
+    <section className="relative overflow-hidden bg-[#fff8e8] px-[clamp(1rem,5vw,5rem)] py-[clamp(2.8rem,6vw,4.8rem)]">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-12rem] top-[-10rem] h-[clamp(18rem,35vw,30rem)] w-[clamp(18rem,35vw,30rem)] rounded-full bg-[#6fa83a]/20 blur-3xl" />
-        <div className="absolute bottom-[-12rem] right-[-10rem] h-[clamp(20rem,38vw,34rem)] w-[clamp(20rem,38vw,34rem)] rounded-full bg-[#ffd58a]/30 blur-3xl" />
+        <div className="absolute left-[-10rem] top-[-9rem] h-[clamp(16rem,30vw,25rem)] w-[clamp(16rem,30vw,25rem)] rounded-full bg-[#6fa83a]/18 blur-3xl" />
+        <div className="absolute bottom-[-10rem] right-[-9rem] h-[clamp(17rem,32vw,27rem)] w-[clamp(17rem,32vw,27rem)] rounded-full bg-[#ffd58a]/28 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto flex max-w-6xl flex-col gap-[clamp(1.4rem,3vw,2.6rem)]">
-        <div className="flex flex-col gap-[clamp(0.8rem,1.6vw,1.2rem)]">
-          <span className="w-fit rounded-full border border-[#4f8124]/25 bg-[#edf7df] px-[clamp(0.8rem,1.4vw,1rem)] py-[clamp(0.35rem,0.8vw,0.5rem)] font-mono text-[clamp(0.66rem,0.85vw,0.78rem)] font-black uppercase tracking-[0.18em] text-[#4f8124]">
+      <div className="relative mx-auto flex max-w-5xl flex-col gap-[clamp(1.1rem,2.4vw,1.8rem)]">
+        <div className="flex flex-col gap-[clamp(0.6rem,1.3vw,0.9rem)]">
+          <span className="w-fit rounded-full border border-[#4f8124]/25 bg-[#edf7df] px-[clamp(0.7rem,1.2vw,0.9rem)] py-[clamp(0.28rem,0.65vw,0.42rem)] font-mono text-[clamp(0.58rem,0.75vw,0.7rem)] font-black uppercase tracking-[0.18em] text-[#4f8124]">
             Built in Public
           </span>
 
-          <div className="flex flex-col gap-[clamp(0.7rem,1.4vw,1rem)]">
-            <h2 className="font-mono text-[clamp(2rem,5vw,4.6rem)] font-black leading-[0.95] tracking-[-0.06em] text-[#2f1b12]">
+          <div className="flex flex-col gap-[clamp(0.5rem,1vw,0.75rem)]">
+            <h2 className="font-mono text-[clamp(1.65rem,4vw,3.35rem)] font-black leading-[0.95] tracking-[-0.055em] text-[#2f1b12]">
               Live Dev Log
             </h2>
 
-            <p className="max-w-4xl text-[clamp(0.92rem,1.3vw,1.15rem)] leading-[1.8] text-[#7a5635]">
-              A real-time development feed synced from GitHub. Every push helps
-              reviewers, players, and ecosystem partners see that Lifetopia
-              World is actively being shipped.
+            <p className="max-w-3xl text-[clamp(0.82rem,1.1vw,1rem)] leading-[1.75] text-[#7a5635]">
+              A real-time development feed synced from GitHub, showing that
+              Lifetopia World is actively shipped across the platform.
             </p>
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-[clamp(1.1rem,2.4vw,2rem)] border border-[#2f1b12]/90 bg-[#11120f] shadow-[0_28px_90px_rgba(47,27,18,0.24)]">
-          <div className="flex items-center justify-between gap-[clamp(0.75rem,1.6vw,1.2rem)] border-b border-white/10 bg-[#191b15] px-[clamp(0.9rem,2vw,1.4rem)] py-[clamp(0.75rem,1.4vw,1rem)]">
-            <div className="flex items-center gap-[clamp(0.5rem,1vw,0.75rem)]">
-              <span className="size-[clamp(0.55rem,1vw,0.75rem)] rounded-full bg-[#ff6b6b]" />
-              <span className="size-[clamp(0.55rem,1vw,0.75rem)] rounded-full bg-[#ffd36a]" />
-              <span className="size-[clamp(0.55rem,1vw,0.75rem)] rounded-full bg-[#9be564]" />
+        <div className="overflow-hidden rounded-[clamp(0.9rem,1.8vw,1.45rem)] border border-[#2f1b12]/90 bg-[#11120f] shadow-[0_20px_70px_rgba(47,27,18,0.22)]">
+          <div className="flex items-center justify-between gap-[clamp(0.65rem,1.2vw,1rem)] border-b border-white/10 bg-[#191b15] px-[clamp(0.8rem,1.6vw,1.1rem)] py-[clamp(0.6rem,1.1vw,0.82rem)]">
+            <div className="flex items-center gap-[clamp(0.42rem,0.8vw,0.6rem)]">
+              <span className="size-[clamp(0.45rem,0.8vw,0.62rem)] rounded-full bg-[#ff6b6b]" />
+              <span className="size-[clamp(0.45rem,0.8vw,0.62rem)] rounded-full bg-[#ffd36a]" />
+              <span className="size-[clamp(0.45rem,0.8vw,0.62rem)] rounded-full bg-[#9be564]" />
             </div>
 
-            <p className="truncate font-mono text-[clamp(0.68rem,0.9vw,0.82rem)] font-bold text-[#d7f5bd]/80">
-              lifetopia-platform / development_logs
+            <p className="truncate font-mono text-[clamp(0.58rem,0.78vw,0.72rem)] font-bold text-[#d7f5bd]/75">
+              lifetopia-platform / ship_feed
             </p>
           </div>
 
-          <div className="grid gap-[clamp(0.75rem,1.6vw,1rem)] border-b border-white/10 bg-[#0d0f0b] px-[clamp(0.9rem,2vw,1.4rem)] py-[clamp(0.9rem,1.8vw,1.25rem)]">
-            <div className="flex flex-wrap items-center gap-[clamp(0.55rem,1vw,0.8rem)] font-mono text-[clamp(0.72rem,1vw,0.9rem)]">
+          <div className="border-b border-white/10 bg-[#0d0f0b] px-[clamp(0.8rem,1.6vw,1.1rem)] py-[clamp(0.7rem,1.4vw,1rem)]">
+            <div className="flex flex-wrap items-center gap-[clamp(0.45rem,0.9vw,0.7rem)] font-mono text-[clamp(0.64rem,0.9vw,0.78rem)]">
               <span className="text-[#7a8f68]">$</span>
-              <span className="text-[#d7f5bd]">git status</span>
-              <span className="text-[#7a8f68]">--lifetopia</span>
+              <span className="text-[#d7f5bd]">lifetopia devlog</span>
+              <span className="text-[#7a8f68]">--latest=5</span>
             </div>
 
-            <div className="grid gap-[clamp(0.55rem,1vw,0.75rem)]">
-              <div className="flex flex-wrap items-center gap-[clamp(0.5rem,1vw,0.75rem)] font-mono text-[clamp(0.72rem,1vw,0.9rem)]">
-                <span className="text-[#9be564]">●</span>
-                <span className="text-[#d7f5bd]">active_development</span>
-                <span className="text-[#7a8f68]">=</span>
-                <span className="text-[#9be564]">true</span>
+            <div className="mt-[clamp(0.65rem,1.2vw,0.9rem)] flex flex-wrap gap-[clamp(0.45rem,0.9vw,0.65rem)]">
+              <div className="rounded-full border border-[#9be564]/20 bg-[#9be564]/10 px-[clamp(0.55rem,1vw,0.75rem)] py-[clamp(0.28rem,0.55vw,0.38rem)] font-mono text-[clamp(0.58rem,0.75vw,0.7rem)] font-bold text-[#9be564]">
+                active=true
               </div>
 
-              <div className="flex flex-wrap items-center gap-[clamp(0.5rem,1vw,0.75rem)] font-mono text-[clamp(0.72rem,1vw,0.9rem)]">
-                <span className="text-[#8fd8ff]">latest_push</span>
-                <span className="text-[#7a8f68]">=</span>
-                <span className="text-[#f4ead4]">
-                  {latestLog ? formatRelativeTime(latestLog.pushed_at) : "waiting"}
-                </span>
+              <div className="rounded-full border border-[#8fd8ff]/20 bg-[#8fd8ff]/10 px-[clamp(0.55rem,1vw,0.75rem)] py-[clamp(0.28rem,0.55vw,0.38rem)] font-mono text-[clamp(0.58rem,0.75vw,0.7rem)] font-bold text-[#8fd8ff]">
+                latest={latestLog ? formatRelativeTime(latestLog.pushed_at) : "waiting"}
               </div>
 
-              <div className="flex flex-wrap items-center gap-[clamp(0.5rem,1vw,0.75rem)] font-mono text-[clamp(0.72rem,1vw,0.9rem)]">
-                <span className="text-[#c6a7ff]">synced_updates</span>
-                <span className="text-[#7a8f68]">=</span>
-                <span className="text-[#f4ead4]">{logs.length}</span>
+              <div className="rounded-full border border-[#c6a7ff]/20 bg-[#c6a7ff]/10 px-[clamp(0.55rem,1vw,0.75rem)] py-[clamp(0.28rem,0.55vw,0.38rem)] font-mono text-[clamp(0.58rem,0.75vw,0.7rem)] font-bold text-[#c6a7ff]">
+                updates={logs.length}
               </div>
             </div>
           </div>
 
-          <div className="px-[clamp(0.9rem,2vw,1.4rem)] py-[clamp(0.9rem,1.8vw,1.25rem)]">
+          <div className="px-[clamp(0.8rem,1.6vw,1.1rem)] py-[clamp(0.75rem,1.4vw,1rem)]">
             {logs.length ? (
-              <div className="flex flex-col gap-[clamp(0.65rem,1.3vw,0.9rem)]">
+              <div className="flex flex-col gap-[clamp(0.5rem,1vw,0.7rem)]">
                 {logs.map((log, index) => {
                   const row = (
-                    <article className="group rounded-[clamp(0.8rem,1.6vw,1.15rem)] border border-white/10 bg-white/[0.035] px-[clamp(0.8rem,1.6vw,1.1rem)] py-[clamp(0.75rem,1.4vw,1rem)] transition hover:border-[#9be564]/40 hover:bg-white/[0.06]">
-                      <div className="flex flex-col gap-[clamp(0.55rem,1vw,0.75rem)]">
-                        <div className="flex flex-wrap items-center gap-[clamp(0.45rem,0.9vw,0.7rem)] font-mono text-[clamp(0.66rem,0.85vw,0.78rem)]">
+                    <article className="group rounded-[clamp(0.68rem,1.25vw,0.95rem)] border border-white/10 bg-white/[0.035] px-[clamp(0.7rem,1.35vw,0.95rem)] py-[clamp(0.62rem,1.15vw,0.82rem)] transition hover:border-[#9be564]/40 hover:bg-white/[0.06]">
+                      <div className="flex flex-col gap-[clamp(0.38rem,0.8vw,0.58rem)]">
+                        <div className="flex flex-wrap items-center gap-[clamp(0.38rem,0.75vw,0.55rem)] font-mono text-[clamp(0.55rem,0.72vw,0.67rem)]">
                           <span className="text-[#7a8f68]">
                             {String(index + 1).padStart(2, "0")}
                           </span>
@@ -194,12 +178,12 @@ export async function LiveDevelopmentLogSection() {
                           </span>
                         </div>
 
-                        <h3 className="break-words font-mono text-[clamp(0.85rem,1.25vw,1.05rem)] font-bold leading-[1.55] text-[#f8ffe9]">
+                        <h3 className="break-words font-mono text-[clamp(0.72rem,1vw,0.9rem)] font-bold leading-[1.55] text-[#f8ffe9]">
                           <span className="text-[#7a8f68]">commit:</span>{" "}
                           {log.commit_message}
                         </h3>
 
-                        <div className="flex flex-wrap items-center gap-[clamp(0.45rem,0.9vw,0.7rem)] font-mono text-[clamp(0.66rem,0.85vw,0.78rem)] text-[#9aa98a]">
+                        <div className="flex flex-wrap items-center gap-[clamp(0.38rem,0.75vw,0.55rem)] font-mono text-[clamp(0.55rem,0.72vw,0.67rem)] text-[#9aa98a]">
                           <span>branch:{log.branch}</span>
                           <span>sha:{getShortSha(log.commit_sha)}</span>
                           {log.author_username ? (
@@ -228,18 +212,17 @@ export async function LiveDevelopmentLogSection() {
                 })}
               </div>
             ) : (
-              <div className="rounded-[clamp(0.8rem,1.6vw,1.15rem)] border border-white/10 bg-white/[0.035] px-[clamp(0.8rem,1.6vw,1.1rem)] py-[clamp(0.8rem,1.6vw,1.1rem)]">
-                <p className="font-mono text-[clamp(0.8rem,1vw,0.95rem)] leading-[1.7] text-[#d7f5bd]">
+              <div className="rounded-[clamp(0.68rem,1.25vw,0.95rem)] border border-white/10 bg-white/[0.035] px-[clamp(0.7rem,1.35vw,0.95rem)] py-[clamp(0.62rem,1.15vw,0.82rem)]">
+                <p className="font-mono text-[clamp(0.68rem,0.9vw,0.82rem)] leading-[1.7] text-[#d7f5bd]">
                   No logs synced yet. The next GitHub push will appear here.
                 </p>
               </div>
             )}
           </div>
 
-          <div className="border-t border-white/10 bg-[#191b15] px-[clamp(0.9rem,2vw,1.4rem)] py-[clamp(0.75rem,1.4vw,1rem)]">
-            <p className="font-mono text-[clamp(0.66rem,0.85vw,0.78rem)] leading-[1.7] text-[#9aa98a]">
-              Synced via GitHub Actions → Lifetopia API → Supabase
-              development_logs.
+          <div className="border-t border-white/10 bg-[#191b15] px-[clamp(0.8rem,1.6vw,1.1rem)] py-[clamp(0.55rem,1vw,0.75rem)]">
+            <p className="font-mono text-[clamp(0.55rem,0.72vw,0.67rem)] leading-[1.6] text-[#9aa98a]">
+              GitHub Actions → Lifetopia API → Supabase development_logs
             </p>
           </div>
         </div>
