@@ -261,6 +261,9 @@ importers:
       '@repo/lib':
         specifier: workspace:*
         version: link:../lib
+      '@repo/types':
+        specifier: workspace:*
+        version: link:../types
 
   packages/types:
     dependencies:

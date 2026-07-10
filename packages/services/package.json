@@ -8,6 +8,7 @@
     "./*": "./*.ts"
   },
   "dependencies": {
-    "@repo/lib": "workspace:*"
+    "@repo/lib": "workspace:*",
+    "@repo/types": "workspace:*"
   }
 }

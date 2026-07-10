@@ -1,0 +1,89 @@
+name: Sync Development Log
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync-development-log:
+    name: Sync development log
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send commits to Lifetopia development log
+        env:
+          DEVELOPMENT_LOG_ENDPOINT: ${{ secrets.DEVELOPMENT_LOG_ENDPOINT }}
+          DEVELOPMENT_LOG_SECRET: ${{ secrets.DEVELOPMENT_LOG_SECRET }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+
+          const endpoint = process.env.DEVELOPMENT_LOG_ENDPOINT;
+          const secret = process.env.DEVELOPMENT_LOG_SECRET;
+          const eventPath = process.env.GITHUB_EVENT_PATH;
+
+          if (!endpoint || !secret) {
+            throw new Error("Missing DEVELOPMENT_LOG_ENDPOINT or DEVELOPMENT_LOG_SECRET.");
+          }
+
+          const event = JSON.parse(fs.readFileSync(eventPath, "utf8"));
+
+          const branch = event.ref?.replace("refs/heads/", "") || "main";
+          const repo = event.repository?.full_name || "unknown/repository";
+          const sender = event.sender?.login || null;
+
+          const commits = Array.isArray(event.commits)
+            ? event.commits.map((commit) => {
+                const changedFiles = [
+                  ...(commit.added || []),
+                  ...(commit.modified || []),
+                  ...(commit.removed || []),
+                ];
+
+                return {
+                  commit_sha: commit.id,
+                  commit_message: commit.message,
+                  commit_url: commit.url,
+                  author_name: commit.author?.name || null,
+                  author_username: commit.author?.username || sender,
+                  changed_files: changedFiles,
+                  pushed_at: commit.timestamp || new Date().toISOString(),
+                };
+              })
+            : [];
+
+          if (!commits.length) {
+            console.log("No commits to sync.");
+            process.exit(0);
+          }
+
+          const payload = {
+            repo,
+            branch,
+            commits,
+          };
+
+          fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              "x-lifetopia-devlog-secret": secret,
+            },
+            body: JSON.stringify(payload),
+          })
+            .then(async (response) => {
+              const text = await response.text();
+
+              if (!response.ok) {
+                throw new Error(`Request failed with ${response.status}: ${text}`);
+              }
+
+              console.log(text);
+            })
+            .catch((error) => {
+              console.error(error);
+              process.exit(1);
+            });
+          NODE

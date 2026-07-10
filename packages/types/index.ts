@@ -5,3 +5,4 @@ export * from "./dashboard.js";
 export * from "./footer.js";
 export * from "./news.js";
 export * from "./roadmap.js";
+export * from "./development-log.js";
