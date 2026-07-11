@@ -1,13 +1,24 @@
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { PlayWarningModal } from "@/components/PlayWarningModal";
+
+type ProductAccent = "green" | "purple" | "orange";
 
 type ProductPreview = {
   label: string;
   domain: string;
   href: string;
   description: string;
-  accent: "green" | "purple" | "orange" | "blue";
-  status?: string;
-  current?: boolean;
+  image: string;
+  imagePosition: string;
+  accent: ProductAccent;
+  status: string;
+  cta: string;
+  featured?: boolean;
+  opensModal?: boolean;
 };
 
 const products: ProductPreview[] = [
@@ -15,353 +26,277 @@ const products: ProductPreview[] = [
     label: "Main Website",
     domain: "lifetopiaworld.io",
     href: "https://lifetopiaworld.io",
-    description: "Official home of Lifetopia World and project information.",
+    description:
+      "The official home of Lifetopia World, including project information, player accounts, and ecosystem access.",
+    image: "/previews/main-website.jpg",
+    imagePosition: "object-center",
     accent: "green",
     status: "Live",
+    cta: "Visit Website",
   },
   {
     label: "Community Platform",
     domain: "community.lifetopiaworld.io",
     href: "https://community.lifetopiaworld.io",
-    description: "Social platform for Lifetopians to connect and grow.",
+    description:
+      "A social platform where Lifetopians can create profiles, publish posts, discuss updates, and grow together.",
+    image: "/previews/community-platform.png",
+    imagePosition: "object-top",
     accent: "purple",
     status: "Live Beta",
+    cta: "Open Community",
   },
   {
     label: "Playable Game",
     domain: "play.lifetopiaworld.io",
     href: "https://play.lifetopiaworld.io",
-    description: "Playable cozy life-sim prototype powered by Solana.",
+    description:
+      "The playable Alpha build of Lifetopia World, featuring the early foundation of its cozy life-sim experience.",
+    image: "/previews/playable-game.jpg",
+    imagePosition: "object-center",
     accent: "orange",
-    status: "Beta",
-  },
-  {
-    label: "Grant Portal",
-    domain: "grants.lifetopiaworld.io",
-    href: "https://grants.lifetopiaworld.io",
-    description: "Transparency, development logs, milestones, and documents.",
-    accent: "blue",
-    status: "You are here",
-    current: true,
+    status: "Alpha",
+    cta: "Play Alpha",
+    featured: true,
+    opensModal: true,
   },
 ];
 
-function getAccentClasses(accent: ProductPreview["accent"]) {
+function getAccentClasses(accent: ProductAccent) {
   if (accent === "purple") {
     return {
-      icon: "bg-[#eee7ff] text-[#7651d6]",
-      line: "bg-[#8b6ce3]",
-      preview:
-        "from-[#151823] via-[#24263a] to-[#101119]",
-      glow: "bg-[#9a7cff]/20",
+      iconBackground: "bg-[#eee7ff]",
+      iconText: "text-[#7651d6]",
+      status: "border-[#8267d8]/15 bg-[#eee8ff] text-[#7156c8]",
+      button:
+        "border-[#7651d6]/15 bg-[#7651d6] text-white hover:bg-[#6543c0]",
+      glow: "bg-[#9a7cff]/18",
+      line: "bg-[#8869dc]",
     };
   }
 
   if (accent === "orange") {
     return {
-      icon: "bg-[#fff0dc] text-[#de7f18]",
-      line: "bg-[#e4912b]",
-      preview:
-        "from-[#d5f0a4] via-[#7bb85d] to-[#3c743c]",
-      glow: "bg-[#ffd071]/30",
-    };
-  }
-
-  if (accent === "blue") {
-    return {
-      icon: "bg-[#e1f1ff] text-[#3479c9]",
-      line: "bg-[#4c92dc]",
-      preview:
-        "from-[#dff4ff] via-[#b9e7fa] to-[#f8f2df]",
-      glow: "bg-[#78cdf4]/25",
+      iconBackground: "bg-[#fff0dc]",
+      iconText: "text-[#d97813]",
+      status: "border-[#e49324]/18 bg-[#fff0dc] text-[#c96c0c]",
+      button:
+        "border-[#d97813]/15 bg-[#d97813] text-white hover:bg-[#c96808]",
+      glow: "bg-[#ffc968]/24",
+      line: "bg-[#e28a1c]",
     };
   }
 
   return {
-    icon: "bg-[#e8f4d8] text-[#3f843a]",
-    line: "bg-[#5c9f45]",
-    preview:
-      "from-[#ccecff] via-[#8ed2ef] to-[#7ca65c]",
-    glow: "bg-[#a7df6c]/25",
+    iconBackground: "bg-[#e8f4d8]",
+    iconText: "text-[#3f843a]",
+    status: "border-[#4f8e3c]/15 bg-[#e8f4d8] text-[#3f7a34]",
+    button:
+      "border-[#33783c]/15 bg-[#33783c] text-white hover:bg-[#286532]",
+    glow: "bg-[#9fd969]/22",
+    line: "bg-[#559643]",
   };
 }
 
-function MainWebsitePreview() {
-  return (
-    <div className="relative h-full overflow-hidden bg-gradient-to-br from-[#ccecff] via-[#91d5f2] to-[#74a75c]">
-      <div className="absolute inset-x-0 bottom-0 h-[42%] bg-[#57944d]" />
-
-      <div className="absolute left-[8%] top-[15%] h-[18%] w-[32%] rounded-full bg-white/65 blur-[clamp(0.35rem,1vw,0.8rem)]" />
-      <div className="absolute right-[6%] top-[9%] h-[24%] w-[28%] rounded-full bg-white/55 blur-[clamp(0.35rem,1vw,0.8rem)]" />
-
-      <div className="absolute bottom-[14%] left-[7%] h-[28%] w-[30%] rounded-t-[45%] bg-[#39773b]" />
-      <div className="absolute bottom-[10%] right-[6%] h-[34%] w-[37%] rounded-t-[50%] bg-[#316c35]" />
-
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-[clamp(0.35rem,1vw,0.8rem)] text-center">
-        <p className="text-[clamp(0.48rem,0.9vw,0.75rem)] font-extrabold leading-tight text-white drop-shadow">
-          A Cozy World
-        </p>
-        <p className="text-[clamp(0.48rem,0.9vw,0.75rem)] font-extrabold leading-tight text-white drop-shadow">
-          Built Together.
-        </p>
-
-        <span className="mt-[clamp(0.25rem,0.7vw,0.5rem)] rounded-full bg-white/90 px-[clamp(0.35rem,0.8vw,0.65rem)] py-[clamp(0.12rem,0.3vw,0.25rem)] text-[clamp(0.32rem,0.55vw,0.48rem)] font-bold text-[#346c37]">
-          Explore Lifetopia
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function CommunityPreview() {
-  return (
-    <div className="relative flex h-full bg-gradient-to-br from-[#181b24] via-[#25283a] to-[#11131a] p-[clamp(0.35rem,0.8vw,0.65rem)]">
-      <div className="w-[23%] rounded-l-[clamp(0.25rem,0.5vw,0.45rem)] bg-[#11131b] p-[clamp(0.18rem,0.45vw,0.35rem)]">
-        <div className="size-[clamp(0.5rem,1vw,0.9rem)] rounded-full bg-[#87bd50]" />
-
-        <div className="mt-[clamp(0.25rem,0.6vw,0.45rem)] flex flex-col gap-[clamp(0.12rem,0.3vw,0.24rem)]">
-          {[1, 2, 3, 4].map((item) => (
-            <span
-              key={item}
-              className="h-[clamp(0.12rem,0.25vw,0.2rem)] rounded-full bg-white/12"
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col gap-[clamp(0.2rem,0.45vw,0.35rem)] bg-[#202330] p-[clamp(0.25rem,0.6vw,0.45rem)]">
-        <div className="flex items-center justify-between">
-          <span className="h-[clamp(0.18rem,0.35vw,0.28rem)] w-[35%] rounded-full bg-white/22" />
-          <span className="size-[clamp(0.45rem,0.8vw,0.7rem)] rounded-full bg-[#9170ef]" />
-        </div>
-
-        {[1, 2].map((item) => (
-          <div
-            key={item}
-            className="rounded-[clamp(0.2rem,0.45vw,0.4rem)] bg-white/[0.055] p-[clamp(0.2rem,0.45vw,0.35rem)]"
-          >
-            <div className="flex items-center gap-[clamp(0.15rem,0.35vw,0.28rem)]">
-              <span className="size-[clamp(0.35rem,0.65vw,0.55rem)] rounded-full bg-[#6ca3db]" />
-              <span className="h-[clamp(0.12rem,0.24vw,0.2rem)] w-[30%] rounded-full bg-white/25" />
-            </div>
-
-            <div className="mt-[clamp(0.15rem,0.35vw,0.28rem)] h-[clamp(0.6rem,1.3vw,1.1rem)] rounded-[clamp(0.15rem,0.3vw,0.25rem)] bg-gradient-to-r from-[#375063] to-[#344136]" />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function GamePreview() {
-  return (
-    <div className="relative h-full overflow-hidden bg-gradient-to-br from-[#dff2a6] via-[#86bf62] to-[#477c3e]">
-      <div className="absolute left-[8%] top-[14%] h-[28%] w-[28%] rounded-[20%] bg-[#b57d3d] shadow-[0_0.3rem_0_#714825]" />
-      <div className="absolute left-[12%] top-[9%] h-[18%] w-[20%] rotate-45 bg-[#39868b]" />
-
-      <div className="absolute bottom-[9%] left-[7%] h-[30%] w-[34%] rounded-[15%] border-[clamp(0.1rem,0.3vw,0.2rem)] border-[#80542b] bg-[#77aa4f]" />
-      <div className="absolute bottom-[14%] right-[9%] h-[34%] w-[36%] rounded-[15%] border-[clamp(0.1rem,0.3vw,0.2rem)] border-[#80542b] bg-[#6ca14b]" />
-
-      <div className="absolute inset-x-0 bottom-[2%] mx-auto flex w-[70%] justify-center gap-[clamp(0.08rem,0.2vw,0.18rem)] rounded-[clamp(0.2rem,0.5vw,0.4rem)] bg-[#d9b77e]/90 p-[clamp(0.12rem,0.3vw,0.25rem)]">
-        {[1, 2, 3, 4, 5].map((item) => (
-          <span
-            key={item}
-            className="size-[clamp(0.35rem,0.7vw,0.6rem)] rounded-[20%] bg-[#85613d]/75"
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function GrantPortalPreview() {
-  return (
-    <div className="relative h-full overflow-hidden bg-gradient-to-br from-[#e2f5ff] via-[#c8eafa] to-[#f5edda]">
-      <div className="absolute inset-x-0 top-0 h-[18%] bg-white/80" />
-
-      <div className="absolute left-[6%] top-[26%] flex w-[47%] flex-col gap-[clamp(0.15rem,0.35vw,0.28rem)]">
-        <span className="h-[clamp(0.16rem,0.35vw,0.3rem)] w-[38%] rounded-full bg-[#448343]" />
-        <span className="h-[clamp(0.25rem,0.55vw,0.45rem)] w-[95%] rounded-full bg-[#253529]" />
-        <span className="h-[clamp(0.25rem,0.55vw,0.45rem)] w-[76%] rounded-full bg-[#397f3c]" />
-        <span className="h-[clamp(0.1rem,0.25vw,0.2rem)] w-[85%] rounded-full bg-[#6f716b]/45" />
-        <span className="h-[clamp(0.1rem,0.25vw,0.2rem)] w-[64%] rounded-full bg-[#6f716b]/35" />
-
-        <div className="mt-[clamp(0.15rem,0.35vw,0.3rem)] flex gap-[clamp(0.12rem,0.3vw,0.24rem)]">
-          <span className="h-[clamp(0.28rem,0.65vw,0.5rem)] w-[38%] rounded-[clamp(0.12rem,0.3vw,0.25rem)] bg-[#28683a]" />
-          <span className="h-[clamp(0.28rem,0.65vw,0.5rem)] w-[34%] rounded-[clamp(0.12rem,0.3vw,0.25rem)] bg-white/90" />
-        </div>
-      </div>
-
-      <div className="absolute bottom-[5%] right-[6%] h-[68%] w-[38%] rounded-t-full bg-[#76aa5f]/35" />
-
-      <div className="absolute bottom-[4%] right-[15%] h-[51%] w-[16%] rounded-t-full bg-[#dabd82]" />
-      <div className="absolute bottom-[20%] right-[12%] h-[19%] w-[22%] rounded-full bg-[#d8ba79]" />
-      <div className="absolute bottom-[4%] right-[12%] h-[29%] w-[22%] rounded-t-[35%] bg-[#365d79]" />
-    </div>
-  );
-}
-
-function ProductVisual({ product }: { product: ProductPreview }) {
-  if (product.accent === "purple") {
-    return <CommunityPreview />;
+function ProductIcon({
+  accent,
+}: {
+  accent: ProductAccent;
+}) {
+  if (accent === "purple") {
+    return <span aria-hidden="true">◉</span>;
   }
 
-  if (product.accent === "orange") {
-    return <GamePreview />;
+  if (accent === "orange") {
+    return <span aria-hidden="true">◆</span>;
   }
 
-  if (product.accent === "blue") {
-    return <GrantPortalPreview />;
-  }
-
-  return <MainWebsitePreview />;
+  return <span aria-hidden="true">◎</span>;
 }
 
 export function ProjectSnapshot() {
+  const [isPlayWarningOpen, setIsPlayWarningOpen] = useState(false);
+
   return (
-    <section
-      id="products"
-      className="relative z-20 mt-[clamp(-0.35rem,-0.8vw,-0.7rem)] px-[clamp(0.6rem,2vw,1.3rem)] pb-[clamp(2.8rem,6vw,5rem)]"
-    >
-      <div className="grants-container">
-        <div className="grants-panel relative overflow-hidden p-[clamp(0.85rem,2.4vw,2rem)]">
-          <div className="pointer-events-none absolute -right-[8%] -top-[30%] size-[clamp(9rem,22vw,18rem)] rounded-full bg-[#dff2bc]/45 blur-[clamp(2rem,5vw,4rem)]" />
+    <>
+      <section
+        id="products"
+        className="relative z-20 px-[clamp(0.6rem,2vw,1.3rem)] pb-[clamp(2.8rem,6vw,5rem)] pt-[clamp(1.5rem,3vw,2.6rem)]"
+      >
+        <div className="grants-container">
+          <div className="grants-panel relative overflow-hidden p-[clamp(0.85rem,2.2vw,1.8rem)]">
+            <div className="pointer-events-none absolute -right-[8%] -top-[32%] size-[clamp(9rem,22vw,18rem)] rounded-full bg-[#dff2bc]/45 blur-[clamp(2rem,5vw,4rem)]" />
 
-          <div className="relative flex items-end justify-between gap-[clamp(0.75rem,2vw,1.5rem)]">
-            <div>
-              <span className="grants-eyebrow">
-                <span aria-hidden="true">🌿</span>
-                Lifetopia Ecosystem
-              </span>
+            <div className="relative flex items-end justify-between gap-[clamp(0.7rem,2vw,1.4rem)]">
+              <div>
+                <span className="grants-eyebrow">
+                  <span aria-hidden="true">🌿</span>
+                  Lifetopia Ecosystem
+                </span>
 
-              <h2 className="mt-[clamp(0.65rem,1.4vw,1rem)] text-[clamp(1.25rem,3.1vw,2.5rem)] font-extrabold leading-[1] tracking-[-0.04em] text-[#172016]">
-                Live Products &amp; Ecosystem
-              </h2>
+                <h2 className="mt-[clamp(0.6rem,1.3vw,0.9rem)] text-[clamp(1.25rem,3vw,2.4rem)] font-extrabold leading-[1] tracking-[-0.04em] text-[#172016]">
+                  Live Products &amp; Ecosystem
+                </h2>
 
-              <p className="mt-[clamp(0.35rem,0.8vw,0.6rem)] text-[clamp(0.62rem,0.95vw,0.86rem)] font-medium text-[#6b6253]">
-                Real products. Real users. Real impact.
-              </p>
+                <p className="mt-[clamp(0.35rem,0.8vw,0.55rem)] text-[clamp(0.62rem,0.95vw,0.84rem)] font-medium text-[#6b6253]">
+                  Explore the products already shaping the Lifetopia ecosystem.
+                </p>
+              </div>
+
+              <Link
+                href="#development"
+                className="shrink-0 text-[clamp(0.55rem,0.86vw,0.76rem)] font-extrabold text-[#315f31] transition duration-200 hover:translate-x-1"
+              >
+                View development →
+              </Link>
             </div>
 
-            <Link
-              href="#development"
-              className="shrink-0 text-[clamp(0.58rem,0.9vw,0.8rem)] font-extrabold text-[#315f31] transition hover:translate-x-1"
-            >
-              View development →
-            </Link>
-          </div>
+            <div className="relative mt-[clamp(0.9rem,2vw,1.5rem)] flex snap-x snap-mandatory gap-[clamp(0.7rem,1.3vw,1rem)] overflow-x-auto pb-[clamp(0.4rem,0.8vw,0.6rem)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0">
+              {products.map((product) => {
+                const accent = getAccentClasses(product.accent);
 
-          <div className="relative mt-[clamp(0.9rem,2vw,1.5rem)] grid grid-cols-4 gap-[clamp(0.3rem,1vw,0.85rem)]">
-            {products.map((product) => {
-              const accent = getAccentClasses(product.accent);
+                const cardContent = (
+                  <article
+                    className={[
+                      "group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[clamp(0.8rem,1.5vw,1.15rem)] border bg-[#fffdf7] shadow-[0_0.45rem_1.7rem_rgba(57,44,24,0.085)] transition duration-300 hover:-translate-y-[clamp(0.12rem,0.3vw,0.24rem)] hover:shadow-[0_1rem_2.8rem_rgba(57,44,24,0.14)]",
+                      product.featured
+                        ? "border-[#e39828]/35 ring-1 ring-[#e39828]/12"
+                        : "border-[#755f3d]/12",
+                    ].join(" ")}
+                  >
+                    <div className="relative aspect-[16/9] overflow-hidden border-b border-[#5a4b35]/10 bg-[#e9e3d7]">
+                      <Image
+                        src={product.image}
+                        alt={`${product.label} preview`}
+                        fill
+                        sizes="(max-width: 1024px) 78vw, 33vw"
+                        className={`object-cover transition duration-500 group-hover:scale-[1.025] ${product.imagePosition}`}
+                      />
 
-              return (
-                <Link
-                  key={product.href}
-                  href={product.href}
-                  target={product.current ? undefined : "_blank"}
-                  rel={product.current ? undefined : "noreferrer"}
-                  className={[
-                    "group min-w-0 overflow-hidden rounded-[clamp(0.55rem,1.4vw,1.1rem)] border bg-[#fffdf7] shadow-[0_0.3rem_1.4rem_rgba(57,44,24,0.08)] transition duration-200 hover:-translate-y-[clamp(0.08rem,0.25vw,0.2rem)] hover:shadow-[0_0.8rem_2rem_rgba(57,44,24,0.13)]",
-                    product.current
-                      ? "border-[#65a9df] ring-1 ring-[#65a9df]/30"
-                      : "border-[#755f3d]/12",
-                  ].join(" ")}
-                >
-                  <div className="relative h-[clamp(4.4rem,12vw,9.5rem)] overflow-hidden border-b border-[#5a4b35]/10">
-                    <div
-                      className={`pointer-events-none absolute -right-[14%] -top-[32%] size-[65%] rounded-full blur-[clamp(1rem,3vw,2.5rem)] ${accent.glow}`}
-                    />
+                      <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(17,32,21,0.18),transparent_45%)]" />
 
-                    <ProductVisual product={product} />
+                      <div className="absolute inset-x-0 top-0 flex h-[clamp(1.1rem,1.8vw,1.4rem)] items-center gap-[clamp(0.12rem,0.25vw,0.2rem)] bg-white/88 px-[clamp(0.3rem,0.6vw,0.45rem)] backdrop-blur">
+                        <span className="size-[clamp(0.18rem,0.3vw,0.24rem)] rounded-full bg-[#ff7474]" />
+                        <span className="size-[clamp(0.18rem,0.3vw,0.24rem)] rounded-full bg-[#f3c85c]" />
+                        <span className="size-[clamp(0.18rem,0.3vw,0.24rem)] rounded-full bg-[#78bd65]" />
 
-                    <div className="absolute inset-x-0 top-0 flex h-[clamp(0.7rem,1.5vw,1.15rem)] items-center gap-[clamp(0.08rem,0.25vw,0.18rem)] bg-white/75 px-[clamp(0.18rem,0.45vw,0.35rem)] backdrop-blur">
-                      <span className="size-[clamp(0.12rem,0.28vw,0.22rem)] rounded-full bg-[#ff7474]" />
-                      <span className="size-[clamp(0.12rem,0.28vw,0.22rem)] rounded-full bg-[#f3c85c]" />
-                      <span className="size-[clamp(0.12rem,0.28vw,0.22rem)] rounded-full bg-[#78bd65]" />
+                        <span className="ml-auto h-[clamp(0.14rem,0.25vw,0.2rem)] w-[34%] rounded-full bg-[#4c5a4b]/13" />
+                      </div>
 
-                      <span className="ml-auto h-[clamp(0.12rem,0.25vw,0.2rem)] w-[34%] rounded-full bg-[#4c5a4b]/14" />
+                      <span
+                        className={`absolute bottom-[clamp(0.5rem,1vw,0.75rem)] left-[clamp(0.5rem,1vw,0.75rem)] rounded-full border px-[clamp(0.45rem,0.85vw,0.65rem)] py-[clamp(0.18rem,0.38vw,0.28rem)] text-[clamp(0.46rem,0.68vw,0.6rem)] font-extrabold shadow-sm backdrop-blur ${accent.status}`}
+                      >
+                        {product.status}
+                      </span>
+
+                      {product.featured ? (
+                        <span className="absolute bottom-[clamp(0.5rem,1vw,0.75rem)] right-[clamp(0.5rem,1vw,0.75rem)] rounded-full border border-white/25 bg-[#173b24]/88 px-[clamp(0.45rem,0.85vw,0.65rem)] py-[clamp(0.18rem,0.38vw,0.28rem)] text-[clamp(0.44rem,0.66vw,0.58rem)] font-extrabold text-white shadow-sm backdrop-blur">
+                          Core Product
+                        </span>
+                      ) : null}
                     </div>
-                  </div>
 
-                  <div className="p-[clamp(0.45rem,1.25vw,1rem)]">
-                    <div className="flex min-w-0 items-start justify-between gap-[clamp(0.25rem,0.6vw,0.5rem)]">
-                      <div className="flex min-w-0 items-center gap-[clamp(0.28rem,0.65vw,0.5rem)]">
+                    <div className="relative flex flex-1 flex-col p-[clamp(0.75rem,1.5vw,1.1rem)]">
+                      <div
+                        className={`pointer-events-none absolute -right-[18%] -top-[35%] size-[45%] rounded-full blur-[clamp(1.4rem,3vw,2.5rem)] ${accent.glow}`}
+                      />
+
+                      <div className="relative flex min-w-0 items-start gap-[clamp(0.45rem,0.9vw,0.7rem)]">
                         <span
-                          className={`flex size-[clamp(1rem,2vw,1.55rem)] shrink-0 items-center justify-center rounded-[clamp(0.3rem,0.6vw,0.48rem)] text-[clamp(0.46rem,0.8vw,0.68rem)] font-black ${accent.icon}`}
+                          className={`flex size-[clamp(1.7rem,2.8vw,2.2rem)] shrink-0 items-center justify-center rounded-[clamp(0.45rem,0.8vw,0.65rem)] text-[clamp(0.7rem,1vw,0.9rem)] font-black ${accent.iconBackground} ${accent.iconText}`}
                         >
-                          {product.accent === "green"
-                            ? "◎"
-                            : product.accent === "purple"
-                              ? "♟"
-                              : product.accent === "orange"
-                                ? "∞"
-                                : "◆"}
+                          <ProductIcon accent={product.accent} />
                         </span>
 
                         <div className="min-w-0">
-                          <h3 className="truncate text-[clamp(0.52rem,1.05vw,0.88rem)] font-extrabold leading-tight text-[#20281f]">
+                          <h3 className="truncate text-[clamp(0.82rem,1.2vw,1.05rem)] font-extrabold leading-tight text-[#20281f]">
                             {product.label}
                           </h3>
 
-                          <span className="mt-[clamp(0.1rem,0.25vw,0.2rem)] block truncate text-[clamp(0.38rem,0.65vw,0.56rem)] font-medium text-[#8a7f6c]">
+                          <p className="mt-[clamp(0.08rem,0.2vw,0.15rem)] truncate text-[clamp(0.5rem,0.72vw,0.64rem)] font-semibold text-[#8a7f6c]">
                             {product.domain}
-                          </span>
+                          </p>
                         </div>
                       </div>
 
-                      <span className="shrink-0 text-[clamp(0.55rem,0.85vw,0.75rem)] font-bold text-[#39743a] transition group-hover:translate-x-0.5">
-                        ↗
-                      </span>
+                      <div
+                        className={`relative mt-[clamp(0.55rem,1vw,0.75rem)] h-[clamp(0.12rem,0.2vw,0.16rem)] w-[clamp(1.4rem,2.3vw,1.8rem)] rounded-full ${accent.line}`}
+                      />
+
+                      <p className="relative mt-[clamp(0.5rem,1vw,0.75rem)] line-clamp-3 text-[clamp(0.58rem,0.85vw,0.76rem)] font-medium leading-[1.6] text-[#6b6253]">
+                        {product.description}
+                      </p>
+
+                      <div className="relative mt-auto pt-[clamp(0.75rem,1.4vw,1rem)]">
+                        <span
+                          className={`inline-flex min-h-[clamp(2.4rem,3.8vw,2.9rem)] w-full items-center justify-center gap-[clamp(0.3rem,0.6vw,0.45rem)] rounded-[clamp(0.55rem,0.9vw,0.75rem)] border px-[clamp(0.7rem,1.3vw,1rem)] text-[clamp(0.58rem,0.82vw,0.72rem)] font-extrabold shadow-[0_0.6rem_1.5rem_rgba(55,42,24,0.08)] transition duration-200 group-hover:shadow-[0_0.9rem_2rem_rgba(55,42,24,0.12)] ${accent.button}`}
+                        >
+                          {product.cta}
+                          <span aria-hidden="true">↗</span>
+                        </span>
+                      </div>
                     </div>
+                  </article>
+                );
 
-                    <div
-                      className={`mt-[clamp(0.35rem,0.8vw,0.6rem)] h-[clamp(0.1rem,0.22vw,0.16rem)] w-[clamp(1rem,2vw,1.5rem)] rounded-full ${accent.line}`}
-                    />
-
-                    <p className="mt-[clamp(0.35rem,0.8vw,0.6rem)] line-clamp-3 text-[clamp(0.42rem,0.78vw,0.67rem)] font-medium leading-[1.5] text-[#6b6253]">
-                      {product.description}
-                    </p>
-
-                    <span
-                      className={[
-                        "mt-[clamp(0.4rem,0.9vw,0.7rem)] inline-flex rounded-full px-[clamp(0.32rem,0.65vw,0.5rem)] py-[clamp(0.12rem,0.3vw,0.22rem)] text-[clamp(0.34rem,0.58vw,0.5rem)] font-extrabold",
-                        product.current
-                          ? "bg-[#e1f1ff] text-[#3479c9]"
-                          : "bg-[#e8f4d8] text-[#3f843a]",
-                      ].join(" ")}
+                if (product.opensModal) {
+                  return (
+                    <button
+                      key={product.label}
+                      type="button"
+                      onClick={() => setIsPlayWarningOpen(true)}
+                      className="w-[clamp(16rem,78vw,22rem)] shrink-0 snap-start text-left lg:w-auto"
+                      aria-label="Open Lifetopia Alpha warning"
                     >
-                      {product.status}
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+                      {cardContent}
+                    </button>
+                  );
+                }
 
-          <div className="relative mt-[clamp(0.8rem,1.7vw,1.25rem)] flex items-center justify-between rounded-[clamp(0.55rem,1.1vw,0.9rem)] border border-[#5f724d]/12 bg-[#f4efe3]/80 px-[clamp(0.6rem,1.5vw,1.1rem)] py-[clamp(0.45rem,1vw,0.75rem)]">
-            <div className="flex items-center gap-[clamp(0.35rem,0.8vw,0.6rem)]">
-              <span className="flex size-[clamp(1rem,1.8vw,1.4rem)] items-center justify-center rounded-full bg-[#367d40] text-[clamp(0.45rem,0.75vw,0.65rem)] font-black text-white">
-                ✓
-              </span>
-
-              <div>
-                <p className="text-[clamp(0.5rem,0.85vw,0.75rem)] font-extrabold text-[#263526]">
-                  Connected Lifetopia ecosystem
-                </p>
-                <p className="text-[clamp(0.38rem,0.65vw,0.56rem)] font-medium text-[#817662]">
-                  One identity foundation across website, community, game, and
-                  future services.
-                </p>
-              </div>
+                return (
+                  <Link
+                    key={product.label}
+                    href={product.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-[clamp(16rem,78vw,22rem)] shrink-0 snap-start lg:w-auto"
+                  >
+                    {cardContent}
+                  </Link>
+                );
+              })}
             </div>
 
-            <span className="rounded-full bg-[#174d29] px-[clamp(0.45rem,0.9vw,0.7rem)] py-[clamp(0.18rem,0.4vw,0.3rem)] text-[clamp(0.38rem,0.65vw,0.55rem)] font-extrabold text-white">
-              Actively Building
-            </span>
+            <div className="relative mt-[clamp(0.8rem,1.7vw,1.2rem)] flex items-center justify-between gap-[clamp(0.55rem,1.2vw,0.9rem)] rounded-[clamp(0.65rem,1.1vw,0.9rem)] border border-[#5f724d]/12 bg-[#f4efe3]/80 px-[clamp(0.65rem,1.4vw,1rem)] py-[clamp(0.5rem,1vw,0.72rem)]">
+              <div className="flex min-w-0 items-center gap-[clamp(0.4rem,0.8vw,0.6rem)]">
+                <span className="flex size-[clamp(1.3rem,2vw,1.6rem)] shrink-0 items-center justify-center rounded-full bg-[#367d40] text-[clamp(0.55rem,0.78vw,0.68rem)] font-black text-white">
+                  ✓
+                </span>
+
+                <div className="min-w-0">
+                  <p className="truncate text-[clamp(0.58rem,0.88vw,0.76rem)] font-extrabold text-[#263526]">
+                    One connected Lifetopia ecosystem
+                  </p>
+
+                  <p className="truncate text-[clamp(0.44rem,0.68vw,0.58rem)] font-medium text-[#817662]">
+                    Website, community, and game built around one evolving
+                    player experience.
+                  </p>
+                </div>
+              </div>
+
+              <span className="shrink-0 rounded-full bg-[#174d29] px-[clamp(0.5rem,0.9vw,0.7rem)] py-[clamp(0.2rem,0.4vw,0.3rem)] text-[clamp(0.4rem,0.62vw,0.54rem)] font-extrabold text-white">
+                Actively Building
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <PlayWarningModal
+        isOpen={isPlayWarningOpen}
+        onClose={() => setIsPlayWarningOpen(false)}
+      />
+    </>
   );
 }
