@@ -206,3 +206,53 @@ img {
     clamp(1.8rem, 3vw, 2.8rem)
     clamp(1.8rem, 3vw, 2.8rem);
 }
+
+
+@keyframes visionReveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.8rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes visionPillarReveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.7rem) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.vision-reveal {
+  animation: visionReveal 650ms ease-out both;
+}
+
+.vision-reveal-delayed {
+  animation: visionReveal 650ms ease-out 120ms both;
+}
+
+.vision-pillar {
+  animation: visionPillarReveal 600ms ease-out both;
+}
+
+.vision-quote {
+  animation: visionReveal 650ms ease-out 240ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vision-reveal,
+  .vision-reveal-delayed,
+  .vision-pillar,
+  .vision-quote {
+    animation: none;
+  }
+}
