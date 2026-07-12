@@ -1,135 +1,295 @@
 "use client";
 
 import Link from "next/link";
-import { createPortal } from "react-dom";
-import { useEffect, useState } from "react";
+import {
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent,
+  useEffect,
+  useRef,
+} from "react";
 
 type PlayWarningModalProps = {
   isOpen: boolean;
   onClose: () => void;
 };
 
+const playableGameUrl =
+  "https://play.lifetopiaworld.io";
+
+const focusableElementSelector = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
+
 export function PlayWarningModal({
   isOpen,
   onClose,
 }: PlayWarningModalProps) {
-  const [mounted, setMounted] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const previousFocusRef =
+    useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      return;
+    }
 
-    const previousOverflow = document.body.style.overflow;
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+
+    const previousBodyOverflow =
+      document.body.style.overflow;
+
     document.body.style.overflow = "hidden";
 
-    function handleEscape(event: KeyboardEvent) {
+    const focusTimer = window.setTimeout(() => {
+      titleRef.current?.focus();
+    }, 0);
+
+    function handleKeyboardNavigation(
+      event: KeyboardEvent,
+    ) {
       if (event.key === "Escape") {
-        onClose();
+        event.preventDefault();
+        onCloseRef.current();
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const dialog = dialogRef.current;
+
+      if (!dialog) {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          focusableElementSelector,
+        ),
+      ).filter(
+        (element) =>
+          !element.hasAttribute("disabled") &&
+          element.getAttribute("aria-hidden") !==
+            "true",
+      );
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        titleRef.current?.focus();
+        return;
+      }
+
+      const firstFocusableElement =
+        focusableElements[0];
+
+      const lastFocusableElement =
+        focusableElements[
+          focusableElements.length - 1
+        ];
+
+      const activeElement =
+        document.activeElement;
+
+      if (
+        event.shiftKey &&
+        (activeElement === firstFocusableElement ||
+          activeElement === titleRef.current)
+      ) {
+        event.preventDefault();
+        lastFocusableElement?.focus();
+        return;
+      }
+
+      if (
+        !event.shiftKey &&
+        activeElement === lastFocusableElement
+      ) {
+        event.preventDefault();
+        firstFocusableElement?.focus();
       }
     }
 
-    window.addEventListener("keydown", handleEscape);
+    window.addEventListener(
+      "keydown",
+      handleKeyboardNavigation,
+    );
 
     return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleEscape);
+      window.clearTimeout(focusTimer);
+
+      window.removeEventListener(
+        "keydown",
+        handleKeyboardNavigation,
+      );
+
+      document.body.style.overflow =
+        previousBodyOverflow;
+
+      previousFocusRef.current?.focus({
+        preventScroll: true,
+      });
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
-  if (!mounted || !isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
-  return createPortal(
+  function handleBackdropClick(
+    event: MouseEvent<HTMLDivElement>,
+  ) {
+    if (event.target === event.currentTarget) {
+      onCloseRef.current();
+    }
+  }
+
+  function handleDialogKeyDown(
+    event: ReactKeyboardEvent<HTMLDivElement>,
+  ) {
+    event.stopPropagation();
+  }
+
+  return (
     <div
-      className="fixed inset-0 z-[999999] flex items-center justify-center bg-[#162218]/70 px-[clamp(1rem,4vw,2rem)] py-[clamp(1rem,3vw,2rem)] backdrop-blur-md"
-      role="presentation"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-[#07150d]/75 p-[clamp(0.8rem,3vw,1.5rem)] backdrop-blur-sm"
+      onMouseDown={handleBackdropClick}
+      aria-hidden="false"
     >
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="play-warning-title"
-        className="relative max-h-[92vh] w-full max-w-[clamp(20rem,42vw,31rem)] overflow-y-auto rounded-[clamp(1rem,2.4vw,1.7rem)] border border-[#e4bd5c]/45 bg-[#fffaf0] p-[clamp(1rem,2.5vw,1.6rem)] text-center shadow-[0_2rem_7rem_rgba(22,34,24,0.42)]"
+        aria-describedby="play-warning-description"
+        onKeyDown={handleDialogKeyDown}
+        className="relative my-auto w-full max-w-[38rem] overflow-hidden rounded-[clamp(1rem,2vw,1.5rem)] border border-white/15 bg-[#fffaf0] shadow-[0_2rem_6rem_rgba(0,0,0,0.38)]"
       >
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute right-[clamp(0.7rem,1.5vw,1rem)] top-[clamp(0.7rem,1.5vw,1rem)] flex size-[clamp(2rem,3.5vw,2.5rem)] items-center justify-center rounded-full border border-[#866d40]/15 bg-white text-[clamp(1rem,1.6vw,1.3rem)] font-bold text-[#594a34] transition hover:border-[#c48a27]/35 hover:bg-[#fff5dc]"
-          aria-label="Close warning"
-        >
-          ×
-        </button>
+        <div className="relative overflow-hidden bg-[#173b21] px-[clamp(1rem,2.5vw,1.7rem)] pb-[clamp(1.2rem,2.5vw,1.8rem)] pt-[clamp(1rem,2.5vw,1.5rem)] text-white">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-[#8ee46a]/15 blur-3xl"
+          />
 
-        <div className="mx-auto flex size-[clamp(3.5rem,7vw,5rem)] items-center justify-center rounded-full border border-[#e4bd5c]/55 bg-[#fff0bd] shadow-[0_0.8rem_2.3rem_rgba(181,119,22,0.16)]">
-          <span className="text-[clamp(1.5rem,3vw,2.2rem)]">⚠</span>
-        </div>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-24 -left-20 size-64 rounded-full bg-[#63bde9]/12 blur-3xl"
+          />
 
-        <p className="mx-auto mt-[clamp(0.7rem,1.5vw,1rem)] inline-flex w-fit rounded-full border border-[#e5bd58]/35 bg-[#fff2c9] px-[clamp(0.65rem,1.2vw,0.9rem)] py-[clamp(0.25rem,0.5vw,0.38rem)] text-[clamp(0.52rem,0.72vw,0.66rem)] font-extrabold uppercase tracking-[0.1em] text-[#9a6914]">
-          Alpha Development Notice
-        </p>
+          <div className="relative flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#9be879]/15 bg-[#9be879]/10 px-3 py-1.5 text-[clamp(0.68rem,0.78vw,0.84rem)] font-black uppercase tracking-[0.1em] text-[#afe994]">
+                <span className="size-2 rounded-full bg-[#8ee46a]" />
+                Public Alpha Notice
+              </span>
 
-        <h2
-          id="play-warning-title"
-          className="mt-[clamp(0.7rem,1.5vw,1rem)] text-[clamp(1.25rem,2.6vw,2rem)] font-extrabold leading-[1.08] tracking-[-0.035em] text-[#172016]"
-        >
-          Lifetopia World is under
-          <span className="block text-[#b77917]">active development.</span>
-        </h2>
+              <h2
+                ref={titleRef}
+                id="play-warning-title"
+                tabIndex={-1}
+                className="mt-4 max-w-[28rem] text-[clamp(1.5rem,3vw,2.25rem)] font-black leading-[1.1] tracking-[-0.035em] text-white outline-none"
+              >
+                You are about to open the previous
+                playable Alpha build.
+              </h2>
+            </div>
 
-        <p className="mt-[clamp(0.65rem,1.3vw,0.9rem)] text-[clamp(0.72rem,1vw,0.9rem)] font-medium leading-[1.7] text-[#6b5b45]">
-          The current Alpha build is publicly playable, but several systems are
-          still being rebuilt and improved.
-        </p>
+            <button
+              type="button"
+              onClick={() => {
+                onCloseRef.current();
+              }}
+              aria-label="Close playable Alpha notice"
+              className="flex size-[clamp(2.5rem,4vw,2.9rem)] shrink-0 items-center justify-center rounded-[0.75rem] border border-white/12 bg-white/[0.07] text-[1.25rem] font-medium text-white/70 transition hover:bg-white/[0.12] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#afe994]"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
 
-        <div className="mt-[clamp(0.8rem,1.7vw,1.2rem)] rounded-[clamp(0.7rem,1.4vw,1rem)] border border-[#e4bd5c]/35 bg-[#fff5d9] p-[clamp(0.75rem,1.5vw,1rem)] text-left">
-          <p className="text-[clamp(0.68rem,0.95vw,0.84rem)] font-extrabold text-[#8c6019]">
-            Before continuing
+          <p
+            id="play-warning-description"
+            className="relative mt-4 max-w-[31rem] text-[clamp(0.88rem,1vw,1.04rem)] leading-[1.7] text-white/67"
+          >
+            Lifetopia World is currently undergoing
+            active Beta development. The publicly
+            accessible game remains an earlier Alpha
+            build and does not yet represent the
+            quality, integration, or stability planned
+            for the connected Beta ecosystem.
           </p>
-
-          <ul className="mt-[clamp(0.35rem,0.8vw,0.6rem)] space-y-[clamp(0.25rem,0.55vw,0.4rem)] text-[clamp(0.64rem,0.9vw,0.8rem)] font-medium leading-[1.55] text-[#7a6340]">
-            <li className="flex gap-2">
-              <span className="text-[#b77917]">•</span>
-              Some gameplay systems may be limited or unavailable.
-            </li>
-            <li className="flex gap-2">
-              <span className="text-[#b77917]">•</span>
-              Bugs and visual issues may appear during development.
-            </li>
-            <li className="flex gap-2">
-              <span className="text-[#b77917]">•</span>
-              This build does not represent the final product quality.
-            </li>
-          </ul>
         </div>
 
-        <div className="mt-[clamp(0.9rem,1.8vw,1.3rem)] flex flex-col justify-center gap-[clamp(0.45rem,0.9vw,0.7rem)] sm:flex-row">
-          <Link
-            href="https://play.lifetopiaworld.io"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex min-h-[clamp(2.7rem,4vw,3.2rem)] flex-1 items-center justify-center gap-2 rounded-[clamp(0.6rem,1vw,0.8rem)] bg-[#1f6a39] px-[clamp(0.8rem,1.5vw,1.1rem)] text-[clamp(0.68rem,0.95vw,0.84rem)] font-extrabold text-white shadow-[0_0.8rem_2rem_rgba(31,106,57,0.2)] transition hover:-translate-y-0.5 hover:bg-[#2a7b44]"
-          >
-            Continue to Alpha
-            <span aria-hidden="true">↗</span>
-          </Link>
+        <div className="p-[clamp(1rem,2.5vw,1.7rem)]">
+          <div className="rounded-[clamp(0.8rem,1.3vw,1rem)] border border-[#e2d5ba] bg-[#f8f1e4] p-[clamp(0.9rem,1.5vw,1.15rem)]">
+            <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.1em] text-[#668255]">
+              What reviewers should expect
+            </p>
 
-          <Link
-            href="https://community.lifetopiaworld.io"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex min-h-[clamp(2.7rem,4vw,3.2rem)] flex-1 items-center justify-center rounded-[clamp(0.6rem,1vw,0.8rem)] border border-[#66583f]/14 bg-white px-[clamp(0.8rem,1.5vw,1.1rem)] text-[clamp(0.68rem,0.95vw,0.84rem)] font-extrabold text-[#4c4234] transition hover:-translate-y-0.5 hover:border-[#4f873d]/25 hover:bg-[#f6faef]"
-          >
-            Visit Community
-          </Link>
+            <div className="mt-3 grid gap-2">
+              {[
+                "An early demonstration of the playable world and gameplay foundation.",
+                "Some systems may be incomplete, disabled, or under maintenance.",
+                "The build is provided as execution evidence rather than the final Beta product.",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="flex items-start gap-3 rounded-[0.7rem] border border-[#e4d8c1] bg-white/65 px-3 py-2.5"
+                >
+                  <span className="mt-[0.4rem] size-2 shrink-0 rounded-full bg-[#68ad4a]" />
+
+                  <p className="text-[clamp(0.8rem,0.9vw,0.96rem)] font-semibold leading-[1.6] text-[#665b4b]">
+                    {item}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-[clamp(1rem,1.8vw,1.4rem)] flex flex-col gap-3 sm:flex-row">
+            <Link
+              href={playableGameUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                onCloseRef.current();
+              }}
+              className="inline-flex min-h-[3rem] flex-1 items-center justify-center gap-2 rounded-[0.8rem] bg-[#173b21] px-5 text-[clamp(0.8rem,0.9vw,0.96rem)] font-black text-white shadow-[0_0.8rem_2rem_rgba(23,59,33,0.18)] transition hover:-translate-y-0.5 hover:bg-[#24532e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5f9d49] focus-visible:ring-offset-2"
+            >
+              Open Playable Alpha
+              <span aria-hidden="true">↗</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => {
+                onCloseRef.current();
+              }}
+              className="inline-flex min-h-[3rem] flex-1 items-center justify-center rounded-[0.8rem] border border-[#d7c9ae] bg-white px-5 text-[clamp(0.8rem,0.9vw,0.96rem)] font-black text-[#4f4436] transition hover:-translate-y-0.5 hover:bg-[#fffdf8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7d9c68] focus-visible:ring-offset-2"
+            >
+              Return to Review Portal
+            </button>
+          </div>
+
+          <p className="mt-4 text-center text-[clamp(0.7rem,0.8vw,0.86rem)] leading-[1.55] text-[#8a7c66]">
+            The playable build opens in a new browser
+            tab. Press Escape to close this notice.
+          </p>
         </div>
       </div>
-    </div>,
-    document.body,
+    </div>
   );
 }

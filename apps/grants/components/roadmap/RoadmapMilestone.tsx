@@ -2,6 +2,7 @@ export type RoadmapMilestoneData = {
   number: string;
   title: string;
   status: "Current" | "Upcoming" | "Planned";
+  statusDetail: string;
   funding: string;
   duration: string;
   description: string;
@@ -13,34 +14,47 @@ type RoadmapMilestoneProps = {
   isLast?: boolean;
 };
 
-function getStatusStyles(status: RoadmapMilestoneData["status"]) {
+function getStatusStyles(
+  status: RoadmapMilestoneData["status"],
+) {
   if (status === "Current") {
     return {
       marker:
         "border-[#4f9238] bg-[#5da943] text-white shadow-[0_0_0_0.45rem_rgba(93,169,67,0.12)]",
-      badge: "border-[#78b260]/25 bg-[#e8f4df] text-[#477d34]",
+      badge:
+        "border-[#78b260]/25 bg-[#e8f4df] text-[#477d34]",
       line: "bg-[#75aa5e]",
       accent: "text-[#4f833c]",
-      progress: "w-[68%] bg-[#65a94b]",
+      statusPanel:
+        "border-[#cae0bf] bg-[#f0f8eb] text-[#477d34]",
+      dot: "bg-[#68ad4a]",
     };
   }
 
   if (status === "Upcoming") {
     return {
-      marker: "border-[#4a98c9] bg-[#55a9dc] text-white",
-      badge: "border-[#65a9d2]/25 bg-[#e6f4fc] text-[#347da9]",
+      marker:
+        "border-[#4a98c9] bg-[#55a9dc] text-white",
+      badge:
+        "border-[#65a9d2]/25 bg-[#e6f4fc] text-[#347da9]",
       line: "bg-[#8ebbd4]",
       accent: "text-[#397fa9]",
-      progress: "w-[18%] bg-[#55a9dc]",
+      statusPanel:
+        "border-[#c7e1ef] bg-[#eef8fd] text-[#347da9]",
+      dot: "bg-[#55a9dc]",
     };
   }
 
   return {
-    marker: "border-[#c9ae70] bg-[#fff6df] text-[#987326]",
-    badge: "border-[#d4b873]/30 bg-[#fff3d5] text-[#967024]",
+    marker:
+      "border-[#c9ae70] bg-[#fff6df] text-[#987326]",
+    badge:
+      "border-[#d4b873]/30 bg-[#fff3d5] text-[#967024]",
     line: "bg-[#ddd1b5]",
     accent: "text-[#9a762d]",
-    progress: "w-0 bg-[#d1b15e]",
+    statusPanel:
+      "border-[#ead8aa] bg-[#fff8e7] text-[#967024]",
+    dot: "bg-[#d8ad4f]",
   };
 }
 
@@ -61,14 +75,14 @@ export function RoadmapMilestone({
 
         {!isLast ? (
           <span
-            className={`mt-2 h-full min-h-[clamp(4rem,8vw,7rem)] w-[0.16rem] rounded-full ${styles.line}`}
+            className={`mt-2 h-full min-h-[clamp(5rem,10vw,8rem)] w-[0.16rem] rounded-full ${styles.line}`}
           />
         ) : null}
       </div>
 
       <div className="min-w-0 pb-[clamp(1.2rem,2.5vw,2rem)]">
         <div className="rounded-[clamp(1rem,1.7vw,1.35rem)] border border-[#ddcfaf] bg-white p-[clamp(1rem,1.8vw,1.5rem)] shadow-[0_1rem_3.5rem_rgba(62,47,27,0.07)]">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
               <span
                 className={`inline-flex rounded-full border px-3 py-1.5 text-[clamp(0.72rem,0.82vw,0.88rem)] font-black ${styles.badge}`}
@@ -81,67 +95,75 @@ export function RoadmapMilestone({
               </h3>
             </div>
 
-            <div className="flex shrink-0 gap-3">
-              <div className="rounded-[clamp(0.65rem,1vw,0.82rem)] bg-[#f6efe2] px-4 py-3 text-center">
-                <p className="text-[0.72rem] font-black uppercase tracking-[0.08em] text-[#8b7b62]">
+            <div className="grid shrink-0 grid-cols-2 gap-2">
+              <div className="min-w-[7rem] rounded-[clamp(0.65rem,1vw,0.82rem)] bg-[#f6efe2] px-4 py-3 text-center">
+                <p className="text-[clamp(0.68rem,0.76vw,0.82rem)] font-black uppercase tracking-[0.08em] text-[#8b7b62]">
                   Funding
                 </p>
 
-                <p className={`mt-1 text-[1rem] font-black ${styles.accent}`}>
+                <p
+                  className={`mt-1 text-[clamp(0.94rem,1.1vw,1.06rem)] font-black ${styles.accent}`}
+                >
                   {milestone.funding}
                 </p>
               </div>
 
-              <div className="rounded-[clamp(0.65rem,1vw,0.82rem)] bg-[#f6efe2] px-4 py-3 text-center">
-                <p className="text-[0.72rem] font-black uppercase tracking-[0.08em] text-[#8b7b62]">
+              <div className="min-w-[7rem] rounded-[clamp(0.65rem,1vw,0.82rem)] bg-[#f6efe2] px-4 py-3 text-center">
+                <p className="text-[clamp(0.68rem,0.76vw,0.82rem)] font-black uppercase tracking-[0.08em] text-[#8b7b62]">
                   Duration
                 </p>
 
-                <p className="mt-1 text-[1rem] font-black text-[#534737]">
+                <p className="mt-1 text-[clamp(0.94rem,1.1vw,1.06rem)] font-black text-[#534737]">
                   {milestone.duration}
                 </p>
               </div>
             </div>
           </div>
 
-          <p className="mt-[clamp(0.8rem,1.4vw,1.1rem)] max-w-[50rem] text-[clamp(0.92rem,1.02vw,1.08rem)] leading-[1.7] text-[#706452]">
+          <p className="mt-[clamp(0.8rem,1.4vw,1.1rem)] max-w-[52rem] text-[clamp(0.92rem,1.02vw,1.08rem)] leading-[1.7] text-[#706452]">
             {milestone.description}
           </p>
 
-          <div className="mt-[clamp(0.9rem,1.5vw,1.2rem)]">
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-[clamp(0.75rem,0.84vw,0.9rem)] font-black uppercase tracking-[0.09em] text-[#7e6e56]">
-                Deliverables
+          <div
+            className={`mt-[clamp(0.9rem,1.5vw,1.2rem)] flex items-start gap-3 rounded-[clamp(0.7rem,1.1vw,0.9rem)] border px-[clamp(0.8rem,1.3vw,1rem)] py-[clamp(0.7rem,1.1vw,0.9rem)] ${styles.statusPanel}`}
+          >
+            <span
+              className={`mt-[0.4rem] size-2.5 shrink-0 rounded-full ${styles.dot}`}
+            />
+
+            <div className="min-w-0">
+              <p className="text-[clamp(0.7rem,0.8vw,0.86rem)] font-black uppercase tracking-[0.08em]">
+                Delivery Status
               </p>
 
-              <span className="text-[clamp(0.74rem,0.82vw,0.88rem)] font-bold text-[#8c7d67]">
-                {milestone.deliverables.length} outputs
-              </span>
-            </div>
-
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              {milestone.deliverables.map((deliverable) => (
-                <div
-                  key={deliverable}
-                  className="flex items-start gap-3 rounded-[clamp(0.65rem,1vw,0.82rem)] border border-[#e8dcc4] bg-[#fcf8f0] px-4 py-3"
-                >
-                  <span
-                    className={`mt-[0.38rem] size-2 shrink-0 rounded-full ${styles.line}`}
-                  />
-
-                  <span className="text-[clamp(0.82rem,0.92vw,0.98rem)] font-semibold leading-[1.5] text-[#5f5546]">
-                    {deliverable}
-                  </span>
-                </div>
-              ))}
+              <p className="mt-1 text-[clamp(0.82rem,0.92vw,0.98rem)] font-semibold leading-[1.55]">
+                {milestone.statusDetail}
+              </p>
             </div>
           </div>
 
-          <div className="mt-[clamp(0.9rem,1.5vw,1.2rem)]">
-            <div className="h-[0.55rem] overflow-hidden rounded-full bg-[#e8dfcd]">
-              <div
-                className={`h-full rounded-full transition-[width] duration-700 ${styles.progress}`}
-              />
+          <div className="mt-[clamp(1rem,1.7vw,1.3rem)] border-t border-[#eadfc8] pt-[clamp(0.9rem,1.5vw,1.15rem)]">
+            <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.1em] text-[#668255]">
+              Milestone Deliverables
+            </p>
+
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {milestone.deliverables.map(
+                (deliverable, index) => (
+                  <div
+                    key={deliverable}
+                    className="flex items-start gap-3 rounded-[clamp(0.65rem,1vw,0.82rem)] border border-[#e4d9c1] bg-[#faf7ef] px-[clamp(0.75rem,1.2vw,0.95rem)] py-[clamp(0.7rem,1.1vw,0.88rem)]"
+                  >
+                    <span className="flex size-[clamp(1.7rem,2.5vw,2rem)] shrink-0 items-center justify-center rounded-full bg-[#e8f3df] font-mono text-[clamp(0.64rem,0.72vw,0.78rem)] font-black text-[#4f803b]">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+
+                    <p className="text-[clamp(0.8rem,0.9vw,0.96rem)] font-semibold leading-[1.55] text-[#665b4b]">
+                      {deliverable}
+                    </p>
+                  </div>
+                ),
+              )}
             </div>
           </div>
         </div>

@@ -5,100 +5,121 @@ import {
 
 const impactMetrics: ImpactCardData[] = [
   {
-    label: "Active Users",
+    label: "Beta Participants",
     value: "100+",
     description:
-      "Initial target for active Beta participants across the game and community platform.",
-    icon: "👥",
+      "Target number of players participating across the game and community platform during the public Beta period.",
+    measurement:
+      "Unique registered participants with recorded platform or gameplay activity.",
+    icon: "mdi:account-group-outline",
     accent: "green",
-  },
-  {
-    label: "Connected Wallets",
-    value: "50+",
-    description:
-      "Players onboarded through wallet connectivity and Solana-based identity features.",
-    icon: "◎",
-    accent: "purple",
   },
   {
     label: "Verified Testers",
     value: "50+",
     description:
-      "A focused tester group providing structured gameplay and platform feedback.",
-    icon: "✓",
+      "A structured testing group contributing usable feedback across gameplay, platform stability, and onboarding.",
+    measurement:
+      "Approved tester roster with submitted testing reports or structured feedback.",
+    icon: "mdi:clipboard-check-outline",
     accent: "blue",
   },
   {
-    label: "Devnet Transactions",
+    label: "Connected Wallets",
+    value: "50+",
+    description:
+      "Players introduced to Solana wallet connectivity through Lifetopia's connected identity and ecosystem features.",
+    measurement:
+      "Unique wallets successfully connected during the Beta testing period.",
+    icon: "mdi:wallet-outline",
+    accent: "purple",
+  },
+  {
+    label: "Devnet Interactions",
     value: "500+",
     description:
-      "Target transaction activity generated through wallet and ecosystem testing.",
-    icon: "↗",
+      "Target Solana activity generated through wallet testing, identity flows, and marketplace foundation experiments.",
+    measurement:
+      "Recorded successful devnet transactions and verified blockchain interactions.",
+    icon: "mdi:swap-horizontal",
     accent: "gold",
   },
 ];
 
-const productOutputs = [
+const reportingMethods = [
   {
-    title: "Community Platform",
+    number: "01",
+    title: "Product Analytics",
     description:
-      "A social platform where Lifetopians can create profiles, publish posts, interact, and follow game development.",
+      "Registered accounts, active participation, feature usage, and onboarding completion.",
   },
   {
-    title: "Playable Beta",
+    number: "02",
+    title: "Testing Records",
     description:
-      "An expanded game experience featuring farming, fishing, exploration, quests, and social activities.",
+      "Verified tester participation, submitted feedback, issue reports, and resolved findings.",
   },
   {
-    title: "Android Distribution",
+    number: "03",
+    title: "Blockchain Evidence",
     description:
-      "A mobile-ready community application prepared for distribution through the Google Play ecosystem.",
+      "Connected wallet counts and verifiable Solana devnet activity.",
   },
   {
-    title: "Connected Solana Layer",
+    number: "04",
+    title: "Milestone Evidence",
     description:
-      "A foundation for wallet identity, devnet transactions, and synchronized game-community experiences.",
+      "Completed deliverables, public development records, and milestone acceptance results.",
   },
 ];
 
 export function ImpactMetrics() {
   return (
     <div>
-      <div className="grid gap-[clamp(0.7rem,1.3vw,1rem)] sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-[clamp(0.75rem,1.4vw,1.05rem)] sm:grid-cols-2 xl:grid-cols-4">
         {impactMetrics.map((item) => (
-          <ImpactCard key={item.label} item={item} />
+          <ImpactCard
+            key={item.label}
+            item={item}
+          />
         ))}
       </div>
 
       <section className="mt-[clamp(1rem,2vw,1.5rem)] overflow-hidden rounded-[clamp(1rem,1.7vw,1.35rem)] border border-[#d9c9a8] bg-white shadow-[0_1rem_3.5rem_rgba(62,47,27,0.07)]">
-        <div className="border-b border-[#eadfc8] bg-[#faf6ed] px-[clamp(1rem,1.7vw,1.35rem)] py-[clamp(0.8rem,1.3vw,1rem)]">
+        <header className="border-b border-[#eadfc8] bg-[#faf6ed] px-[clamp(1rem,1.7vw,1.35rem)] py-[clamp(0.9rem,1.4vw,1.1rem)]">
           <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.11em] text-[#668255]">
-            Product Outputs
+            Measurement Framework
           </p>
 
           <h3 className="mt-2 text-[clamp(1.3rem,1.9vw,1.8rem)] font-black tracking-[-0.03em] text-[#2f2118]">
-            Tangible products delivered through the grant
+            Every target has a defined verification method
           </h3>
-        </div>
+
+          <p className="mt-3 max-w-[48rem] text-[clamp(0.86rem,0.96vw,1.02rem)] leading-[1.65] text-[#706452]">
+            Reported impact will be based on recorded product activity,
+            testing evidence, blockchain data, and completed milestone
+            deliverables.
+          </p>
+        </header>
 
         <div className="grid gap-px bg-[#eadfc8] sm:grid-cols-2">
-          {productOutputs.map((output, index) => (
+          {reportingMethods.map((method) => (
             <article
-              key={output.title}
+              key={method.number}
               className="bg-white p-[clamp(1rem,1.7vw,1.35rem)]"
             >
-              <div className="flex items-start gap-[clamp(0.7rem,1.1vw,0.9rem)]">
-                <span className="flex size-[clamp(2.3rem,3.5vw,2.9rem)] shrink-0 items-center justify-center rounded-[clamp(0.55rem,0.9vw,0.72rem)] border border-[#75ac5d]/20 bg-[#edf6e7] text-[clamp(0.78rem,1.1vw,0.96rem)] font-black text-[#4f803b]">
-                  {String(index + 1).padStart(2, "0")}
+              <div className="flex items-start gap-3">
+                <span className="flex size-[clamp(2.3rem,3.5vw,2.9rem)] shrink-0 items-center justify-center rounded-[clamp(0.55rem,0.9vw,0.72rem)] border border-[#75ac5d]/20 bg-[#edf6e7] font-mono text-[clamp(0.74rem,0.86vw,0.9rem)] font-black text-[#4f803b]">
+                  {method.number}
                 </span>
 
                 <div className="min-w-0">
                   <h4 className="text-[clamp(1rem,1.15vw,1.22rem)] font-black text-[#30251c]">
-                    {output.title}
+                    {method.title}
                   </h4>
 
-                  <p className="mt-2 text-[clamp(0.84rem,0.94vw,1rem)] leading-[1.65] text-[#706452]">
-                    {output.description}
+                  <p className="mt-2 text-[clamp(0.82rem,0.92vw,0.98rem)] leading-[1.65] text-[#706452]">
+                    {method.description}
                   </p>
                 </div>
               </div>

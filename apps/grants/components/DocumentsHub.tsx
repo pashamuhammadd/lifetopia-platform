@@ -1,481 +1,714 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
+
+import { TechnologyIcon } from "@/components/TechnologyIcon";
+
+type DocumentStatus = "Live" | "Preparing" | "Planned";
+
+type DocumentAccent =
+  | "green"
+  | "blue"
+  | "purple"
+  | "gold"
+  | "orange";
 
 type ReviewDocument = {
   index: string;
   title: string;
+  category: string;
   description: string;
-  type: string;
-  status: "Live" | "Draft" | "Preparing";
-  href?: string;
-  accent: "green" | "blue" | "purple" | "orange" | "gold";
   summary: string;
   highlights: string[];
+  status: DocumentStatus;
+  href?: string;
+  external?: boolean;
+  icon: string;
+  accent: DocumentAccent;
+};
+
+type DocumentSelectorButtonProps = {
+  document: ReviewDocument;
+  isActive: boolean;
+  compact?: boolean;
+  onSelect: () => void;
 };
 
 const documents: ReviewDocument[] = [
   {
     index: "01",
     title: "Project Overview",
+    category: "Project",
     description:
-      "Core vision, product scope, ecosystem structure, and current development phase.",
-    type: "Overview",
-    status: "Live",
-    href: "#overview",
-    accent: "green",
+      "The problem, Lifetopia's solution, ecosystem model, and product direction.",
     summary:
-      "Lifetopia World is a cozy fantasy life-sim and social sandbox ecosystem combining a playable game, community platform, shared player identity, and future Solana-powered ownership.",
+      "Lifetopia World lowers the barrier to Web3 adoption through a familiar cozy game, a community platform, and a future connected marketplace. These products gradually introduce players to wallets, digital ownership, and the Solana ecosystem.",
     highlights: [
-      "Playable game prototype",
-      "Live community platform",
-      "Shared account foundation",
-      "Active Beta development",
+      "Problem and solution",
+      "Connected product ecosystem",
+      "Web3 onboarding approach",
+      "Long-term product direction",
     ],
+    status: "Live",
+    href: "#problem-solution",
+    icon: "mdi:file-document-outline",
+    accent: "green",
   },
   {
     index: "02",
-    title: "Grant Milestone Plan",
+    title: "Beta Roadmap",
+    category: "Delivery",
     description:
-      "Three milestone delivery plan covering platform security, Solana identity, and beta onboarding.",
-    type: "Milestones",
-    status: "Live",
-    href: "#grant-request",
-    accent: "blue",
+      "The three-milestone delivery plan for completing the connected Beta ecosystem.",
     summary:
-      "The requested grant will be delivered through three measurable milestones over an estimated 8–12 week development cycle.",
+      "The Beta roadmap divides the funding period into three sequential milestones covering community platform completion, playable Beta expansion, and connected Solana ecosystem delivery.",
     highlights: [
-      "Platform security and community hardening",
-      "Solana identity and wallet integration",
-      "Game account synchronization",
-      "Public Beta onboarding",
+      "Three sequential milestones",
+      "8–12 week delivery window",
+      "Defined acceptance outcomes",
+      "Milestone-linked funding",
     ],
+    status: "Live",
+    href: "#roadmap",
+    icon: "mdi:map-marker-path",
+    accent: "blue",
   },
   {
     index: "03",
-    title: "Budget Breakdown",
+    title: "Budget & Allocation",
+    category: "Finance",
     description:
-      "Planned allocation of the requested $10,000 grant across product and ecosystem development.",
-    type: "Finance",
-    status: "Draft",
-    accent: "gold",
+      "The complete allocation of the requested grant across four defined cost categories.",
     summary:
-      "The $10,000 grant request is designed to fund platform hardening, game-account integration, Solana identity infrastructure, onboarding, and technical operations.",
+      "The $10,000 grant request prioritizes product development while reserving dedicated resources for infrastructure, quality assurance, and community onboarding.",
     highlights: [
-      "$3,000 platform security and community",
-      "$2,500 game-account integration",
-      "$2,000 Solana identity layer",
-      "$1,500 UI, assets, and onboarding",
-      "$1,000 infrastructure and testing",
+      "55% product development",
+      "20% infrastructure",
+      "15% quality assurance",
+      "10% community and onboarding",
     ],
+    status: "Live",
+    href: "#budget",
+    icon: "mdi:chart-donut",
+    accent: "gold",
   },
   {
     index: "04",
     title: "Technical Architecture",
+    category: "Technical",
     description:
-      "Monorepo, shared account system, Supabase infrastructure, and cross-app platform architecture.",
-    type: "Technical",
-    status: "Preparing",
-    accent: "purple",
+      "The monorepo, authentication, backend, application, and deployment architecture.",
     summary:
-      "Lifetopia uses a Turborepo monorepo architecture with independently deployed applications and shared packages for reusable platform logic.",
+      "Lifetopia uses a Turborepo monorepo with independently deployed applications and shared packages for authentication, services, data types, and reusable platform logic.",
     highlights: [
-      "Next.js monorepo powered by Turborepo",
+      "Next.js and Turborepo",
       "Shared Supabase authentication",
-      "Reusable services, types, and UI systems",
-      "Independent website, community, grants, and docs apps",
+      "Independent applications",
+      "Reusable services and types",
     ],
+    status: "Preparing",
+    icon: "mdi:server-network",
+    accent: "purple",
   },
   {
     index: "05",
-    title: "Live Development Log",
+    title: "GitHub Repository",
+    category: "Source Code",
     description:
-      "Automatically synchronized development history from GitHub Actions and Supabase.",
-    type: "Changelog",
-    status: "Live",
-    href: "#development",
-    accent: "orange",
+      "Public source code, project structure, commit history, and development workflows.",
     summary:
-      "Every production push is automatically processed through GitHub Actions, sent to the Lifetopia API, stored in Supabase, and displayed publicly.",
+      "The Lifetopia repository provides independently reviewable evidence of active development, application structure, public commits, and ongoing technical delivery.",
     highlights: [
-      "Automatic GitHub commit synchronization",
-      "Secure server API endpoint",
-      "Public Supabase development history",
-      "Reusable across all Lifetopia applications",
+      "Public commit history",
+      "Monorepo project structure",
+      "Development workflows",
+      "Continuous product delivery",
     ],
+    status: "Live",
+    href: "https://github.com/pashamuhammadd/lifetopia-platform",
+    external: true,
+    icon: "mdi:github",
+    accent: "orange",
   },
   {
     index: "06",
-    title: "Media & Brand Kit",
+    title: "Pitch Deck",
+    category: "Presentation",
     description:
-      "Official Lifetopia World logo, game icon, character artwork, screenshots, and brand materials.",
-    type: "Assets",
-    status: "Preparing",
-    accent: "green",
+      "A concise presentation covering the opportunity, execution, funding, and impact.",
     summary:
-      "The media kit will provide official visual assets for ecosystem partners, grant reviewers, publishers, and media coverage.",
+      "The pitch deck will give grant reviewers and ecosystem partners a concise presentation of Lifetopia World's products, progress, roadmap, budget, and expected Beta impact.",
     highlights: [
-      "Official Lifetopia World logo",
-      "Game icon and main character",
-      "Product screenshots",
-      "Brand usage guidelines",
+      "Project opportunity",
+      "Product ecosystem",
+      "Execution evidence",
+      "Funding and expected impact",
     ],
+    status: "Preparing",
+    icon: "mdi:presentation",
+    accent: "blue",
+  },
+  {
+    index: "07",
+    title: "Whitepaper",
+    category: "Research",
+    description:
+      "A future document covering the player economy, ownership model, and broader ecosystem.",
+    summary:
+      "The whitepaper will be completed after the Beta systems, marketplace foundation, and player economy have been sufficiently validated through real product testing.",
+    highlights: [
+      "Ecosystem architecture",
+      "Player economy",
+      "Digital ownership model",
+      "Long-term development strategy",
+    ],
+    status: "Planned",
+    icon: "mdi:book-open-page-variant-outline",
+    accent: "green",
   },
 ];
 
-function getDocumentAccent(accent: ReviewDocument["accent"]) {
+function getAccentClasses(accent: DocumentAccent) {
   if (accent === "blue") {
     return {
-      icon: "bg-[#e4f2fc] text-[#317cac]",
-      line: "bg-[#4a9ed0]",
-      preview: "from-[#dff3ff] to-[#f5fbff]",
+      icon: "border-[#65a9d2]/25 bg-[#e7f4fc] text-[#347ca6]",
+      active: "border-[#65a9d2]/35 bg-[#f1f9fd]",
+      line: "bg-[#4f9fca]",
+      soft: "bg-[#edf7fd]",
+      text: "text-[#357ca5]",
     };
   }
 
   if (accent === "purple") {
     return {
-      icon: "bg-[#eee8ff] text-[#7459c6]",
-      line: "bg-[#896bdb]",
-      preview: "from-[#eee9ff] to-[#faf8ff]",
-    };
-  }
-
-  if (accent === "orange") {
-    return {
-      icon: "bg-[#fff0df] text-[#cb7618]",
-      line: "bg-[#e89429]",
-      preview: "from-[#fff0dc] to-[#fffaf3]",
+      icon: "border-[#9278d7]/25 bg-[#eee9ff] text-[#6d50b4]",
+      active: "border-[#9b84dc]/35 bg-[#f8f5ff]",
+      line: "bg-[#8c72d6]",
+      soft: "bg-[#f3efff]",
+      text: "text-[#6b4eaf]",
     };
   }
 
   if (accent === "gold") {
     return {
-      icon: "bg-[#fff4cf] text-[#bd8810]",
-      line: "bg-[#e2ad25]",
-      preview: "from-[#fff3c9] to-[#fffaf0]",
+      icon: "border-[#d9aa49]/25 bg-[#fff0cb] text-[#9d741d]",
+      active: "border-[#ddb866]/40 bg-[#fffaf0]",
+      line: "bg-[#dda438]",
+      soft: "bg-[#fff6df]",
+      text: "text-[#946c1c]",
+    };
+  }
+
+  if (accent === "orange") {
+    return {
+      icon: "border-[#df9847]/25 bg-[#fff0df] text-[#b96b18]",
+      active: "border-[#e3a052]/35 bg-[#fff8ef]",
+      line: "bg-[#e28a27]",
+      soft: "bg-[#fff2e4]",
+      text: "text-[#ae6518]",
     };
   }
 
   return {
-    icon: "bg-[#e9f4dc] text-[#4f872f]",
-    line: "bg-[#69a544]",
-    preview: "from-[#e8f4dc] to-[#f9fcf4]",
+    icon: "border-[#72aa59]/25 bg-[#e8f4de] text-[#4e8039]",
+    active: "border-[#79ad62]/35 bg-[#f4faf0]",
+    line: "bg-[#67aa4b]",
+    soft: "bg-[#edf7e6]",
+    text: "text-[#4c7e38]",
   };
 }
 
-function getStatusClasses(status: ReviewDocument["status"]) {
+function getStatusClasses(status: DocumentStatus) {
   if (status === "Live") {
-    return "border-[#65a34b]/20 bg-[#e8f4dc] text-[#477f2f]";
+    return "border-[#70aa58]/25 bg-[#e8f4de] text-[#477b34]";
   }
 
-  if (status === "Draft") {
-    return "border-[#d9a52c]/20 bg-[#fff3cc] text-[#a97812]";
+  if (status === "Preparing") {
+    return "border-[#d2aa4e]/25 bg-[#fff3d5] text-[#987020]";
   }
 
-  return "border-[#77649f]/15 bg-[#eee9f7] text-[#6c568d]";
+  return "border-[#9380bc]/20 bg-[#f0ebf8] text-[#705d98]";
 }
 
-function DocumentIcon({
-  accent,
-}: {
-  accent: ReviewDocument["accent"];
-}) {
-  const styles = getDocumentAccent(accent);
+function getStatusDescription(status: DocumentStatus) {
+  if (status === "Live") {
+    return "Available now";
+  }
+
+  if (status === "Preparing") {
+    return "In preparation";
+  }
+
+  return "Planned resource";
+}
+
+function DocumentSelectorButton({
+  document,
+  isActive,
+  compact = false,
+  onSelect,
+}: DocumentSelectorButtonProps) {
+  const accent = getAccentClasses(document.accent);
 
   return (
-    <span
-      className={`relative flex size-[clamp(1.2rem,2.4vw,2rem)] shrink-0 items-center justify-center rounded-[clamp(0.35rem,0.75vw,0.6rem)] ${styles.icon}`}
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={isActive}
+      className={[
+        "relative flex min-w-0 items-center gap-3 rounded-[clamp(0.7rem,1.1vw,0.9rem)] border px-[clamp(0.75rem,1.2vw,0.95rem)] py-[clamp(0.7rem,1.1vw,0.9rem)] text-left transition duration-200",
+        compact
+          ? "w-[16rem] shrink-0 snap-start"
+          : "w-full",
+        isActive
+          ? `${accent.active} shadow-[0_0.6rem_1.8rem_rgba(54,42,24,0.07)]`
+          : "border-transparent bg-white/25 hover:border-[#d8cab0] hover:bg-white/60",
+      ].join(" ")}
     >
-      <span className="relative block h-[55%] w-[44%] rounded-[0.08rem] border-[clamp(0.06rem,0.12vw,0.1rem)] border-current">
-        <span className="absolute left-[18%] top-[27%] h-[8%] w-[62%] rounded-full bg-current opacity-65" />
-        <span className="absolute left-[18%] top-[49%] h-[8%] w-[48%] rounded-full bg-current opacity-45" />
+      {isActive ? (
+        <span
+          aria-hidden="true"
+          className={`absolute inset-y-[20%] left-0 w-1 rounded-full ${accent.line}`}
+        />
+      ) : null}
+
+      <span
+        className={`flex size-[clamp(2.5rem,3.8vw,3rem)] shrink-0 items-center justify-center rounded-[clamp(0.6rem,0.95vw,0.78rem)] border ${accent.icon}`}
+      >
+        <TechnologyIcon
+          icon={document.icon}
+          label={document.title}
+        />
       </span>
-    </span>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="shrink-0 font-mono text-[clamp(0.68rem,0.76vw,0.82rem)] font-black text-[#9a8d76]">
+            {document.index}
+          </span>
+
+          <h3 className="truncate text-[clamp(0.86rem,0.96vw,1.02rem)] font-black text-[#30271e]">
+            {document.title}
+          </h3>
+        </div>
+
+        <p className="mt-1 truncate text-[clamp(0.72rem,0.82vw,0.88rem)] font-medium text-[#7c705d]">
+          {document.category}
+        </p>
+      </div>
+
+      <span
+        className={`shrink-0 rounded-full border px-2.5 py-1 text-[clamp(0.64rem,0.72vw,0.78rem)] font-black ${getStatusClasses(
+          document.status,
+        )}`}
+      >
+        {document.status}
+      </span>
+    </button>
+  );
+}
+
+function DataRoomAvailability({
+  liveDocuments,
+}: {
+  liveDocuments: number;
+}) {
+  const availabilityPercentage = Math.round(
+    (liveDocuments / documents.length) * 100,
+  );
+
+  return (
+    <div className="rounded-[clamp(0.65rem,1vw,0.82rem)] border border-[#d8cab0] bg-[#eadfce] px-4 py-3">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black text-[#4f473b]">
+            Data room availability
+          </p>
+
+          <p className="mt-1 text-[clamp(0.68rem,0.78vw,0.84rem)] text-[#7c705d]">
+            {liveDocuments} of {documents.length} resources available
+          </p>
+        </div>
+
+        <span className="text-[clamp(1rem,1.3vw,1.2rem)] font-black text-[#4f7e3a]">
+          {availabilityPercentage}%
+        </span>
+      </div>
+
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#d6cab5]">
+        <div
+          className="h-full rounded-full bg-[#69a94c] transition-[width] duration-500"
+          style={{
+            width: `${availabilityPercentage}%`,
+          }}
+        />
+      </div>
+    </div>
   );
 }
 
 export function DocumentsHub() {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
+  const previewRef = useRef<HTMLElement>(null);
+
   const selectedDocument =
     documents[selectedIndex] ?? documents[0]!;
 
-  const selectedAccent = getDocumentAccent(
+  const selectedAccent = getAccentClasses(
     selectedDocument.accent,
   );
+
+  const liveDocuments = documents.filter(
+    (document) => document.status === "Live",
+  ).length;
+
+  function handleDocumentSelect(index: number) {
+    setSelectedIndex(index);
+
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 1023px)").matches
+    ) {
+      window.requestAnimationFrame(() => {
+        previewRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      });
+    }
+  }
 
   return (
     <section
       id="documents"
-      className="relative px-[clamp(0.6rem,2vw,1.3rem)] py-[clamp(2.5rem,5.5vw,5rem)]"
+      className="relative overflow-hidden bg-[#fff9ef] py-[clamp(4rem,8vw,7rem)]"
     >
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-[8%] top-[10%] size-[clamp(10rem,24vw,21rem)] rounded-full bg-[#dff0c5]/40 blur-[clamp(2.5rem,6vw,5rem)]" />
-        <div className="absolute -right-[7%] bottom-[3%] size-[clamp(11rem,26vw,23rem)] rounded-full bg-[#d9eef9]/45 blur-[clamp(2.5rem,6vw,5rem)]" />
-      </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-[-8rem] top-[4rem] size-[22rem] rounded-full bg-[#e2f1d7]/60 blur-[7rem]"
+      />
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-[2rem] right-[-9rem] size-[24rem] rounded-full bg-[#e1eef9]/55 blur-[7rem]"
+      />
 
       <div className="grants-container relative">
-        <div className="flex items-end justify-between gap-[clamp(0.7rem,2vw,1.5rem)]">
-          <div>
-            <span className="grants-eyebrow">
-              <span aria-hidden="true">▣</span>
-              Reviewer Resources
+        <header className="grid gap-[clamp(1rem,2vw,1.5rem)] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <div className="min-w-0">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#c7d8b9] bg-[#edf6e6] px-4 py-2 text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.14em] text-[#557f43]">
+              <span className="size-2 rounded-full bg-[#68ad4a]" />
+              Grant Review Data Room
             </span>
 
-            <h2 className="mt-[clamp(0.7rem,1.5vw,1.1rem)] text-[clamp(1.5rem,3.6vw,3rem)] font-extrabold leading-[1] tracking-[-0.045em] text-[#172016]">
-              Project Documents Hub
+            <h2 className="mt-[clamp(1rem,1.8vw,1.4rem)] max-w-[52rem] text-[clamp(2rem,4.2vw,3.9rem)] font-black leading-[1.03] tracking-[-0.045em] text-[#2f2118]">
+              Supporting information for a complete project review.
             </h2>
 
-            <p className="mt-[clamp(0.45rem,1vw,0.75rem)] max-w-[46rem] text-[clamp(0.68rem,1vw,0.94rem)] font-medium leading-[1.65] text-[#6b6253]">
-              A structured review room containing Lifetopia&apos;s proposal,
-              architecture, milestones, budget, development history, and media
-              resources.
+            <p className="mt-[clamp(0.9rem,1.6vw,1.2rem)] max-w-[47rem] text-[clamp(0.98rem,1.16vw,1.14rem)] leading-[1.75] text-[#706452]">
+              Review Lifetopia&apos;s strategy, delivery plan, funding
+              allocation, technical foundation, source code, and supporting
+              materials from one organized data room.
             </p>
           </div>
 
-          <span className="shrink-0 rounded-full border border-[#5f8a45]/15 bg-[#eaf4df] px-[clamp(0.5rem,1vw,0.8rem)] py-[clamp(0.22rem,0.45vw,0.34rem)] text-[clamp(0.42rem,0.68vw,0.58rem)] font-extrabold text-[#4b7e35]">
-            6 Resources
-          </span>
-        </div>
+          <div className="grid grid-cols-2 overflow-hidden rounded-[clamp(0.8rem,1.3vw,1rem)] border border-[#d8c9a9] bg-white shadow-[0_1rem_3rem_rgba(62,47,27,0.07)]">
+            <article className="min-w-0 px-[clamp(0.8rem,1.3vw,1rem)] py-[clamp(0.7rem,1.1vw,0.9rem)] text-center">
+              <p className="text-[clamp(0.68rem,0.78vw,0.84rem)] font-black uppercase tracking-[0.08em] text-[#897a63]">
+                Resources
+              </p>
 
-        <div className="mt-[clamp(1rem,2.2vw,1.7rem)] grid grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] overflow-hidden rounded-[clamp(0.85rem,2vw,1.55rem)] border border-[#64563e]/12 bg-[#fffaf1] shadow-[0_1.5rem_5rem_rgba(62,47,27,0.11)]">
-          <aside className="min-w-0 border-r border-[#64563e]/10 bg-[#f4ecde]">
-            <div className="border-b border-[#64563e]/10 px-[clamp(0.5rem,1.3vw,1rem)] py-[clamp(0.45rem,1vw,0.75rem)]">
-              <div className="flex items-center justify-between gap-2">
-                <p className="truncate font-mono text-[clamp(0.4rem,0.72vw,0.62rem)] font-black uppercase tracking-[0.08em] text-[#4d543f]">
-                  Project Files
+              <p className="mt-1 text-[clamp(1.05rem,1.4vw,1.3rem)] font-black text-[#477c35]">
+                {documents.length}
+              </p>
+            </article>
+
+            <article className="min-w-0 border-l border-[#eadfc8] px-[clamp(0.8rem,1.3vw,1rem)] py-[clamp(0.7rem,1.1vw,0.9rem)] text-center">
+              <p className="text-[clamp(0.68rem,0.78vw,0.84rem)] font-black uppercase tracking-[0.08em] text-[#897a63]">
+                Available Now
+              </p>
+
+              <p className="mt-1 text-[clamp(1.05rem,1.4vw,1.3rem)] font-black text-[#477c35]">
+                {liveDocuments}
+              </p>
+            </article>
+          </div>
+        </header>
+
+        <div className="mt-[clamp(2rem,4vw,3.2rem)]">
+          <div className="overflow-hidden rounded-[clamp(1rem,1.7vw,1.35rem)] border border-[#d9caa9] bg-[#f4ecde] shadow-[0_1rem_3.5rem_rgba(62,47,27,0.07)] lg:hidden">
+            <div className="flex items-center justify-between gap-4 border-b border-[#dfd2b9] px-4 py-3">
+              <div>
+                <p className="font-mono text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.09em] text-[#536044]">
+                  Select Resource
                 </p>
 
-                <span className="font-mono text-[clamp(0.34rem,0.58vw,0.5rem)] text-[#8e826d]">
-                  lifetopia/
-                </span>
+                <p className="mt-1 text-[clamp(0.76rem,0.86vw,0.92rem)] text-[#7b6e59]">
+                  Swipe horizontally to view all resources
+                </p>
               </div>
+
+              <span className="rounded-full bg-[#e8dfcf] px-3 py-1 font-mono text-[clamp(0.68rem,0.76vw,0.82rem)] font-bold text-[#756953]">
+                {selectedDocument.index}/{documents.length}
+              </span>
             </div>
 
-            <div className="p-[clamp(0.35rem,0.9vw,0.7rem)]">
-              {documents.map((document, index) => {
-                const accent = getDocumentAccent(document.accent);
-                const isActive = index === selectedIndex;
-
-                const content = (
-                  <article
-                    className={[
-                      "group relative flex min-w-0 items-center gap-[clamp(0.35rem,0.85vw,0.65rem)] rounded-[clamp(0.45rem,1vw,0.8rem)] px-[clamp(0.4rem,1vw,0.8rem)] py-[clamp(0.42rem,1vw,0.75rem)] transition",
-                      isActive
-                        ? "bg-white shadow-[0_0.4rem_1.4rem_rgba(55,42,24,0.08)]"
-                        : "hover:bg-white/55",
-                    ].join(" ")}
-                  >
-                    {isActive ? (
-                      <span
-                        className={`absolute inset-y-[18%] left-0 w-[clamp(0.1rem,0.22vw,0.16rem)] rounded-full ${accent.line}`}
-                      />
-                    ) : null}
-
-                    <DocumentIcon accent={document.accent} />
-
-                    <div className="min-w-0 flex-1">
-                      <div className="flex min-w-0 items-center gap-[clamp(0.25rem,0.6vw,0.45rem)]">
-                        <span className="font-mono text-[clamp(0.32rem,0.56vw,0.48rem)] font-bold text-[#a09581]">
-                          {document.index}
-                        </span>
-
-                        <h3 className="truncate text-[clamp(0.48rem,0.9vw,0.75rem)] font-extrabold text-[#242a21]">
-                          {document.title}
-                        </h3>
-                      </div>
-
-                      <p className="mt-[clamp(0.1rem,0.25vw,0.2rem)] truncate text-[clamp(0.34rem,0.6vw,0.52rem)] font-medium text-[#857966]">
-                        {document.type}
-                      </p>
-                    </div>
-
-                    <span
-                      className={`shrink-0 rounded-full border px-[clamp(0.28rem,0.55vw,0.42rem)] py-[clamp(0.08rem,0.18vw,0.14rem)] text-[clamp(0.28rem,0.5vw,0.43rem)] font-extrabold ${getStatusClasses(document.status)}`}
-                    >
-                      {document.status}
-                    </span>
-                  </article>
-                );
-
-                return (
-  <button
-    key={document.title}
-    type="button"
-    onClick={() => setSelectedIndex(index)}
-    className="block w-full text-left"
-    aria-pressed={isActive}
-  >
-    {content}
-  </button>
-);
-              })}
+            <div
+              aria-label="Project resource selector"
+              className="flex snap-x snap-mandatory gap-3 overflow-x-auto p-3"
+            >
+              {documents.map((document, index) => (
+                <DocumentSelectorButton
+                  key={document.title}
+                  document={document}
+                  isActive={selectedIndex === index}
+                  compact
+                  onSelect={() => {
+                    handleDocumentSelect(index);
+                  }}
+                />
+              ))}
             </div>
 
-            <div className="border-t border-[#64563e]/10 p-[clamp(0.45rem,1vw,0.75rem)]">
-              <div className="flex items-center justify-between rounded-[clamp(0.45rem,0.9vw,0.7rem)] bg-[#e9dfcf] px-[clamp(0.4rem,0.9vw,0.7rem)] py-[clamp(0.32rem,0.7vw,0.55rem)]">
+            <div className="border-t border-[#dfd2b9] p-3">
+              <DataRoomAvailability
+                liveDocuments={liveDocuments}
+              />
+            </div>
+          </div>
+
+          <div className="mt-3 grid gap-[clamp(0.9rem,1.7vw,1.3rem)] lg:mt-0 lg:grid-cols-[minmax(18rem,0.72fr)_minmax(0,1.28fr)]">
+            <aside className="hidden overflow-hidden rounded-[clamp(1rem,1.7vw,1.35rem)] border border-[#d9caa9] bg-[#f4ecde] shadow-[0_1rem_3.5rem_rgba(62,47,27,0.07)] lg:block">
+              <div className="flex items-center justify-between gap-4 border-b border-[#dfd2b9] px-[clamp(0.9rem,1.5vw,1.2rem)] py-[clamp(0.75rem,1.2vw,0.95rem)]">
                 <div>
-                  <p className="text-[clamp(0.34rem,0.62vw,0.52rem)] font-extrabold text-[#524a3d]">
-                    Portal completeness
+                  <p className="font-mono text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.09em] text-[#536044]">
+                    Project Resources
                   </p>
 
-                  <p className="text-[clamp(0.28rem,0.5vw,0.43rem)] font-medium text-[#8b7f6b]">
-                    3 of 6 resources live
+                  <p className="mt-1 text-[clamp(0.78rem,0.88vw,0.94rem)] text-[#7b6e59]">
+                    Select a resource to preview
                   </p>
                 </div>
 
-                <span className="text-[clamp(0.5rem,0.9vw,0.75rem)] font-black text-[#4d8135]">
-                  50%
+                <span className="rounded-full bg-[#e8dfcf] px-3 py-1 font-mono text-[clamp(0.68rem,0.76vw,0.82rem)] font-bold text-[#756953]">
+                  lifetopia/
                 </span>
               </div>
-            </div>
-          </aside>
 
-          <div className="relative min-w-0 bg-[#fffdf7]">
-            <div className="flex items-center justify-between gap-[clamp(0.4rem,1vw,0.8rem)] border-b border-[#64563e]/10 bg-white/75 px-[clamp(0.55rem,1.5vw,1.2rem)] py-[clamp(0.45rem,1vw,0.75rem)]">
-              <div className="flex min-w-0 items-center gap-[clamp(0.3rem,0.7vw,0.55rem)]">
-                <span className="size-[clamp(0.36rem,0.65vw,0.52rem)] rounded-full bg-[#65a544]" />
-
-                <p className="truncate font-mono text-[clamp(0.38rem,0.72vw,0.62rem)] font-bold text-[#5d604f]">
-                  {selectedDocument.index.toLowerCase()}-
-                  {selectedDocument.title
-                    .toLowerCase()
-                    .replaceAll(" ", "-")}
-                  .md
-                </p>
+              <div className="space-y-2 p-[clamp(0.6rem,1vw,0.8rem)]">
+                {documents.map((document, index) => (
+                  <DocumentSelectorButton
+                    key={document.title}
+                    document={document}
+                    isActive={selectedIndex === index}
+                    onSelect={() => {
+                      handleDocumentSelect(index);
+                    }}
+                  />
+                ))}
               </div>
 
-              <div className="flex items-center gap-[clamp(0.25rem,0.55vw,0.4rem)]">
-                <span className="rounded-full bg-[#edf4e7] px-[clamp(0.35rem,0.7vw,0.55rem)] py-[clamp(0.1rem,0.23vw,0.17rem)] font-mono text-[clamp(0.28rem,0.52vw,0.45rem)] font-bold text-[#558139]">
-                  READ ONLY
-                </span>
+              <div className="border-t border-[#dfd2b9] p-[clamp(0.7rem,1.1vw,0.9rem)]">
+                <DataRoomAvailability
+                  liveDocuments={liveDocuments}
+                />
+              </div>
+            </aside>
 
-                <span className="font-mono text-[clamp(0.4rem,0.72vw,0.62rem)] text-[#948875]">
-                  •••
+            <article
+              ref={previewRef}
+              aria-live="polite"
+              className="scroll-mt-24 overflow-hidden rounded-[clamp(1rem,1.7vw,1.35rem)] border border-[#d9caa9] bg-white shadow-[0_1.2rem_4rem_rgba(62,47,27,0.08)]"
+            >
+              <div className="flex items-center justify-between gap-4 border-b border-[#e8dcc4] bg-[#faf6ed] px-[clamp(0.9rem,1.5vw,1.2rem)] py-[clamp(0.75rem,1.2vw,0.95rem)]">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div
+                    aria-hidden="true"
+                    className="flex shrink-0 gap-1.5"
+                  >
+                    <span className="size-2.5 rounded-full bg-[#e46c62]" />
+                    <span className="size-2.5 rounded-full bg-[#e5ae43]" />
+                    <span className="size-2.5 rounded-full bg-[#6ebc55]" />
+                  </div>
+
+                  <p className="truncate font-mono text-[clamp(0.72rem,0.82vw,0.88rem)] font-bold text-[#635c4f]">
+                    {selectedDocument.index}-
+                    {selectedDocument.title
+                      .toLowerCase()
+                      .replaceAll(" ", "-")}
+                    .md
+                  </p>
+                </div>
+
+                <span
+                  className={`shrink-0 rounded-full border px-3 py-1.5 text-[clamp(0.68rem,0.76vw,0.82rem)] font-black ${getStatusClasses(
+                    selectedDocument.status,
+                  )}`}
+                >
+                  {getStatusDescription(selectedDocument.status)}
                 </span>
               </div>
-            </div>
 
-            <div className="relative min-h-[clamp(14rem,30vw,25rem)] overflow-hidden p-[clamp(0.7rem,2vw,1.7rem)]">
-              <div
-                className={`pointer-events-none absolute -right-[12%] -top-[24%] size-[clamp(8rem,22vw,18rem)] rounded-full bg-gradient-to-br blur-[clamp(2rem,5vw,4rem)] ${selectedAccent.preview}`}
-              />
+              <div className="p-[clamp(1rem,2vw,1.7rem)]">
+                <div className="flex flex-col gap-[clamp(0.8rem,1.4vw,1.1rem)] sm:flex-row sm:items-start">
+                  <span
+                    className={`flex size-[clamp(3.5rem,5.5vw,4.5rem)] shrink-0 items-center justify-center rounded-[clamp(0.8rem,1.3vw,1rem)] border ${selectedAccent.icon}`}
+                  >
+                    <TechnologyIcon
+                      icon={selectedDocument.icon}
+                      label={selectedDocument.title}
+                    />
+                  </span>
 
-              <div className="relative mx-auto max-w-[44rem]">
-                <div className="flex items-start gap-[clamp(0.5rem,1.2vw,0.9rem)]">
-                  <DocumentIcon accent={selectedDocument.accent} />
-
-                  <div>
-                    <span
-                      className={`inline-flex rounded-full border px-[clamp(0.38rem,0.8vw,0.6rem)] py-[clamp(0.12rem,0.28vw,0.2rem)] text-[clamp(0.32rem,0.58vw,0.5rem)] font-extrabold ${getStatusClasses(selectedDocument.status)}`}
+                  <div className="min-w-0">
+                    <p
+                      className={`text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.11em] ${selectedAccent.text}`}
                     >
-                      {selectedDocument.status} Document
-                    </span>
+                      {selectedDocument.category}
+                    </p>
 
-                    <h3 className="mt-[clamp(0.4rem,0.9vw,0.7rem)] text-[clamp(0.9rem,2.2vw,1.75rem)] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#1d251c]">
+                    <h3 className="mt-2 text-[clamp(1.55rem,2.7vw,2.5rem)] font-black leading-[1.08] tracking-[-0.035em] text-[#2f2118]">
                       {selectedDocument.title}
                     </h3>
 
-                    <p className="mt-[clamp(0.35rem,0.8vw,0.6rem)] max-w-[38rem] text-[clamp(0.48rem,0.86vw,0.74rem)] font-medium leading-[1.65] text-[#6b6253]">
+                    <p className="mt-3 max-w-[46rem] text-[clamp(0.9rem,1.02vw,1.08rem)] leading-[1.7] text-[#706452]">
                       {selectedDocument.description}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-[clamp(0.75rem,1.6vw,1.2rem)] grid grid-cols-3 gap-[clamp(0.3rem,0.8vw,0.6rem)]">
-                  {[
-                    {
-                      label: "Current Phase",
-                      value: "Beta",
-                    },
-                    {
-                      label: "Grant Request",
-                      value: "$10,000",
-                    },
-                    {
-                      label: "Delivery Plan",
-                      value: "8–12 Weeks",
-                    },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="min-w-0 rounded-[clamp(0.45rem,1vw,0.8rem)] border border-[#695a40]/10 bg-white/72 px-[clamp(0.4rem,1vw,0.75rem)] py-[clamp(0.38rem,0.9vw,0.7rem)] shadow-[0_0.35rem_1.4rem_rgba(56,44,26,0.05)]"
-                    >
-                      <p className="truncate text-[clamp(0.28rem,0.52vw,0.45rem)] font-extrabold uppercase tracking-[0.06em] text-[#968a76]">
-                        {item.label}
-                      </p>
-
-                      <p className="mt-[clamp(0.18rem,0.4vw,0.3rem)] truncate text-[clamp(0.48rem,0.92vw,0.76rem)] font-black text-[#3b7137]">
-                        {item.value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-[clamp(0.7rem,1.5vw,1.1rem)] rounded-[clamp(0.55rem,1.15vw,0.9rem)] border border-[#695a40]/10 bg-[#f5efe3] p-[clamp(0.5rem,1.3vw,1rem)]">
-                  <p className="font-mono text-[clamp(0.34rem,0.62vw,0.54rem)] font-bold uppercase tracking-[0.08em] text-[#678052]">
+                <section
+                  className={`mt-[clamp(1rem,1.8vw,1.4rem)] rounded-[clamp(0.8rem,1.3vw,1rem)] border border-[#ded2b9] p-[clamp(0.85rem,1.5vw,1.15rem)] ${selectedAccent.soft}`}
+                >
+                  <p
+                    className={`font-mono text-[clamp(0.7rem,0.8vw,0.86rem)] font-black uppercase tracking-[0.09em] ${selectedAccent.text}`}
+                  >
                     Executive Summary
                   </p>
 
-                  <p className="mt-[clamp(0.3rem,0.7vw,0.5rem)] text-[clamp(0.44rem,0.78vw,0.68rem)] font-medium leading-[1.7] text-[#625a4b]">
-  {selectedDocument.summary}
-</p>
-                </div>
+                  <p className="mt-3 text-[clamp(0.88rem,1vw,1.06rem)] leading-[1.75] text-[#62594b]">
+                    {selectedDocument.summary}
+                  </p>
+                </section>
 
-                  <div className="mt-[clamp(0.55rem,1.2vw,0.9rem)] grid grid-cols-2 gap-[clamp(0.3rem,0.7vw,0.55rem)]">
-  {selectedDocument.highlights.map((highlight) => (
-    <div
-      key={highlight}
-      className="flex min-w-0 items-start gap-[clamp(0.2rem,0.5vw,0.4rem)] rounded-[clamp(0.42rem,0.9vw,0.7rem)] border border-[#695a40]/10 bg-white/65 px-[clamp(0.4rem,0.9vw,0.7rem)] py-[clamp(0.35rem,0.8vw,0.6rem)]"
-    >
-      <span className="mt-[0.05rem] shrink-0 text-[clamp(0.36rem,0.62vw,0.52rem)] font-black text-[#5b963d]">
-        ✓
-      </span>
+                <section className="mt-[clamp(1rem,1.8vw,1.4rem)]">
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.1em] text-[#6a7f58]">
+                      Key Information
+                    </p>
 
-      <span className="text-[clamp(0.36rem,0.66vw,0.56rem)] font-semibold leading-[1.4] text-[#625a4b]">
-        {highlight}
-      </span>
-    </div>
-  ))}
-</div>
+                    <span className="text-[clamp(0.7rem,0.8vw,0.86rem)] font-bold text-[#897c67]">
+                      {selectedDocument.highlights.length} highlights
+                    </span>
+                  </div>
 
-                <div className="mt-[clamp(0.65rem,1.4vw,1rem)] flex flex-wrap gap-[clamp(0.35rem,0.8vw,0.6rem)]">
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    {selectedDocument.highlights.map(
+                      (highlight) => (
+                        <div
+                          key={highlight}
+                          className="flex items-start gap-3 rounded-[clamp(0.7rem,1.1vw,0.9rem)] border border-[#e7dcc5] bg-[#fcf8f0] px-[clamp(0.75rem,1.2vw,0.95rem)] py-[clamp(0.7rem,1.1vw,0.88rem)]"
+                        >
+                          <span
+                            className={`mt-[0.4rem] size-2 shrink-0 rounded-full ${selectedAccent.line}`}
+                          />
+
+                          <span className="text-[clamp(0.82rem,0.92vw,0.98rem)] font-semibold leading-[1.55] text-[#62594b]">
+                            {highlight}
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </section>
+
+                <div className="mt-[clamp(1.1rem,2vw,1.5rem)] flex flex-col gap-3 sm:flex-row sm:items-center">
+                  {selectedDocument.status === "Live" &&
+                  selectedDocument.href ? (
+                    <Link
+                      href={selectedDocument.href}
+                      target={
+                        selectedDocument.external
+                          ? "_blank"
+                          : undefined
+                      }
+                      rel={
+                        selectedDocument.external
+                          ? "noreferrer"
+                          : undefined
+                      }
+                      className="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[clamp(0.7rem,1.1vw,0.9rem)] bg-[#173e22] px-[clamp(1rem,1.8vw,1.4rem)] text-[clamp(0.82rem,0.92vw,0.98rem)] font-black text-white shadow-[0_0.8rem_2rem_rgba(23,62,34,0.18)] transition hover:-translate-y-0.5 hover:bg-[#245b31]"
+                    >
+                      Open {selectedDocument.title}
+
+                      <span aria-hidden="true">
+                        {selectedDocument.external
+                          ? "↗"
+                          : "→"}
+                      </span>
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled
+                      className="inline-flex min-h-[3rem] cursor-not-allowed items-center justify-center gap-2 rounded-[clamp(0.7rem,1.1vw,0.9rem)] border border-[#d5c8ae] bg-[#eee6d8] px-[clamp(1rem,1.8vw,1.4rem)] text-[clamp(0.82rem,0.92vw,0.98rem)] font-black text-[#8a7d68]"
+                    >
+                      {selectedDocument.status === "Preparing"
+                        ? "Document in Preparation"
+                        : "Planned Resource"}
+                    </button>
+                  )}
+
                   <Link
-  href={selectedDocument.href ?? "#documents"}
-  className="grants-button-primary min-h-[clamp(2rem,3.4vw,2.65rem)] px-[clamp(0.7rem,1.4vw,1rem)] text-[clamp(0.48rem,0.78vw,0.68rem)]"
->
-  {selectedDocument.href
-    ? `Open ${selectedDocument.type}`
-    : "Document Preparing"}
-
-  <span aria-hidden="true">
-    {selectedDocument.href ? "↗" : "•"}
-  </span>
-</Link>
-
-                  <Link
-                    href="#development"
-                    className="grants-button-secondary min-h-[clamp(2rem,3.4vw,2.65rem)] px-[clamp(0.7rem,1.4vw,1rem)] text-[clamp(0.48rem,0.78vw,0.68rem)]"
+                    href="mailto:contact@lifetopiaworld.io"
+                    className="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[clamp(0.7rem,1.1vw,0.9rem)] border border-[#d5c8ae] bg-[#fffaf0] px-[clamp(1rem,1.8vw,1.4rem)] text-[clamp(0.82rem,0.92vw,0.98rem)] font-black text-[#4f4436] transition hover:-translate-y-0.5 hover:bg-white"
                   >
-                    View Development
+                    Request More Information
+                    <span aria-hidden="true">↗</span>
                   </Link>
                 </div>
               </div>
-            </div>
 
-            <div className="flex items-center justify-between gap-3 border-t border-[#64563e]/10 bg-[#f6efe3] px-[clamp(0.5rem,1.2vw,0.9rem)] py-[clamp(0.35rem,0.8vw,0.6rem)]">
-              <p className="truncate font-mono text-[clamp(0.28rem,0.52vw,0.45rem)] text-[#8e826f]">
-                grants.lifetopiaworld.io / documents
-              </p>
+              <div className="flex flex-col gap-2 border-t border-[#e8dcc4] bg-[#f6efe3] px-[clamp(0.9rem,1.5vw,1.2rem)] py-[clamp(0.65rem,1vw,0.8rem)] sm:flex-row sm:items-center sm:justify-between">
+                <p className="font-mono text-[clamp(0.68rem,0.76vw,0.82rem)] text-[#8b7e6a]">
+                  grants.lifetopiaworld.io / data-room
+                </p>
 
-              <span className="flex shrink-0 items-center gap-[clamp(0.2rem,0.45vw,0.35rem)] font-mono text-[clamp(0.28rem,0.52vw,0.45rem)] font-bold text-[#4f7d39]">
-                <span className="size-[clamp(0.24rem,0.42vw,0.34rem)] rounded-full bg-[#67ac48]" />
-                Reviewer-ready
-              </span>
-            </div>
+                <span className="flex items-center gap-2 font-mono text-[clamp(0.68rem,0.76vw,0.82rem)] font-bold text-[#4f7d39]">
+                  <span className="size-2 rounded-full bg-[#67ac48]" />
+                  Reviewer access enabled
+                </span>
+              </div>
+            </article>
           </div>
         </div>
+
+        <footer className="mt-[clamp(1rem,2vw,1.5rem)] flex flex-col gap-4 rounded-[clamp(1rem,1.7vw,1.35rem)] border border-[#d8c8a7] bg-[#f7f0e3] p-[clamp(1rem,1.8vw,1.5rem)] sm:flex-row sm:items-center sm:justify-between">
+          <div className="max-w-[46rem]">
+            <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.11em] text-[#668255]">
+              Additional Due Diligence
+            </p>
+
+            <h3 className="mt-2 text-[clamp(1.1rem,1.5vw,1.4rem)] font-black text-[#30251c]">
+              Need a specific document or technical explanation?
+            </h3>
+
+            <p className="mt-2 text-[clamp(0.84rem,0.94vw,1rem)] leading-[1.65] text-[#746753]">
+              Additional supporting materials can be prepared when required
+              during the grant review process.
+            </p>
+          </div>
+
+          <Link
+            href="mailto:contact@lifetopiaworld.io"
+            className="inline-flex min-h-[3rem] shrink-0 items-center justify-center gap-2 rounded-[clamp(0.7rem,1.1vw,0.9rem)] bg-[#173e22] px-[clamp(1rem,1.8vw,1.4rem)] text-[clamp(0.82rem,0.92vw,0.98rem)] font-black text-white shadow-[0_0.8rem_2rem_rgba(23,62,34,0.18)] transition hover:-translate-y-0.5 hover:bg-[#245b31]"
+          >
+            Contact the Founder
+            <span aria-hidden="true">↗</span>
+          </Link>
+        </footer>
       </div>
     </section>
   );

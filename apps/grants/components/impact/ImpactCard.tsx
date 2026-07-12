@@ -1,7 +1,10 @@
+import { TechnologyIcon } from "@/components/TechnologyIcon";
+
 export type ImpactCardData = {
   label: string;
   value: string;
   description: string;
+  measurement: string;
   icon: string;
   accent: "green" | "blue" | "gold" | "purple";
 };
@@ -10,13 +13,17 @@ type ImpactCardProps = {
   item: ImpactCardData;
 };
 
-function getAccentClasses(accent: ImpactCardData["accent"]) {
+function getAccentClasses(
+  accent: ImpactCardData["accent"],
+) {
   if (accent === "blue") {
     return {
       card: "border-[#71add0]/25 bg-[#f2f9fd]",
       icon: "border-[#5fa7d2]/20 bg-[#e4f4fc] text-[#347ca6]",
       value: "text-[#2f789f]",
       label: "text-[#4d7f9b]",
+      badge:
+        "border-[#cce3f0] bg-[#eaf6fc] text-[#347ca6]",
     };
   }
 
@@ -26,6 +33,8 @@ function getAccentClasses(accent: ImpactCardData["accent"]) {
       icon: "border-[#d8aa45]/20 bg-[#fff0cb] text-[#a6781c]",
       value: "text-[#9a711e]",
       label: "text-[#8c7441]",
+      badge:
+        "border-[#ead7a5] bg-[#fff5dc] text-[#946c1c]",
     };
   }
 
@@ -35,6 +44,8 @@ function getAccentClasses(accent: ImpactCardData["accent"]) {
       icon: "border-[#9278d7]/20 bg-[#eee9ff] text-[#6f51b6]",
       value: "text-[#694cad]",
       label: "text-[#75659d]",
+      badge:
+        "border-[#dad0f1] bg-[#f2edff] text-[#674aab]",
     };
   }
 
@@ -43,20 +54,35 @@ function getAccentClasses(accent: ImpactCardData["accent"]) {
     icon: "border-[#6ca852]/20 bg-[#e7f4dd] text-[#4f8239]",
     value: "text-[#477b34]",
     label: "text-[#5f7e51]",
+    badge:
+      "border-[#d1e4c7] bg-[#edf7e7] text-[#477a34]",
   };
 }
 
-export function ImpactCard({ item }: ImpactCardProps) {
+export function ImpactCard({
+  item,
+}: ImpactCardProps) {
   const accent = getAccentClasses(item.accent);
 
   return (
     <article
-      className={`group min-w-0 rounded-[clamp(0.9rem,1.5vw,1.2rem)] border p-[clamp(1rem,1.6vw,1.3rem)] shadow-[0_0.8rem_2.5rem_rgba(64,48,27,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_1.2rem_3.2rem_rgba(64,48,27,0.1)] ${accent.card}`}
+      className={`group flex min-w-0 flex-col rounded-[clamp(0.9rem,1.5vw,1.2rem)] border p-[clamp(1rem,1.6vw,1.3rem)] shadow-[0_0.8rem_2.5rem_rgba(64,48,27,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_1.2rem_3.2rem_rgba(64,48,27,0.1)] ${accent.card}`}
     >
-      <div
-        className={`flex size-[clamp(2.8rem,4.2vw,3.5rem)] items-center justify-center rounded-[clamp(0.7rem,1.1vw,0.9rem)] border text-[clamp(1rem,1.5vw,1.3rem)] font-black ${accent.icon}`}
-      >
-        {item.icon}
+      <div className="flex items-start justify-between gap-4">
+        <span
+          className={`flex size-[clamp(2.8rem,4.2vw,3.5rem)] shrink-0 items-center justify-center rounded-[clamp(0.7rem,1.1vw,0.9rem)] border ${accent.icon}`}
+        >
+          <TechnologyIcon
+            icon={item.icon}
+            label={item.label}
+          />
+        </span>
+
+        <span
+          className={`rounded-full border px-3 py-1.5 text-[clamp(0.68rem,0.78vw,0.84rem)] font-black uppercase tracking-[0.07em] ${accent.badge}`}
+        >
+          Beta Target
+        </span>
       </div>
 
       <p
@@ -66,14 +92,26 @@ export function ImpactCard({ item }: ImpactCardProps) {
       </p>
 
       <h3
-        className={`mt-2 text-[clamp(1.7rem,2.7vw,2.5rem)] font-black leading-none tracking-[-0.04em] ${accent.value}`}
+        className={`mt-2 text-[clamp(1.8rem,2.8vw,2.6rem)] font-black leading-none tracking-[-0.04em] ${accent.value}`}
       >
         {item.value}
       </h3>
 
-      <p className="mt-[clamp(0.55rem,0.9vw,0.72rem)] text-[clamp(0.86rem,0.96vw,1.02rem)] leading-[1.65] text-[#6f6554]">
+      <p className="mt-3 text-[clamp(0.84rem,0.94vw,1rem)] leading-[1.65] text-[#706452]">
         {item.description}
       </p>
+
+      <div className="mt-auto pt-4">
+        <div className="border-t border-[#6b5c42]/10 pt-4">
+          <p className="text-[clamp(0.68rem,0.78vw,0.84rem)] font-black uppercase tracking-[0.08em] text-[#8a7a63]">
+            Measurement
+          </p>
+
+          <p className="mt-1.5 text-[clamp(0.78rem,0.88vw,0.94rem)] font-semibold leading-[1.55] text-[#665b4b]">
+            {item.measurement}
+          </p>
+        </div>
+      </div>
     </article>
   );
 }

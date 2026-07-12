@@ -3,25 +3,24 @@ import { CurrentDevelopmentSection } from "@/components/current-development";
 import { ImpactSection } from "@/components/impact";
 import { PublicDevelopmentSection } from "@/components/public-development";
 import { RoadmapSection } from "@/components/roadmap";
+import { TeamSection } from "@/components/team";
+import { WhySupportSection } from "@/components/why-support";
+import { FounderNoteSection } from "@/components/founder-note";
+import { ProblemSolutionSection } from "@/components/problem-solution";
 
 import { DocumentsHub } from "@/components/DocumentsHub";
 import { GrantHero } from "@/components/GrantHero";
-import { GrantRequestSection } from "@/components/GrantRequestSection";
 import { GrantsFooter } from "@/components/GrantsFooter";
-import { ProjectPurposeSection } from "@/components/ProjectPurposeSection";
 import { ProjectSnapshot } from "@/components/ProjectSnapshot";
-import { ProjectVisionSection } from "@/components/ProjectVisionSection";
 
 export default function GrantsPage() {
   return (
-    <main className="min-h-screen overflow-hidden">
+    <main className="min-h-screen overflow-x-hidden">
       <GrantHero />
 
       <ProjectSnapshot />
 
-      <ProjectPurposeSection />
-
-      <ProjectVisionSection />
+      <ProblemSolutionSection />
 
       <CurrentDevelopmentSection />
 
@@ -33,9 +32,13 @@ export default function GrantsPage() {
 
       <ImpactSection />
 
-      <GrantRequestSection />
+      <WhySupportSection />
 
       <DocumentsHub />
+
+      <TeamSection />
+
+      <FounderNoteSection />
 
       <GrantsFooter />
     </main>
