@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+@source "../app/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../components/**/*.{js,ts,jsx,tsx,mdx}";
+
 :root {
   --page-background: #f7f1e5;
   --page-background-soft: #fffaf0;
@@ -254,5 +257,89 @@ img {
   .vision-pillar,
   .vision-quote {
     animation: none;
+  }
+}
+
+/* Development section readability */
+.development-readable h3 {
+  font-size: clamp(1rem, 1.15vw, 1.25rem) !important;
+  line-height: 1.35 !important;
+}
+
+.development-readable h4 {
+  font-size: clamp(0.9rem, 1vw, 1.08rem) !important;
+  line-height: 1.4 !important;
+}
+
+.development-readable p {
+  font-size: clamp(0.76rem, 0.82vw, 0.94rem) !important;
+  line-height: 1.55 !important;
+}
+
+.development-readable a {
+  font-size: clamp(0.76rem, 0.82vw, 0.94rem) !important;
+}
+
+.development-readable span {
+  font-size: clamp(0.66rem, 0.7vw, 0.8rem) !important;
+  line-height: 1.35 !important;
+}
+
+/* Section label */
+.development-readable p.font-mono.uppercase {
+  font-size: clamp(0.68rem, 0.72vw, 0.82rem) !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* Main descriptive text under the title */
+.development-readable header > div:first-child > p:last-child {
+  font-size: clamp(0.9rem, 1vw, 1.08rem) !important;
+  line-height: 1.65 !important;
+}
+
+/* Stats */
+.development-readable header article p:last-child {
+  font-size: clamp(0.9rem, 1.05vw, 1.15rem) !important;
+}
+
+/* Pipeline and roadmap titles */
+.development-readable article h3,
+.development-readable article h4 {
+  font-size: clamp(0.92rem, 1vw, 1.1rem) !important;
+}
+
+/* Small badges and chips stay compact but readable */
+.development-readable span.rounded-full,
+.development-readable span[class*="rounded-["] {
+  font-size: clamp(0.62rem, 0.66vw, 0.75rem) !important;
+}
+
+/* Commit messages */
+.development-readable article .font-mono.font-bold {
+  font-size: clamp(0.76rem, 0.82vw, 0.92rem) !important;
+}
+
+/* Mobile readability */
+@media (max-width: 768px) {
+  .development-readable h3 {
+    font-size: 1rem !important;
+  }
+
+  .development-readable h4 {
+    font-size: 0.9rem !important;
+  }
+
+  .development-readable p,
+  .development-readable a {
+    font-size: 0.78rem !important;
+  }
+
+  .development-readable span {
+    font-size: 0.68rem !important;
+  }
+
+  .development-readable span.rounded-full,
+  .development-readable span[class*="rounded-["] {
+    font-size: 0.62rem !important;
   }
 }
