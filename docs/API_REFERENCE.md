@@ -11,6 +11,7 @@
 | Route | Methods | File |
 |---|---|---|
 | `/api/auth/login` | `POST` | `apps/website/app/api/auth/login/route.ts` |
+| `/api/development-log` | `POST` | `apps/website/app/api/development-log/route.ts` |
 
 
 ---

@@ -66,6 +66,25 @@ Incorrect:
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 | `updated_at` | `timestamp with time zone` | NO |  | `now()` |
 
+## Table: `public.development_logs`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `gen_random_uuid()` |
+| `repo` | `text` | NO |  | `` |
+| `branch` | `text` | NO |  | `'main'::text` |
+| `commit_sha` | `text` | NO |  | `` |
+| `commit_message` | `text` | NO |  | `` |
+| `commit_url` | `text` | YES |  | `` |
+| `author_name` | `text` | YES |  | `` |
+| `author_username` | `text` | YES |  | `` |
+| `app_area` | `text` | NO |  | `'Monorepo'::text` |
+| `category` | `text` | NO |  | `'Update'::text` |
+| `changed_files` | `jsonb` | NO |  | `'[]'::jsonb` |
+| `is_public` | `boolean` | NO |  | `true` |
+| `pushed_at` | `timestamp with time zone` | NO |  | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+
 ## Table: `public.profiles`
 
 | Column | Type | Nullable | Key | Default |

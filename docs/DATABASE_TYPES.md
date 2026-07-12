@@ -38,6 +38,23 @@ export type CommunityPost = {
   updated_at: string;
 };
 
+export type DevelopmentLog = {
+  id: string;
+  repo: string;
+  branch: string;
+  commit_sha: string;
+  commit_message: string;
+  commit_url: string | null;
+  author_name: string | null;
+  author_username: string | null;
+  app_area: string;
+  category: string;
+  changed_files: Record<string, unknown>;
+  is_public: boolean;
+  pushed_at: string;
+  created_at: string;
+};
+
 export type Profile = {
   id: string;
   username: string;

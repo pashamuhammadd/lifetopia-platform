@@ -75,6 +75,14 @@ Incoming relations:
 - `community_comments.post_id` → `id`
 - `community_likes.post_id` → `id`
 
+### `public.development_logs`
+
+Outgoing relations:
+- None
+
+Incoming relations:
+- None
+
 ### `public.profiles`
 
 Outgoing relations:

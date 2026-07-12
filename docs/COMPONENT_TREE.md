@@ -43,6 +43,7 @@
 | `apps/website/components/home/development-journey/JourneyProgress.tsx` | `JourneyProgress` |
 | `apps/website/components/home/development-journey/JourneyTimeline.tsx` | `JourneyTimeline` |
 | `apps/website/components/home/development-journey/JourneyVision.tsx` | `JourneyVision` |
+| `apps/website/components/home/development-log/LiveDevelopmentLogSection.tsx` | - |
 | `apps/website/components/home/footer/Footer.tsx` | `Footer` |
 | `apps/website/components/home/gameplay/GameplayCards.tsx` | `GameplayCards` |
 | `apps/website/components/home/gameplay/GameplaySection.tsx` | `GameplaySection` |
