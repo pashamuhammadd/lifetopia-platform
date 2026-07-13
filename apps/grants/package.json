@@ -31,6 +31,7 @@
     "@types/react-dom": "19.2.2",
     "eslint": "^9.39.1",
     "tailwindcss": "^4.3.2",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "@repo/docs-data": "workspace:*"
   }
 }

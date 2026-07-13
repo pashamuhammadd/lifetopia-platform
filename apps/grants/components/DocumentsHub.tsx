@@ -1,131 +1,150 @@
 "use client";
 
+import {
+  getDocumentCategory,
+  getDocuments,
+  type DocumentStatus,
+} from "@repo/docs-data";
 import Link from "next/link";
 import { useState } from "react";
 
 import { TechnologyIcon } from "@/components/TechnologyIcon";
 
-type DocumentStatus = "Live" | "Preparing" | "Planned";
-type DocumentAccent = "green" | "blue" | "purple" | "gold";
+type DocumentAccent =
+  | "green"
+  | "blue"
+  | "purple"
+  | "gold"
+  | "orange";
 
-type DocumentItem = {
+type DocumentPresentation = {
+  icon: string;
+  accent: DocumentAccent;
+  buttonLabel: string;
+};
+
+type HubResource = {
   id: string;
   title: string;
   description: string;
+  category: string;
   status: DocumentStatus;
   href: string;
   icon: string;
   accent: DocumentAccent;
-  contents: string[];
-  externalLabel: string;
+  highlights: string[];
+  buttonLabel: string;
+  updatedAt?: string;
+  readingTime?: number;
+  version?: string;
 };
 
-const documents: DocumentItem[] = [
-  {
-    id: "project-overview",
-    title: "Project Overview",
-    description:
-      "A concise introduction to Lifetopia World, its products, current phase, and funding request.",
-    status: "Live",
-    href: "https://docs.lifetopiaworld.io/project-overview",
+const docsBaseUrl = (
+  process.env.NEXT_PUBLIC_DOCS_URL ??
+  "https://docs.lifetopiaworld.io"
+).replace(/\/$/, "");
+
+const githubRepositoryUrl =
+  "https://github.com/pashamuhammadd/lifetopia-platform";
+
+const documentPresentation: Record<
+  string,
+  DocumentPresentation
+> = {
+  "project-overview": {
     icon: "mdi:file-document-outline",
     accent: "green",
-    contents: [
-      "Project vision and product ecosystem",
-      "Current development status",
-      "Existing public products",
-      "Grant request and intended outcome",
-    ],
-    externalLabel: "Open Project Overview",
+    buttonLabel: "Open Project Overview",
   },
-  {
-    id: "beta-roadmap",
-    title: "Beta Roadmap",
-    description:
-      "The milestone-based delivery plan for completing the connected Lifetopia Beta.",
-    status: "Live",
-    href: "https://docs.lifetopiaworld.io/beta-roadmap",
+  "beta-roadmap": {
     icon: "mdi:map-marker-path",
     accent: "blue",
-    contents: [
-      "Three funded milestones",
-      "Delivery timeline",
-      "Core deliverables",
-      "Reviewable milestone outcomes",
-    ],
-    externalLabel: "Open Beta Roadmap",
+    buttonLabel: "Open Beta Roadmap",
   },
-  {
-    id: "technical-architecture",
-    title: "Technical Architecture",
-    description:
-      "An overview of the game, community platform, backend, shared identity, and Solana integration.",
-    status: "Live",
-    href: "https://docs.lifetopiaworld.io/technical-architecture",
+  "technical-architecture": {
     icon: "mdi:server-network",
     accent: "purple",
-    contents: [
-      "Product and monorepo architecture",
-      "Authentication and shared identity",
-      "Backend and data foundation",
-      "Blockchain integration direction",
-    ],
-    externalLabel: "Open Architecture",
+    buttonLabel: "Open Architecture",
   },
-  {
-    id: "pitch-deck",
-    title: "Pitch Deck",
-    description:
-      "A visual presentation of Lifetopia’s opportunity, progress, team, funding, and Beta strategy.",
-    status: "Preparing",
-    href: "https://docs.lifetopiaworld.io/pitch-deck",
+  "pitch-deck": {
     icon: "mdi:presentation-play",
     accent: "gold",
-    contents: [
-      "Problem and opportunity",
-      "Product demonstrations",
-      "Roadmap and funding",
-      "Team and expected impact",
-    ],
-    externalLabel: "Review Pitch Deck",
+    buttonLabel: "Review Pitch Deck",
   },
-  {
-    id: "whitepaper",
-    title: "Whitepaper",
-    description:
-      "The long-form product, ecosystem, economy, and Web3 participation document.",
-    status: "Planned",
-    href: "https://docs.lifetopiaworld.io/whitepaper",
+  whitepaper: {
     icon: "mdi:book-open-page-variant-outline",
     accent: "purple",
-    contents: [
-      "Game and community ecosystem",
-      "Player identity and ownership",
-      "Economy and marketplace direction",
-      "Long-term development vision",
-    ],
-    externalLabel: "Open Whitepaper",
+    buttonLabel: "Open Whitepaper",
   },
-  {
-    id: "github",
-    title: "GitHub Repository",
-    description:
-      "Public source code and development history for independent technical verification.",
-    status: "Live",
-    href: "https://github.com/pashamuhammadd/lifetopia-platform",
-    icon: "mdi:github",
-    accent: "green",
-    contents: [
-      "Public monorepo structure",
-      "Commit history",
-      "Application source code",
-      "Development evidence",
-    ],
-    externalLabel: "Review Repository",
-  },
+};
+
+const fallbackPresentation: DocumentPresentation = {
+  icon: "mdi:file-document-outline",
+  accent: "green",
+  buttonLabel: "Open Document",
+};
+
+const sharedDocumentResources: HubResource[] =
+  getDocuments("en").map((document) => {
+    const presentation =
+      documentPresentation[document.slug] ??
+      fallbackPresentation;
+
+    const category = getDocumentCategory(
+      document.category,
+      "en",
+    );
+
+    return {
+      id: document.slug,
+      title: document.title,
+      description: document.description,
+      category:
+        category?.label ?? "Documentation",
+      status: document.status,
+      href: `${docsBaseUrl}/${document.slug}`,
+      icon: presentation.icon,
+      accent: presentation.accent,
+      highlights: document.sections
+        .slice(0, 4)
+        .map((section) => section.title),
+      buttonLabel: presentation.buttonLabel,
+      updatedAt: document.updatedAt,
+      readingTime: document.readingTime,
+      version: document.version,
+    };
+  });
+
+const githubResource: HubResource = {
+  id: "github-repository",
+  title: "GitHub Repository",
+  description:
+    "Public source code, repository structure, commit history, and development evidence for independent technical verification.",
+  category: "Source Code",
+  status: "Live",
+  href: githubRepositoryUrl,
+  icon: "mdi:github",
+  accent: "orange",
+  highlights: [
+    "Public monorepo structure",
+    "Verifiable commit history",
+    "Application source code",
+    "Continuous development evidence",
+  ],
+  buttonLabel: "Review Repository",
+};
+
+const resources: HubResource[] = [
+  ...sharedDocumentResources,
+  githubResource,
 ];
 
-function getDocumentClasses(accent: DocumentAccent) {
+const defaultResourceId =
+  resources[0]?.id ?? "project-overview";
+
+function getAccentClasses(
+  accent: DocumentAccent,
+) {
   if (accent === "blue") {
     return {
       icon: "border-[#71afd2]/20 bg-[#e3f3fc] text-[#347ca6]",
@@ -135,6 +154,7 @@ function getDocumentClasses(accent: DocumentAccent) {
       preview:
         "border-[#74afd1]/25 bg-[linear-gradient(145deg,#ffffff,#f1f9fd)]",
       glow: "bg-[#72c5eb]/18",
+      text: "text-[#347ca6]",
     };
   }
 
@@ -147,6 +167,7 @@ function getDocumentClasses(accent: DocumentAccent) {
       preview:
         "border-[#9b84dc]/25 bg-[linear-gradient(145deg,#ffffff,#f7f4ff)]",
       glow: "bg-[#9b7de5]/18",
+      text: "text-[#674aab]",
     };
   }
 
@@ -159,6 +180,20 @@ function getDocumentClasses(accent: DocumentAccent) {
       preview:
         "border-[#ddb866]/25 bg-[linear-gradient(145deg,#ffffff,#fff8e8)]",
       glow: "bg-[#f4c45e]/20",
+      text: "text-[#946c1c]",
+    };
+  }
+
+  if (accent === "orange") {
+    return {
+      icon: "border-[#df9847]/20 bg-[#fff0df] text-[#b96b18]",
+      active:
+        "border-[#e3a052]/45 bg-[#fff3e6] text-[#ae6518]",
+      dot: "bg-[#e28a27]",
+      preview:
+        "border-[#e3a052]/25 bg-[linear-gradient(145deg,#ffffff,#fff7ed)]",
+      glow: "bg-[#f0a14a]/18",
+      text: "text-[#ae6518]",
     };
   }
 
@@ -170,33 +205,106 @@ function getDocumentClasses(accent: DocumentAccent) {
     preview:
       "border-[#79ad62]/25 bg-[linear-gradient(145deg,#ffffff,#f4faf0)]",
     glow: "bg-[#9fd969]/20",
+    text: "text-[#477a34]",
   };
 }
 
-function getStatusClasses(status: DocumentStatus) {
+function getStatusClasses(
+  status: DocumentStatus,
+) {
   if (status === "Live") {
-    return "border-[#bcd8ad] bg-[#e9f6e1] text-[#477a34]";
+    return "border-[#bdd6ae] bg-[#e9f6e1] text-[#477a34]";
   }
 
-  if (status === "Preparing") {
+  if (status === "Public Draft") {
+    return "border-[#c9dfea] bg-[#eaf5fa] text-[#477893]";
+  }
+
+  if (status === "In Preparation") {
     return "border-[#e5cf91] bg-[#fff4d7] text-[#936d1f]";
+  }
+
+  if (status === "Archived") {
+    return "border-[#d7cec2] bg-[#eee8df] text-[#827462]";
   }
 
   return "border-[#d4cae9] bg-[#f2edfb] text-[#715b9f]";
 }
 
+function getStatusDescription(
+  status: DocumentStatus,
+) {
+  if (status === "Live") {
+    return "Available now";
+  }
+
+  if (status === "Public Draft") {
+    return "Public working draft";
+  }
+
+  if (status === "In Preparation") {
+    return "Currently being prepared";
+  }
+
+  if (status === "Archived") {
+    return "Archived document";
+  }
+
+  return "Planned documentation";
+}
+
+function formatUpdatedDate(
+  value: string | undefined,
+) {
+  if (!value) {
+    return undefined;
+  }
+
+  const date = new Date(`${value}T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
 export function DocumentsHub() {
-  const [activeDocumentId, setActiveDocumentId] =
-    useState(documents[0]!.id);
+  const [activeResourceId, setActiveResourceId] =
+    useState(defaultResourceId);
 
-  const activeDocument =
-    documents.find(
-      (document) => document.id === activeDocumentId,
-    ) ?? documents[0]!;
+  const activeResource =
+    resources.find(
+      (resource) =>
+        resource.id === activeResourceId,
+    ) ?? resources[0];
 
-  const activeClasses = getDocumentClasses(
-    activeDocument.accent,
+  if (!activeResource) {
+    return null;
+  }
+
+  const activeClasses = getAccentClasses(
+    activeResource.accent,
   );
+
+  const sharedDocumentCount =
+    sharedDocumentResources.length;
+
+  const publishedCount =
+    sharedDocumentResources.filter(
+      (resource) =>
+        resource.status === "Live" ||
+        resource.status === "Public Draft",
+    ).length;
+
+  const formattedUpdatedAt =
+    formatUpdatedDate(
+      activeResource.updatedAt,
+    );
 
   return (
     <section
@@ -228,39 +336,67 @@ export function DocumentsHub() {
             </h2>
 
             <p className="mt-[clamp(0.5rem,0.9vw,0.75rem)] max-w-[42rem] text-[clamp(0.82rem,0.94vw,0.98rem)] leading-[1.55] text-[#706452]">
-              Detailed documents are published through the Lifetopia
-              documentation portal for direct and independent review.
+              Documentation status and content are
+              synchronized directly with the official
+              Lifetopia documentation portal.
             </p>
           </div>
 
-          <Link
-            href="https://docs.lifetopiaworld.io"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-[2.75rem] w-fit items-center justify-center gap-2 rounded-[0.72rem] border border-[#254e2e]/15 bg-[#173b21] px-4 text-[clamp(0.72rem,0.82vw,0.88rem)] font-black text-white shadow-[0_0.7rem_1.8rem_rgba(31,64,37,0.14)] transition hover:-translate-y-0.5 hover:bg-[#24502d]"
-          >
-            Open Documentation Portal
-            <span aria-hidden="true">↗</span>
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="grid grid-cols-2 overflow-hidden rounded-[0.72rem] border border-[#d8cbb2] bg-white/68">
+              <article className="min-w-[5.8rem] px-3 py-2 text-center">
+                <p className="text-[0.58rem] font-black uppercase tracking-[0.07em] text-[#958771]">
+                  Documents
+                </p>
+
+                <p className="mt-1 text-[0.9rem] font-black text-[#395d34]">
+                  {sharedDocumentCount}
+                </p>
+              </article>
+
+              <article className="min-w-[5.8rem] border-l border-[#e4d8c2] px-3 py-2 text-center">
+                <p className="text-[0.58rem] font-black uppercase tracking-[0.07em] text-[#958771]">
+                  Published
+                </p>
+
+                <p className="mt-1 text-[0.9rem] font-black text-[#395d34]">
+                  {publishedCount}
+                </p>
+              </article>
+            </div>
+
+            <Link
+              href={docsBaseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[2.75rem] items-center justify-center gap-2 rounded-[0.72rem] border border-[#254e2e]/15 bg-[#173b21] px-4 text-[clamp(0.72rem,0.82vw,0.88rem)] font-black text-white shadow-[0_0.7rem_1.8rem_rgba(31,64,37,0.14)] transition hover:-translate-y-0.5 hover:bg-[#24502d]"
+            >
+              Open Docs Portal
+              <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
         </header>
 
         <div className="mt-[clamp(1.2rem,2vw,1.7rem)] grid gap-[clamp(0.9rem,1.6vw,1.25rem)] lg:grid-cols-[minmax(14rem,0.65fr)_minmax(0,1.35fr)]">
-          <div className="min-w-0">
+          <aside className="min-w-0">
             <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2 lg:mx-0 lg:grid lg:overflow-visible lg:px-0 lg:pb-0">
-              {documents.map((document) => {
-                const classes = getDocumentClasses(
-                  document.accent,
-                );
+              {resources.map((resource) => {
+                const classes =
+                  getAccentClasses(
+                    resource.accent,
+                  );
 
                 const isActive =
-                  document.id === activeDocument.id;
+                  resource.id === activeResource.id;
 
                 return (
                   <button
-                    key={document.id}
+                    key={resource.id}
                     type="button"
                     onClick={() => {
-                      setActiveDocumentId(document.id);
+                      setActiveResourceId(
+                        resource.id,
+                      );
                     }}
                     aria-pressed={isActive}
                     className={[
@@ -274,33 +410,33 @@ export function DocumentsHub() {
                       className={`flex size-[2.45rem] shrink-0 items-center justify-center rounded-[0.65rem] border transition duration-200 group-hover:scale-105 ${classes.icon}`}
                     >
                       <TechnologyIcon
-                        icon={document.icon}
-                        label={document.title}
+                        icon={resource.icon}
+                        label={resource.title}
                       />
                     </span>
 
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[clamp(0.74rem,0.84vw,0.9rem)] font-black">
-                        {document.title}
+                        {resource.title}
                       </span>
 
                       <span className="mt-1 block truncate text-[clamp(0.62rem,0.7vw,0.76rem)] font-semibold opacity-65">
-                        {document.description}
+                        {resource.category}
                       </span>
                     </span>
 
                     <span
-                      className={`shrink-0 rounded-full border px-2 py-1 text-[0.58rem] font-black ${getStatusClasses(
-                        document.status,
+                      className={`shrink-0 rounded-full border px-2 py-1 text-[0.56rem] font-black ${getStatusClasses(
+                        resource.status,
                       )}`}
                     >
-                      {document.status}
+                      {resource.status}
                     </span>
                   </button>
                 );
               })}
             </div>
-          </div>
+          </aside>
 
           <article
             className={`relative min-w-0 overflow-hidden rounded-[1rem] border p-[clamp(0.9rem,1.5vw,1.2rem)] shadow-[0_1rem_3.2rem_rgba(61,47,27,0.08)] ${activeClasses.preview}`}
@@ -316,70 +452,145 @@ export function DocumentsHub() {
                   className={`flex size-[clamp(2.8rem,4vw,3.4rem)] shrink-0 items-center justify-center rounded-[0.78rem] border ${activeClasses.icon}`}
                 >
                   <TechnologyIcon
-                    icon={activeDocument.icon}
-                    label={activeDocument.title}
+                    icon={activeResource.icon}
+                    label={activeResource.title}
                   />
                 </span>
 
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="text-[clamp(1rem,1.3vw,1.28rem)] font-black leading-[1.2] text-[#30251c]">
-                      {activeDocument.title}
+                      {activeResource.title}
                     </h3>
 
                     <span
                       className={`rounded-full border px-2.5 py-1 text-[0.62rem] font-black ${getStatusClasses(
-                        activeDocument.status,
+                        activeResource.status,
                       )}`}
                     >
-                      {activeDocument.status}
+                      {activeResource.status}
                     </span>
                   </div>
 
+                  <p
+                    className={`mt-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] ${activeClasses.text}`}
+                  >
+                    {activeResource.category}
+                  </p>
+
                   <p className="mt-1.5 max-w-[39rem] text-[clamp(0.72rem,0.82vw,0.88rem)] font-semibold leading-[1.5] text-[#796e5d]">
-                    {activeDocument.description}
+                    {activeResource.description}
                   </p>
                 </div>
               </div>
 
               <Link
-                href={activeDocument.href}
+                href={activeResource.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex min-h-[2.65rem] shrink-0 items-center justify-center gap-2 rounded-[0.7rem] bg-[#173b21] px-4 text-[clamp(0.7rem,0.8vw,0.86rem)] font-black text-white shadow-[0_0.6rem_1.6rem_rgba(31,64,37,0.13)] transition hover:-translate-y-0.5 hover:bg-[#24502d]"
               >
-                {activeDocument.externalLabel}
+                {activeResource.buttonLabel}
                 <span aria-hidden="true">↗</span>
               </Link>
             </div>
 
-            <div className="relative mt-4 grid gap-2 sm:grid-cols-2">
-              {activeDocument.contents.map((content, index) => (
-                <div
-                  key={content}
-                  className="group flex items-center gap-3 rounded-[0.72rem] border border-[#ded2ba] bg-white/68 px-3 py-2.5 transition hover:border-[#9fbe8d] hover:bg-white"
-                >
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#e8f3df] font-mono text-[0.62rem] font-black text-[#4f803b]">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
+            <div className="relative mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <div className="rounded-[0.68rem] border border-[#ded2ba] bg-white/65 px-2.5 py-2">
+                <p className="text-[0.56rem] font-black uppercase tracking-[0.07em] text-[#958771]">
+                  Status
+                </p>
 
-                  <p className="text-[clamp(0.68rem,0.77vw,0.84rem)] font-bold leading-[1.4] text-[#675d4e]">
-                    {content}
-                  </p>
-                </div>
-              ))}
+                <p className="mt-1 truncate text-[0.7rem] font-black text-[#4f5c47]">
+                  {getStatusDescription(
+                    activeResource.status,
+                  )}
+                </p>
+              </div>
+
+              <div className="rounded-[0.68rem] border border-[#ded2ba] bg-white/65 px-2.5 py-2">
+                <p className="text-[0.56rem] font-black uppercase tracking-[0.07em] text-[#958771]">
+                  Updated
+                </p>
+
+                <p className="mt-1 truncate text-[0.7rem] font-black text-[#4f5c47]">
+                  {formattedUpdatedAt ?? "External"}
+                </p>
+              </div>
+
+              <div className="rounded-[0.68rem] border border-[#ded2ba] bg-white/65 px-2.5 py-2">
+                <p className="text-[0.56rem] font-black uppercase tracking-[0.07em] text-[#958771]">
+                  Reading
+                </p>
+
+                <p className="mt-1 truncate text-[0.7rem] font-black text-[#4f5c47]">
+                  {activeResource.readingTime
+                    ? `${activeResource.readingTime} min`
+                    : "Repository"}
+                </p>
+              </div>
+
+              <div className="rounded-[0.68rem] border border-[#ded2ba] bg-white/65 px-2.5 py-2">
+                <p className="text-[0.56rem] font-black uppercase tracking-[0.07em] text-[#958771]">
+                  Version
+                </p>
+
+                <p className="mt-1 truncate text-[0.7rem] font-black text-[#4f5c47]">
+                  {activeResource.version
+                    ? `v${activeResource.version}`
+                    : "Public"}
+                </p>
+              </div>
             </div>
+
+            <section className="relative mt-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[0.64rem] font-black uppercase tracking-[0.09em] text-[#668255]">
+                  Document Coverage
+                </p>
+
+                <span className="text-[0.62rem] font-bold text-[#8a7c66]">
+                  {
+                    activeResource.highlights
+                      .length
+                  }{" "}
+                  sections
+                </span>
+              </div>
+
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                {activeResource.highlights.map(
+                  (highlight, index) => (
+                    <div
+                      key={highlight}
+                      className="group flex items-center gap-3 rounded-[0.72rem] border border-[#ded2ba] bg-white/68 px-3 py-2.5 transition hover:border-[#9fbe8d] hover:bg-white"
+                    >
+                      <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#e8f3df] font-mono text-[0.6rem] font-black text-[#4f803b]">
+                        {String(
+                          index + 1,
+                        ).padStart(2, "0")}
+                      </span>
+
+                      <p className="text-[clamp(0.68rem,0.77vw,0.84rem)] font-bold leading-[1.4] text-[#675d4e]">
+                        {highlight}
+                      </p>
+                    </div>
+                  ),
+                )}
+              </div>
+            </section>
 
             <footer className="relative mt-4 flex flex-col gap-2 border-t border-[#ded2ba] pt-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-[clamp(0.64rem,0.72vw,0.78rem)] font-semibold text-[#847764]">
-                Hosted independently at docs.lifetopiaworld.io
+                Documentation metadata is synchronized
+                from the shared monorepo package.
               </p>
 
               <span className="inline-flex items-center gap-2 text-[clamp(0.64rem,0.72vw,0.78rem)] font-black text-[#557f43]">
                 <span
                   className={`size-2 rounded-full ${activeClasses.dot}`}
                 />
-                Reviewer-accessible route
+                Shared source of truth
               </span>
             </footer>
           </article>
