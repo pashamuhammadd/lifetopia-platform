@@ -1,60 +1,76 @@
+import {
+  getDocuments,
+  type DocumentStatus,
+} from "@repo/docs-data";
 import Link from "next/link";
 
-import { lifetopiaDocuments } from "../data/documents";
+const documents = getDocuments("en");
 
-function getStatusClasses(status: string) {
+function getStatusClasses(
+  status: DocumentStatus,
+) {
   if (status === "Live") {
-    return "border-green-200 bg-green-50 text-green-700";
+    return "border-[#bdd6ae] bg-[#edf6e6] text-[#647653]";
   }
 
-  if (status === "Preparing") {
-    return "border-amber-200 bg-amber-50 text-amber-700";
+  if (status === "Public Draft") {
+    return "border-[#c9dfea] bg-[#eaf5fa] text-[#477893]";
   }
 
-  return "border-violet-200 bg-violet-50 text-violet-700";
+  if (status === "In Preparation") {
+    return "border-[#e2cf9d] bg-[#fff2d2] text-[#946c25]";
+  }
+
+  if (status === "Archived") {
+    return "border-[#d7cec2] bg-[#eee8df] text-[#827462]";
+  }
+
+  return "border-[#d4c8dc] bg-[#f2ebf4] text-[#68556f]";
 }
 
 export default function DocsPage() {
   return (
-    <main className="min-h-screen bg-[#f8f2e7] text-[#30251c]">
-      <header className="border-b border-[#ded2ba] bg-[#fffaf2]">
-        <div className="mx-auto max-w-5xl px-5 py-12 sm:py-16">
-          <span className="text-xs font-black uppercase tracking-[0.12em] text-[#557f43]">
-            Lifetopia World
+    <main className="min-h-screen">
+      <header className="border-b border-[var(--docs-line)] bg-[rgba(255,253,248,0.72)]">
+        <div className="docs-container py-[clamp(2.25rem,5vw,4rem)]">
+          <span className="docs-eyebrow">
+            Official Documentation
           </span>
 
-          <h1 className="mt-4 max-w-3xl text-4xl font-black leading-tight tracking-[-0.04em] sm:text-5xl">
-            Public project documentation.
+          <h1 className="docs-heading mt-4 max-w-[42rem]">
+            Lifetopia World documentation.
           </h1>
 
-          <p className="mt-4 max-w-2xl leading-7 text-[#706452]">
-            Review Lifetopia’s product, development,
-            architecture, roadmap, and ecosystem plans.
+          <p className="docs-description mt-3 max-w-[42rem]">
+            Explore Lifetopia&apos;s project,
+            products, development, architecture,
+            funding, economy, and community.
           </p>
 
           <Link
             href="https://grants.lifetopiaworld.io"
-            className="mt-6 inline-flex rounded-xl bg-[#173b21] px-5 py-3 text-sm font-black text-white transition hover:bg-[#24502d]"
+            className="docs-button-primary mt-5"
           >
-            Open Funding Hub ↗
+            Open Funding Hub
+            <span aria-hidden="true">↗</span>
           </Link>
         </div>
       </header>
 
-      <section className="mx-auto grid max-w-5xl gap-4 px-5 py-10 sm:grid-cols-2">
-        {lifetopiaDocuments.map((document) => (
+      <section className="docs-container grid grid-cols-2 gap-3 py-[clamp(2rem,4vw,3rem)] lg:grid-cols-3">
+        {documents.map((document) => (
           <Link
             key={document.slug}
             href={`/${document.slug}`}
-            className="group rounded-2xl border border-[#ded2ba] bg-white/70 p-5 shadow-[0_0.7rem_2rem_rgba(61,47,27,0.05)] transition hover:-translate-y-1 hover:border-[#9fbe8d] hover:bg-white"
+            className="docs-card group flex min-w-0 flex-col p-[clamp(0.8rem,1.5vw,1.2rem)]"
           >
-            <div className="flex items-start justify-between gap-3">
-              <h2 className="text-lg font-black group-hover:text-[#477a34]">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+              <h2 className="text-[clamp(0.86rem,1.15vw,1.1rem)] font-extrabold leading-[1.2] text-[var(--docs-ink)] transition group-hover:text-[var(--docs-brown)]">
                 {document.title}
               </h2>
 
               <span
-                className={`rounded-full border px-2.5 py-1 text-xs font-black ${getStatusClasses(
+                className={`w-fit shrink-0 rounded-full border px-2 py-1 text-[0.58rem] font-extrabold ${getStatusClasses(
                   document.status,
                 )}`}
               >
@@ -62,13 +78,15 @@ export default function DocsPage() {
               </span>
             </div>
 
-            <p className="mt-3 text-sm leading-6 text-[#706452]">
+            <p className="mt-3 line-clamp-3 text-[clamp(0.7rem,0.84vw,0.86rem)] font-medium leading-[1.55] text-[var(--docs-muted)]">
               {document.description}
             </p>
 
-            <p className="mt-5 text-sm font-black text-[#557f43]">
-              Open document →
-            </p>
+            <div className="mt-auto pt-4">
+              <p className="text-[0.68rem] font-extrabold text-[var(--docs-brown)]">
+                Open document →
+              </p>
+            </div>
           </Link>
         ))}
       </section>

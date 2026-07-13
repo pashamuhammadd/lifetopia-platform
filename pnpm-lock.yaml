@@ -81,6 +81,12 @@ importers:
 
   apps/docs:
     dependencies:
+      '@fontsource/baloo-2':
+        specifier: ^5.2.7
+        version: 5.2.7
+      '@repo/docs-data':
+        specifier: workspace:*
+        version: link:../../packages/docs-data
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -100,6 +106,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      '@tailwindcss/postcss':
+        specifier: ^4.3.2
+        version: 4.3.2
       '@types/node':
         specifier: ^22.15.3
         version: 22.15.3
@@ -112,6 +121,9 @@ importers:
       eslint:
         specifier: ^9.39.1
         version: 9.39.1(jiti@2.7.0)
+      tailwindcss:
+        specifier: ^4.3.2
+        version: 4.3.2
       typescript:
         specifier: 5.9.2
         version: 5.9.2
@@ -264,6 +276,15 @@ importers:
       react-icons:
         specifier: ^5.5.0
         version: 5.7.0(react@19.2.4)
+
+  packages/docs-data:
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
 
   packages/eslint-config:
     devDependencies:

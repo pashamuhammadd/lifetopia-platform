@@ -1,11 +1,11 @@
+import {
+  getAllDocumentSlugs,
+  getDocumentBySlug,
+  type DocumentStatus,
+} from "@repo/docs-data";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
-import {
-  getDocumentBySlug,
-  lifetopiaDocuments,
-} from "../../data/documents";
 
 type DocumentPageProps = {
   params: Promise<{
@@ -14,8 +14,8 @@ type DocumentPageProps = {
 };
 
 export function generateStaticParams() {
-  return lifetopiaDocuments.map((document) => ({
-    slug: document.slug,
+  return getAllDocumentSlugs().map((slug) => ({
+    slug,
   }));
 }
 
@@ -23,7 +23,10 @@ export async function generateMetadata({
   params,
 }: DocumentPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const document = getDocumentBySlug(slug);
+  const document = getDocumentBySlug(
+    slug,
+    "en",
+  );
 
   if (!document) {
     return {
@@ -32,62 +35,95 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${document.title} | Lifetopia World Docs`,
+    title: document.title,
     description: document.description,
+    alternates: {
+      canonical: `/${document.slug}`,
+    },
   };
 }
 
-function getStatusClasses(status: string) {
+function getStatusClasses(
+  status: DocumentStatus,
+) {
   if (status === "Live") {
-    return "border-green-200 bg-green-50 text-green-700";
+    return "border-[#bdd6ae] bg-[#edf6e6] text-[#647653]";
   }
 
-  if (status === "Preparing") {
-    return "border-amber-200 bg-amber-50 text-amber-700";
+  if (status === "Public Draft") {
+    return "border-[#c9dfea] bg-[#eaf5fa] text-[#477893]";
   }
 
-  return "border-violet-200 bg-violet-50 text-violet-700";
+  if (status === "In Preparation") {
+    return "border-[#e2cf9d] bg-[#fff2d2] text-[#946c25]";
+  }
+
+  if (status === "Archived") {
+    return "border-[#d7cec2] bg-[#eee8df] text-[#827462]";
+  }
+
+  return "border-[#d4c8dc] bg-[#f2ebf4] text-[#68556f]";
+}
+
+function formatUpdatedDate(value: string) {
+  const date = new Date(
+    `${value}T00:00:00`,
+  );
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
 }
 
 export default async function DocumentPage({
   params,
 }: DocumentPageProps) {
   const { slug } = await params;
-  const document = getDocumentBySlug(slug);
+
+  const document = getDocumentBySlug(
+    slug,
+    "en",
+  );
 
   if (!document) {
     notFound();
   }
 
   return (
-    <main className="min-h-screen bg-[#f8f2e7] text-[#30251c]">
-      <nav className="sticky top-0 z-50 border-b border-[#d9cdb7] bg-[#fffaf2]/90 backdrop-blur-xl">
-        <div className="mx-auto flex min-h-16 max-w-5xl items-center justify-between gap-4 px-5">
+    <main className="min-h-screen">
+      <nav className="sticky top-0 z-50 border-b border-[var(--docs-line)] bg-[rgba(255,253,248,0.88)] backdrop-blur-xl">
+        <div className="docs-container flex min-h-16 items-center justify-between gap-4">
           <Link
             href="/"
-            className="font-black text-[#315d32]"
+            className="font-extrabold text-[var(--docs-brown-dark)]"
           >
-            Lifetopia World Docs
+            Lifetopia Docs
           </Link>
 
           <Link
             href="https://grants.lifetopiaworld.io"
-            className="text-sm font-black text-[#557f43] hover:underline"
+            className="text-sm font-extrabold text-[var(--docs-sky-dark)] hover:underline"
           >
             Funding Hub ↗
           </Link>
         </div>
       </nav>
 
-      <article className="mx-auto max-w-4xl px-5 py-10 sm:py-14">
-        <header className="border-b border-[#ded2ba] pb-8">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-xs font-black uppercase tracking-[0.12em] text-[#557f43]">
+      <article className="docs-reading-container py-[clamp(2rem,4vw,3.5rem)]">
+        <header className="border-b border-[var(--docs-line)] pb-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="docs-eyebrow">
               {document.eyebrow}
             </span>
 
             <span
-              className={`rounded-full border px-3 py-1 text-xs font-black ${getStatusClasses(
+              className={`rounded-full border px-3 py-1 text-[0.66rem] font-extrabold ${getStatusClasses(
                 document.status,
               )}`}
             >
@@ -95,71 +131,89 @@ export default async function DocumentPage({
             </span>
           </div>
 
-          <h1 className="mt-4 max-w-3xl text-4xl font-black leading-tight tracking-[-0.04em] sm:text-5xl">
+          <h1 className="docs-heading mt-4 max-w-[48rem]">
             {document.title}
           </h1>
 
-          <p className="mt-4 max-w-3xl text-base leading-7 text-[#706452]">
+          <p className="docs-description mt-3 max-w-[46rem]">
             {document.description}
           </p>
 
-          <p className="mt-4 text-sm font-semibold text-[#8a7d68]">
-            Last updated: {document.updatedAt}
-          </p>
+          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[0.72rem] font-semibold text-[var(--docs-muted)]">
+            <span>
+              Updated:{" "}
+              {formatUpdatedDate(
+                document.updatedAt,
+              )}
+            </span>
+
+            <span>
+              Owner: {document.owner}
+            </span>
+
+            <span>
+              {document.readingTime} min read
+            </span>
+
+            <span>
+              Version {document.version}
+            </span>
+          </div>
         </header>
 
-        <div className="mt-8 space-y-5">
+        <div className="docs-prose mt-6">
           {document.sections.map((section) => (
             <section
-              key={section.title}
-              className="rounded-2xl border border-[#ded2ba] bg-white/70 p-5 shadow-[0_0.7rem_2rem_rgba(61,47,27,0.05)] sm:p-6"
+              key={section.id}
+              id={section.id}
+              className="docs-book-surface mb-4 px-[clamp(1.25rem,3vw,2rem)] py-[clamp(1rem,2.5vw,1.6rem)]"
             >
-              <h2 className="text-xl font-black text-[#315d32]">
+              <h2 className="mt-0">
                 {section.title}
               </h2>
 
-              {section.paragraphs?.map((paragraph) => (
-                <p
-                  key={paragraph}
-                  className="mt-3 leading-7 text-[#675d4e]"
-                >
-                  {paragraph}
-                </p>
-              ))}
+              {section.paragraphs?.map(
+                (paragraph) => (
+                  <p key={paragraph}>
+                    {paragraph}
+                  </p>
+                ),
+              )}
 
               {section.bullets ? (
                 <ul className="mt-4 grid gap-2">
-                  {section.bullets.map((bullet) => (
-                    <li
-                      key={bullet}
-                      className="flex items-start gap-3 rounded-xl border border-[#e6dcc9] bg-[#faf6ed] px-4 py-3 text-[#675d4e]"
-                    >
-                      <span className="mt-2 size-2 shrink-0 rounded-full bg-[#68ad4a]" />
-                      <span className="leading-6">
-                        {bullet}
-                      </span>
-                    </li>
-                  ))}
+                  {section.bullets.map(
+                    (bullet) => (
+                      <li
+                        key={bullet}
+                        className="flex items-start gap-3 rounded-[0.7rem] border border-[var(--docs-line)] bg-[rgba(255,253,248,0.72)] px-3 py-2.5"
+                      >
+                        <span className="mt-[0.65rem] size-1.5 shrink-0 rounded-full bg-[var(--docs-gold)]" />
+
+                        <span>{bullet}</span>
+                      </li>
+                    ),
+                  )}
                 </ul>
               ) : null}
             </section>
           ))}
         </div>
 
-        <footer className="mt-8 flex flex-col gap-3 rounded-2xl bg-[#173b21] px-5 py-5 text-white sm:flex-row sm:items-center sm:justify-between">
+        <footer className="mt-6 flex flex-col gap-3 rounded-[1rem] bg-[var(--docs-brown-dark)] px-5 py-4 text-white sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-black">
-              Lifetopia World
+            <p className="font-extrabold">
+              Official Lifetopia Documentation
             </p>
 
             <p className="mt-1 text-sm text-white/55">
-              Public reviewer documentation
+              Public project documentation
             </p>
           </div>
 
           <Link
             href="mailto:contact@lifetopiaworld.io"
-            className="text-sm font-black text-[#afe994] hover:underline"
+            className="text-sm font-extrabold text-[#ffe5a5] hover:underline"
           >
             contact@lifetopiaworld.io
           </Link>
