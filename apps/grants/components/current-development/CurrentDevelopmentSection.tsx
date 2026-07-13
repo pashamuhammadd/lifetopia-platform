@@ -204,7 +204,7 @@ export function CurrentDevelopmentSection() {
   return (
     <section
       id="current-development"
-      className="relative flex overflow-hidden bg-[#f6efe1] py-[clamp(3rem,5vw,4.5rem)] lg:min-h-[calc(100svh-3.75rem)] lg:items-center"
+      className="relative overflow-hidden bg-[#f6efe1] py-[clamp(2.25rem,3vw,3rem)]"
     >
       <div
         aria-hidden="true"

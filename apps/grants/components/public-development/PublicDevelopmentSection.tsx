@@ -143,7 +143,7 @@ export async function PublicDevelopmentSection() {
   return (
     <section
       id="public-development"
-      className="relative flex overflow-hidden bg-[#fff9ef] py-[clamp(3rem,5vw,4.5rem)] lg:min-h-[calc(100svh-3.75rem)] lg:items-center"
+      className="relative overflow-hidden bg-[#fff9ef] py-[clamp(2.25rem,3vw,3rem)]"
     >
       <div
         aria-hidden="true"
