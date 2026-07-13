@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {
-  type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent,
   useEffect,
   useRef,
@@ -19,9 +18,6 @@ const playableGameUrl =
 const focusableElementSelector = [
   'a[href]',
   'button:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
   '[tabindex]:not([tabindex="-1"])',
 ].join(",");
 
@@ -58,9 +54,7 @@ export function PlayWarningModal({
       titleRef.current?.focus();
     }, 0);
 
-    function handleKeyboardNavigation(
-      event: KeyboardEvent,
-    ) {
+    function handleKeyboard(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
         onCloseRef.current();
@@ -81,60 +75,45 @@ export function PlayWarningModal({
         dialog.querySelectorAll<HTMLElement>(
           focusableElementSelector,
         ),
-      ).filter(
-        (element) =>
-          !element.hasAttribute("disabled") &&
-          element.getAttribute("aria-hidden") !==
-            "true",
       );
 
-      if (focusableElements.length === 0) {
+      if (!focusableElements.length) {
         event.preventDefault();
         titleRef.current?.focus();
         return;
       }
 
-      const firstFocusableElement =
-        focusableElements[0];
-
-      const lastFocusableElement =
+      const firstElement = focusableElements[0];
+      const lastElement =
         focusableElements[
           focusableElements.length - 1
         ];
 
-      const activeElement =
-        document.activeElement;
-
       if (
         event.shiftKey &&
-        (activeElement === firstFocusableElement ||
-          activeElement === titleRef.current)
+        (document.activeElement === firstElement ||
+          document.activeElement === titleRef.current)
       ) {
         event.preventDefault();
-        lastFocusableElement?.focus();
-        return;
+        lastElement?.focus();
       }
 
       if (
         !event.shiftKey &&
-        activeElement === lastFocusableElement
+        document.activeElement === lastElement
       ) {
         event.preventDefault();
-        firstFocusableElement?.focus();
+        firstElement?.focus();
       }
     }
 
-    window.addEventListener(
-      "keydown",
-      handleKeyboardNavigation,
-    );
+    window.addEventListener("keydown", handleKeyboard);
 
     return () => {
       window.clearTimeout(focusTimer);
-
       window.removeEventListener(
         "keydown",
-        handleKeyboardNavigation,
+        handleKeyboard,
       );
 
       document.body.style.overflow =
@@ -158,17 +137,10 @@ export function PlayWarningModal({
     }
   }
 
-  function handleDialogKeyDown(
-    event: ReactKeyboardEvent<HTMLDivElement>,
-  ) {
-    event.stopPropagation();
-  }
-
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-[#07150d]/75 p-[clamp(0.8rem,3vw,1.5rem)] backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[#07150d]/76 p-2 backdrop-blur-sm sm:p-4"
       onMouseDown={handleBackdropClick}
-      aria-hidden="false"
     >
       <div
         ref={dialogRef}
@@ -176,23 +148,17 @@ export function PlayWarningModal({
         aria-modal="true"
         aria-labelledby="play-warning-title"
         aria-describedby="play-warning-description"
-        onKeyDown={handleDialogKeyDown}
-        className="relative my-auto w-full max-w-[38rem] overflow-hidden rounded-[clamp(1rem,2vw,1.5rem)] border border-white/15 bg-[#fffaf0] shadow-[0_2rem_6rem_rgba(0,0,0,0.38)]"
+        className="w-full max-w-[34rem] overflow-hidden rounded-[1.15rem] border border-white/15 bg-[#fffaf0] shadow-[0_2rem_6rem_rgba(0,0,0,0.38)]"
       >
-        <div className="relative overflow-hidden bg-[#173b21] px-[clamp(1rem,2.5vw,1.7rem)] pb-[clamp(1.2rem,2.5vw,1.8rem)] pt-[clamp(1rem,2.5vw,1.5rem)] text-white">
+        <div className="relative overflow-hidden bg-[#173b21] px-[clamp(1rem,2vw,1.4rem)] py-[clamp(0.9rem,1.6vw,1.2rem)] text-white">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-[#8ee46a]/15 blur-3xl"
-          />
-
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -bottom-24 -left-20 size-64 rounded-full bg-[#63bde9]/12 blur-3xl"
+            className="pointer-events-none absolute -right-16 -top-20 size-52 rounded-full bg-[#8ee46a]/15 blur-3xl"
           />
 
           <div className="relative flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#9be879]/15 bg-[#9be879]/10 px-3 py-1.5 text-[clamp(0.68rem,0.78vw,0.84rem)] font-black uppercase tracking-[0.1em] text-[#afe994]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#9be879]/15 bg-[#9be879]/10 px-3 py-1.5 text-[clamp(0.64rem,0.72vw,0.78rem)] font-black uppercase tracking-[0.09em] text-[#afe994]">
                 <span className="size-2 rounded-full bg-[#8ee46a]" />
                 Public Alpha Notice
               </span>
@@ -201,10 +167,10 @@ export function PlayWarningModal({
                 ref={titleRef}
                 id="play-warning-title"
                 tabIndex={-1}
-                className="mt-4 max-w-[28rem] text-[clamp(1.5rem,3vw,2.25rem)] font-black leading-[1.1] tracking-[-0.035em] text-white outline-none"
+                className="mt-3 max-w-[26rem] text-[clamp(1.25rem,2.3vw,1.8rem)] font-black leading-[1.1] tracking-[-0.03em] text-white outline-none"
               >
-                You are about to open the previous
-                playable Alpha build.
+                This is the previous playable Alpha
+                build.
               </h2>
             </div>
 
@@ -214,7 +180,7 @@ export function PlayWarningModal({
                 onCloseRef.current();
               }}
               aria-label="Close playable Alpha notice"
-              className="flex size-[clamp(2.5rem,4vw,2.9rem)] shrink-0 items-center justify-center rounded-[0.75rem] border border-white/12 bg-white/[0.07] text-[1.25rem] font-medium text-white/70 transition hover:bg-white/[0.12] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#afe994]"
+              className="flex size-[2.45rem] shrink-0 items-center justify-center rounded-[0.68rem] border border-white/12 bg-white/[0.07] text-[1.15rem] text-white/70 transition hover:bg-white/[0.12] hover:text-white"
             >
               <span aria-hidden="true">×</span>
             </button>
@@ -222,44 +188,35 @@ export function PlayWarningModal({
 
           <p
             id="play-warning-description"
-            className="relative mt-4 max-w-[31rem] text-[clamp(0.88rem,1vw,1.04rem)] leading-[1.7] text-white/67"
+            className="relative mt-3 max-w-[29rem] text-[clamp(0.78rem,0.88vw,0.94rem)] leading-[1.55] text-white/66"
           >
-            Lifetopia World is currently undergoing
-            active Beta development. The publicly
-            accessible game remains an earlier Alpha
-            build and does not yet represent the
-            quality, integration, or stability planned
-            for the connected Beta ecosystem.
+            Lifetopia World is now in Beta development.
+            This public build demonstrates the earlier
+            gameplay foundation and does not represent
+            the final connected Beta experience.
           </p>
         </div>
 
-        <div className="p-[clamp(1rem,2.5vw,1.7rem)]">
-          <div className="rounded-[clamp(0.8rem,1.3vw,1rem)] border border-[#e2d5ba] bg-[#f8f1e4] p-[clamp(0.9rem,1.5vw,1.15rem)]">
-            <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.1em] text-[#668255]">
-              What reviewers should expect
-            </p>
+        <div className="p-[clamp(0.9rem,1.8vw,1.3rem)]">
+          <div className="grid gap-2 sm:grid-cols-2">
+            {[
+              "Some systems may be incomplete or temporarily unavailable.",
+              "The build is provided as execution evidence for reviewers.",
+            ].map((item) => (
+              <div
+                key={item}
+                className="flex items-start gap-2.5 rounded-[0.72rem] border border-[#e3d7c0] bg-[#f8f1e4] px-3 py-2.5"
+              >
+                <span className="mt-[0.38rem] size-2 shrink-0 rounded-full bg-[#68ad4a]" />
 
-            <div className="mt-3 grid gap-2">
-              {[
-                "An early demonstration of the playable world and gameplay foundation.",
-                "Some systems may be incomplete, disabled, or under maintenance.",
-                "The build is provided as execution evidence rather than the final Beta product.",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-start gap-3 rounded-[0.7rem] border border-[#e4d8c1] bg-white/65 px-3 py-2.5"
-                >
-                  <span className="mt-[0.4rem] size-2 shrink-0 rounded-full bg-[#68ad4a]" />
-
-                  <p className="text-[clamp(0.8rem,0.9vw,0.96rem)] font-semibold leading-[1.6] text-[#665b4b]">
-                    {item}
-                  </p>
-                </div>
-              ))}
-            </div>
+                <p className="text-[clamp(0.74rem,0.84vw,0.9rem)] font-semibold leading-[1.5] text-[#665b4b]">
+                  {item}
+                </p>
+              </div>
+            ))}
           </div>
 
-          <div className="mt-[clamp(1rem,1.8vw,1.4rem)] flex flex-col gap-3 sm:flex-row">
+          <div className="mt-3 flex flex-col gap-2.5 sm:flex-row">
             <Link
               href={playableGameUrl}
               target="_blank"
@@ -267,7 +224,7 @@ export function PlayWarningModal({
               onClick={() => {
                 onCloseRef.current();
               }}
-              className="inline-flex min-h-[3rem] flex-1 items-center justify-center gap-2 rounded-[0.8rem] bg-[#173b21] px-5 text-[clamp(0.8rem,0.9vw,0.96rem)] font-black text-white shadow-[0_0.8rem_2rem_rgba(23,59,33,0.18)] transition hover:-translate-y-0.5 hover:bg-[#24532e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5f9d49] focus-visible:ring-offset-2"
+              className="inline-flex min-h-[2.8rem] flex-1 items-center justify-center gap-2 rounded-[0.72rem] bg-[#173b21] px-4 text-[clamp(0.76rem,0.86vw,0.92rem)] font-black text-white transition hover:-translate-y-0.5 hover:bg-[#24532e]"
             >
               Open Playable Alpha
               <span aria-hidden="true">↗</span>
@@ -278,15 +235,14 @@ export function PlayWarningModal({
               onClick={() => {
                 onCloseRef.current();
               }}
-              className="inline-flex min-h-[3rem] flex-1 items-center justify-center rounded-[0.8rem] border border-[#d7c9ae] bg-white px-5 text-[clamp(0.8rem,0.9vw,0.96rem)] font-black text-[#4f4436] transition hover:-translate-y-0.5 hover:bg-[#fffdf8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7d9c68] focus-visible:ring-offset-2"
+              className="inline-flex min-h-[2.8rem] flex-1 items-center justify-center rounded-[0.72rem] border border-[#d7c9ae] bg-white px-4 text-[clamp(0.76rem,0.86vw,0.92rem)] font-black text-[#4f4436] transition hover:-translate-y-0.5 hover:bg-[#fffdf8]"
             >
-              Return to Review Portal
+              Return to Portal
             </button>
           </div>
 
-          <p className="mt-4 text-center text-[clamp(0.7rem,0.8vw,0.86rem)] leading-[1.55] text-[#8a7c66]">
-            The playable build opens in a new browser
-            tab. Press Escape to close this notice.
+          <p className="mt-3 text-center text-[clamp(0.66rem,0.74vw,0.8rem)] text-[#8a7c66]">
+            Opens in a new tab. Press Escape to close.
           </p>
         </div>
       </div>
