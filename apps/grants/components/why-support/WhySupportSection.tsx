@@ -1,289 +1,281 @@
-import Link from "next/link";
-
 import { TechnologyIcon } from "@/components/TechnologyIcon";
+
+type ReasonAccent = "green" | "blue" | "purple" | "gold";
 
 type SupportReason = {
   number: string;
   title: string;
   description: string;
-  evidence: string;
   icon: string;
-  accent: "green" | "blue" | "purple" | "gold";
+  accent: ReasonAccent;
 };
 
 const supportReasons: SupportReason[] = [
   {
     number: "01",
-    title: "The project is already executable",
+    title: "Built, not conceptual",
     description:
-      "Lifetopia World is not requesting funding to validate an initial idea. The project already has a public website, a working community platform, a playable game foundation, and shared technical infrastructure.",
-    evidence:
-      "Reviewers can inspect the products, source repository, and public development records directly.",
-    icon: "mdi:rocket-launch-outline",
+      "Reviewers can already inspect Lifetopia’s website, community platform, playable Alpha, and public repository.",
+    icon: "mdi:cube-scan",
     accent: "green",
   },
   {
     number: "02",
-    title: "The next challenge is integration",
+    title: "The next step is clear",
     description:
-      "The major opportunity now is to connect the existing game, community platform, marketplace foundation, and Solana infrastructure into one consistent player experience.",
-    evidence:
-      "Funding helps move the project from separate working foundations into a cohesive public Beta ecosystem.",
-    icon: "mdi:link-variant",
+      "Funding is focused on connecting working foundations into a stable and publicly reviewable Beta.",
+    icon: "mdi:map-marker-path",
     accent: "blue",
   },
   {
     number: "03",
-    title: "The funding request has defined boundaries",
+    title: "Delivery has ownership",
     description:
-      "The requested capital is assigned to a limited delivery window, three sequential milestones, and clearly defined cost categories rather than unrestricted long-term operations.",
-    evidence:
-      "The roadmap, allocation, deliverables, and expected outcomes are documented inside this portal.",
-    icon: "mdi:target-arrow",
-    accent: "gold",
+      "Product, game, blockchain, and art responsibilities are assigned to specific members of the team.",
+    icon: "mdi:account-check-outline",
+    accent: "purple",
   },
   {
     number: "04",
-    title: "Progress remains reviewable",
+    title: "Solana enters through utility",
     description:
-      "Development activity, milestone delivery, Beta participation, testing results, and Solana interactions will remain measurable throughout the funding period.",
-    evidence:
-      "Results that are not achieved will remain identified as incomplete rather than being presented as completed impact.",
-    icon: "mdi:shield-check-outline",
-    accent: "purple",
+      "Wallets and ownership are introduced through gameplay and community value instead of technical friction.",
+    icon: "mdi:link-variant",
+    accent: "gold",
   },
 ];
 
-const readinessSignals = [
-  {
-    label: "Products",
-    value: "Publicly inspectable",
-  },
-  {
-    label: "Development",
-    value: "Actively progressing",
-  },
-  {
-    label: "Funding",
-    value: "Fully allocated",
-  },
-  {
-    label: "Delivery",
-    value: "Milestone based",
-  },
-];
-
-function getAccentClasses(
-  accent: SupportReason["accent"],
-) {
+function getReasonClasses(accent: ReasonAccent) {
   if (accent === "blue") {
     return {
-      card: "border-[#72add0]/25 bg-[#f2f9fd]",
-      icon: "border-[#5fa7d2]/20 bg-[#e4f4fc] text-[#347ca6]",
+      card: "border-[#74afd1]/30 bg-[#f3fafe]",
+      icon: "border-[#71afd2]/20 bg-[#e3f3fc] text-[#347ca6]",
       number: "text-[#347ca6]",
-      evidence:
-        "border-[#cce3f0] bg-[#eaf6fc] text-[#397a9d]",
-    };
-  }
-
-  if (accent === "gold") {
-    return {
-      card: "border-[#ddb866]/30 bg-[#fffaf0]",
-      icon: "border-[#d8aa45]/20 bg-[#fff0cb] text-[#a6781c]",
-      number: "text-[#9a711e]",
-      evidence:
-        "border-[#ead7a5] bg-[#fff5dc] text-[#8e6a22]",
+      dot: "bg-[#55a9dc]",
+      glow: "bg-[#72c5eb]/18",
     };
   }
 
   if (accent === "purple") {
     return {
-      card: "border-[#9b83db]/25 bg-[#f8f5ff]",
-      icon: "border-[#9278d7]/20 bg-[#eee9ff] text-[#6f51b6]",
-      number: "text-[#694cad]",
-      evidence:
-        "border-[#dad0f1] bg-[#f2edff] text-[#674aab]",
+      card: "border-[#9b84dc]/30 bg-[#faf8ff]",
+      icon: "border-[#9278d7]/20 bg-[#eee9ff] text-[#6d50b4]",
+      number: "text-[#6d50b4]",
+      dot: "bg-[#9177dc]",
+      glow: "bg-[#9b7de5]/18",
+    };
+  }
+
+  if (accent === "gold") {
+    return {
+      card: "border-[#ddb866]/35 bg-[#fffaf0]",
+      icon: "border-[#d8aa45]/20 bg-[#fff0cb] text-[#9e741d]",
+      number: "text-[#9e741d]",
+      dot: "bg-[#e4aa3b]",
+      glow: "bg-[#f4c45e]/20",
     };
   }
 
   return {
-    card: "border-[#79ad62]/25 bg-[#f5faf1]",
+    card: "border-[#79ad62]/30 bg-[#f7fcf3]",
     icon: "border-[#6ca852]/20 bg-[#e7f4dd] text-[#4f8239]",
-    number: "text-[#477b34]",
-    evidence:
-      "border-[#d1e4c7] bg-[#edf7e7] text-[#477a34]",
+    number: "text-[#4f8239]",
+    dot: "bg-[#68ad4a]",
+    glow: "bg-[#9fd969]/20",
   };
+}
+
+function SupportReasonCard({
+  reason,
+}: {
+  reason: SupportReason;
+}) {
+  const classes = getReasonClasses(reason.accent);
+
+  return (
+    <article
+      className={`group relative min-w-0 overflow-hidden rounded-[0.95rem] border p-[clamp(0.8rem,1.2vw,1rem)] shadow-[0_0.7rem_2.2rem_rgba(61,47,27,0.055)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_1rem_2.8rem_rgba(61,47,27,0.1)] ${classes.card}`}
+    >
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none absolute -right-12 -top-12 size-32 rounded-full blur-3xl transition duration-500 group-hover:scale-125 ${classes.glow}`}
+      />
+
+      <div className="relative flex items-start justify-between gap-3">
+        <span
+          className={`flex size-[clamp(2.55rem,3.5vw,3rem)] shrink-0 items-center justify-center rounded-[0.72rem] border transition duration-300 group-hover:rotate-3 group-hover:scale-105 ${classes.icon}`}
+        >
+          <TechnologyIcon
+            icon={reason.icon}
+            label={reason.title}
+          />
+        </span>
+
+        <span
+          className={`font-mono text-[clamp(0.9rem,1.1vw,1.1rem)] font-black ${classes.number}`}
+        >
+          {reason.number}
+        </span>
+      </div>
+
+      <h3 className="relative mt-3 text-[clamp(0.88rem,1vw,1.06rem)] font-black leading-[1.2] text-[#30251c]">
+        {reason.title}
+      </h3>
+
+      <p className="relative mt-1.5 text-[clamp(0.68rem,0.77vw,0.84rem)] font-semibold leading-[1.5] text-[#786d5c]">
+        {reason.description}
+      </p>
+
+      <div className="relative mt-3 flex items-center gap-2 border-t border-[#ded2ba]/70 pt-2.5">
+        <span
+          className={`size-2 rounded-full ${classes.dot}`}
+        />
+
+        <span className="text-[0.62rem] font-black uppercase tracking-[0.08em] text-[#8d806b]">
+          Funding rationale
+        </span>
+      </div>
+    </article>
+  );
 }
 
 export function WhySupportSection() {
   return (
     <section
       id="why-support"
-      className="relative overflow-hidden bg-[#f6efe1] py-[clamp(4rem,8vw,7rem)]"
+      className="relative overflow-hidden bg-[#fff9ef] py-[clamp(2.25rem,3vw,3rem)]"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-[-8rem] top-[4rem] size-[22rem] rounded-full bg-[#e2f1d7]/60 blur-[7rem]"
+        className="pointer-events-none absolute -left-28 top-0 size-80 rounded-full bg-[#dcefd0]/55 blur-[7rem]"
       />
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-[2rem] right-[-9rem] size-[24rem] rounded-full bg-[#e1eef9]/55 blur-[7rem]"
+        className="pointer-events-none absolute -right-24 bottom-0 size-80 rounded-full bg-[#e7dff6]/45 blur-[7rem]"
       />
 
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 bottom-0 h-[22%] bg-[linear-gradient(to_top,rgba(119,174,88,0.11),transparent)]"
+      />
+
+      <div className="grants-grid-pattern absolute inset-0 opacity-[0.12]" />
+
       <div className="grants-container relative">
-        <header className="grid gap-[clamp(1rem,2vw,1.5rem)] lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.68fr)] lg:items-end">
+        <div className="grid gap-[clamp(1.25rem,2.5vw,2rem)] lg:grid-cols-[minmax(16rem,0.66fr)_minmax(0,1.34fr)] lg:items-center">
           <div className="min-w-0">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#c7d8b9] bg-[#edf6e6] px-4 py-2 text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.14em] text-[#557f43]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#c7d8b9] bg-[#edf6e6] px-3.5 py-1.5 text-[clamp(0.68rem,0.78vw,0.84rem)] font-black uppercase tracking-[0.12em] text-[#557f43]">
               <span className="size-2 rounded-full bg-[#68ad4a]" />
-              Why Support Lifetopia Now
+              Why Support Now
             </span>
 
-            <h2 className="mt-[clamp(1rem,1.8vw,1.4rem)] max-w-[52rem] text-[clamp(2rem,4.2vw,3.9rem)] font-black leading-[1.03] tracking-[-0.045em] text-[#2f2118]">
-              Funding unlocks integration and public delivery—not initial
-              experimentation.
+            <h2 className="mt-[clamp(0.7rem,1.2vw,0.95rem)] max-w-[15ch] text-[clamp(1.75rem,3vw,2.85rem)] font-black leading-[1.02] tracking-[-0.04em] text-[#2f2118]">
+              Funding bridges proof into a connected Beta.
             </h2>
 
-            <p className="mt-[clamp(0.9rem,1.6vw,1.2rem)] max-w-[47rem] text-[clamp(0.98rem,1.16vw,1.14rem)] leading-[1.75] text-[#706452]">
-              Lifetopia has reached the stage where its existing products and
-              technical foundations need to become one stable, connected
-              experience. This grant would accelerate that transition through a
-              defined and reviewable delivery plan.
-            </p>
-          </div>
-
-          <aside className="rounded-[clamp(1rem,1.6vw,1.25rem)] border border-[#203d28]/15 bg-[#173b21] p-[clamp(1rem,1.6vw,1.25rem)] text-white shadow-[0_1rem_3rem_rgba(31,64,37,0.16)]">
-            <p className="text-[clamp(0.7rem,0.8vw,0.86rem)] font-black uppercase tracking-[0.1em] text-[#a8df8f]">
-              Funding Position
+            <p className="mt-[clamp(0.55rem,1vw,0.8rem)] max-w-[34rem] text-[clamp(0.84rem,0.96vw,1rem)] leading-[1.55] text-[#706452]">
+              Lifetopia is no longer proving whether the idea can exist.
+              The current opportunity is to connect, stabilize, and expand
+              what has already been built.
             </p>
 
-            <h3 className="mt-2 text-[clamp(1.25rem,1.7vw,1.6rem)] font-black leading-[1.25]">
-              The project has passed concept validation and entered execution.
-            </h3>
-
-            <p className="mt-3 text-[clamp(0.84rem,0.94vw,1rem)] leading-[1.65] text-white/62">
-              The requested funding is intended to increase delivery capacity,
-              improve stability, and complete ecosystem integration.
-            </p>
-
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              {readinessSignals.map((signal) => (
-                <article
-                  key={signal.label}
-                  className="rounded-[clamp(0.6rem,0.95vw,0.78rem)] border border-white/10 bg-white/[0.06] px-3 py-3"
-                >
-                  <p className="text-[clamp(0.7rem,0.8vw,0.86rem)] font-black text-[#afe794]">
-                    {signal.label}
-                  </p>
-
-                  <p className="mt-1.5 text-[clamp(0.66rem,0.76vw,0.82rem)] leading-[1.5] text-white/48">
-                    {signal.value}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </aside>
-        </header>
-
-        <div className="mt-[clamp(2rem,4vw,3.2rem)] grid gap-[clamp(0.8rem,1.5vw,1.1rem)] lg:grid-cols-2">
-          {supportReasons.map((reason) => {
-            const accent = getAccentClasses(
-              reason.accent,
-            );
-
-            return (
-              <article
-                key={reason.number}
-                className={`min-w-0 rounded-[clamp(1rem,1.6vw,1.3rem)] border p-[clamp(1rem,1.8vw,1.5rem)] shadow-[0_0.9rem_3rem_rgba(62,47,27,0.07)] ${accent.card}`}
-              >
-                <div className="flex items-start gap-4">
-                  <span
-                    className={`flex size-[clamp(2.9rem,4.5vw,3.6rem)] shrink-0 items-center justify-center rounded-[clamp(0.7rem,1.1vw,0.9rem)] border ${accent.icon}`}
-                  >
+            <div className="mt-[clamp(1rem,1.6vw,1.25rem)] overflow-hidden rounded-[0.95rem] border border-[#244e2e]/15 bg-[#173b21] text-white shadow-[0_0.9rem_2.8rem_rgba(31,64,37,0.15)]">
+              <div className="grid gap-px bg-white/10 sm:grid-cols-[1fr_auto_1fr_auto_1fr] sm:items-stretch">
+                <div className="bg-[#173b21] px-3 py-3.5 text-center">
+                  <span className="mx-auto flex size-10 items-center justify-center rounded-[0.7rem] border border-[#9be879]/15 bg-[#9be879]/10 text-[#afe994]">
                     <TechnologyIcon
-                      icon={reason.icon}
-                      label={reason.title}
+                      icon="mdi:cube-outline"
+                      label="Working products"
                     />
                   </span>
 
-                  <div className="min-w-0">
-                    <p
-                      className={`font-mono text-[clamp(0.7rem,0.8vw,0.86rem)] font-black ${accent.number}`}
-                    >
-                      REASON {reason.number}
-                    </p>
+                  <p className="mt-2 text-[0.62rem] font-black uppercase tracking-[0.08em] text-white/38">
+                    Existing
+                  </p>
 
-                    <h3 className="mt-2 text-[clamp(1.15rem,1.55vw,1.5rem)] font-black leading-[1.25] tracking-[-0.025em] text-[#30251c]">
-                      {reason.title}
-                    </h3>
-                  </div>
+                  <p className="mt-1 text-[clamp(0.72rem,0.82vw,0.88rem)] font-black text-white">
+                    Working Products
+                  </p>
                 </div>
 
-                <p className="mt-4 text-[clamp(0.88rem,0.98vw,1.04rem)] leading-[1.7] text-[#706452]">
-                  {reason.description}
+                <div className="hidden items-center justify-center bg-[#102d19] px-2 sm:flex">
+                  <span className="text-[1rem] font-black text-[#afe994]">
+                    →
+                  </span>
+                </div>
+
+                <div className="bg-[#102d19] px-3 py-3.5 text-center">
+                  <span className="mx-auto flex size-10 items-center justify-center rounded-[0.7rem] border border-[#f2c866]/15 bg-[#f2c866]/10 text-[#ffd478]">
+                    <TechnologyIcon
+                      icon="mdi:hand-coin-outline"
+                      label="Grant support"
+                    />
+                  </span>
+
+                  <p className="mt-2 text-[0.62rem] font-black uppercase tracking-[0.08em] text-white/38">
+                    Requested
+                  </p>
+
+                  <p className="mt-1 text-[clamp(0.72rem,0.82vw,0.88rem)] font-black text-white">
+                    Grant Support
+                  </p>
+                </div>
+
+                <div className="hidden items-center justify-center bg-[#102d19] px-2 sm:flex">
+                  <span className="text-[1rem] font-black text-[#afe994]">
+                    →
+                  </span>
+                </div>
+
+                <div className="bg-[#173b21] px-3 py-3.5 text-center">
+                  <span className="mx-auto flex size-10 items-center justify-center rounded-[0.7rem] border border-[#9be879]/15 bg-[#9be879]/10 text-[#afe994]">
+                    <TechnologyIcon
+                      icon="mdi:check-decagram-outline"
+                      label="Connected Beta"
+                    />
+                  </span>
+
+                  <p className="mt-2 text-[0.62rem] font-black uppercase tracking-[0.08em] text-white/38">
+                    Outcome
+                  </p>
+
+                  <p className="mt-1 text-[clamp(0.72rem,0.82vw,0.88rem)] font-black text-white">
+                    Connected Beta
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-t border-white/10 bg-[#0f2917] px-4 py-3">
+                <p className="text-center text-[clamp(0.7rem,0.8vw,0.86rem)] font-semibold leading-[1.5] text-white/58">
+                  Support accelerates integration and public readiness rather
+                  than financing an untested concept.
                 </p>
-
-                <div
-                  className={`mt-4 rounded-[clamp(0.7rem,1.1vw,0.9rem)] border px-[clamp(0.8rem,1.3vw,1rem)] py-[clamp(0.75rem,1.2vw,0.95rem)] ${accent.evidence}`}
-                >
-                  <p className="text-[clamp(0.68rem,0.78vw,0.84rem)] font-black uppercase tracking-[0.08em] opacity-70">
-                    Reviewer Evidence
-                  </p>
-
-                  <p className="mt-1.5 text-[clamp(0.8rem,0.9vw,0.96rem)] font-semibold leading-[1.6]">
-                    {reason.evidence}
-                  </p>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-
-        <section className="mt-[clamp(1rem,2vw,1.5rem)] overflow-hidden rounded-[clamp(1rem,1.7vw,1.35rem)] border border-[#203d28]/15 bg-[#173b21] text-white shadow-[0_1.2rem_3.5rem_rgba(31,64,37,0.16)]">
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.55fr)]">
-            <div className="p-[clamp(1rem,2vw,1.7rem)]">
-              <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.11em] text-[#a8df8f]">
-                Reviewer Summary
-              </p>
-
-              <h3 className="mt-2 max-w-[46rem] text-[clamp(1.35rem,2vw,1.9rem)] font-black tracking-[-0.03em]">
-                Lifetopia is seeking support at the point where funding can
-                convert proven foundations into a connected public product.
-              </h3>
-
-              <p className="mt-3 max-w-[48rem] text-[clamp(0.88rem,0.98vw,1.04rem)] leading-[1.7] text-white/65">
-                The project already demonstrates execution capability. The
-                funding decision is therefore centered on accelerating
-                integration, stability, testing, and measurable ecosystem
-                adoption.
-              </p>
-            </div>
-
-            <div className="border-t border-white/10 bg-[#102d19] p-[clamp(1rem,2vw,1.7rem)] lg:border-l lg:border-t-0">
-              <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.1em] text-white/38">
-                Continue Review
-              </p>
-
-              <div className="mt-4 grid gap-3">
-                <Link
-                  href="#documents"
-                  className="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[0.8rem] bg-[#9adf78] px-5 text-[clamp(0.78rem,0.88vw,0.94rem)] font-black text-[#173b21] transition hover:-translate-y-0.5 hover:bg-[#afe994]"
-                >
-                  Review Documents
-                  <span aria-hidden="true">↓</span>
-                </Link>
-
-                <Link
-                  href="#team"
-                  className="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[0.8rem] border border-white/12 bg-white/[0.06] px-5 text-[clamp(0.78rem,0.88vw,0.94rem)] font-black text-white transition hover:-translate-y-0.5 hover:bg-white/[0.1]"
-                >
-                  Review Core Team
-                  <span aria-hidden="true">↓</span>
-                </Link>
               </div>
             </div>
           </div>
-        </section>
+
+          <div className="relative min-w-0">
+            <div
+              aria-hidden="true"
+              className="absolute bottom-[10%] left-1/2 top-[10%] hidden w-px -translate-x-1/2 bg-[linear-gradient(to_bottom,transparent,#a6c395,transparent)] sm:block"
+            />
+
+            <div
+              aria-hidden="true"
+              className="absolute left-[8%] right-[8%] top-1/2 hidden h-px -translate-y-1/2 bg-[linear-gradient(to_right,transparent,#a6c395,transparent)] sm:block"
+            />
+
+            <div className="relative grid gap-2.5 sm:grid-cols-2">
+              {supportReasons.map((reason) => (
+                <SupportReasonCard
+                  key={reason.number}
+                  reason={reason}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
