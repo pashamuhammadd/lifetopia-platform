@@ -4,6 +4,11 @@ import type {
 } from "next";
 import localFont from "next/font/local";
 
+import {
+  DocsLanguageProvider,
+  DocsNavbar,
+} from "../components/docs";
+
 import "./globals.css";
 
 const geistMono = localFont({
@@ -105,8 +110,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistMono.variable} antialiased`}>
-        {children}
-      </body>
+  <DocsLanguageProvider>
+    <DocsNavbar />
+    {children}
+  </DocsLanguageProvider>
+</body>
     </html>
   );
 }

@@ -81,6 +81,7 @@
 html {
   min-width: 20rem;
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
   scrollbar-gutter: stable;
   background: var(--docs-background);
 }
