@@ -243,30 +243,57 @@ lifetopia-platform
 │   │   ├── app
 │   │   │   ├── globals.css
 │   │   │   ├── layout.tsx
-│   │   │   └── page.tsx
+│   │   │   ├── page.tsx
+│   │   │   ├── robots.ts
+│   │   │   └── sitemap.ts
 │   │   ├── components
-│   │   │   ├── development
-│   │   │   │   ├── DeliveryRoadmap.tsx
-│   │   │   │   ├── development-data.ts
-│   │   │   │   ├── development-utils.ts
-│   │   │   │   ├── DevelopmentHeader.tsx
-│   │   │   │   ├── ExecutionPipeline.tsx
-│   │   │   │   ├── FundingSummary.tsx
+│   │   │   ├── budget
+│   │   │   │   ├── BudgetAllocation.tsx
+│   │   │   │   ├── BudgetBreakdown.tsx
+│   │   │   │   ├── BudgetSection.tsx
+│   │   │   │   └── index.ts
+│   │   │   ├── current-development
+│   │   │   │   ├── CurrentDevelopmentSection.tsx
+│   │   │   │   └── index.ts
+│   │   │   ├── founder-note
+│   │   │   │   ├── FounderNoteSection.tsx
+│   │   │   │   └── index.ts
+│   │   │   ├── impact
+│   │   │   │   ├── ImpactCard.tsx
+│   │   │   │   ├── ImpactMetrics.tsx
+│   │   │   │   ├── ImpactSection.tsx
+│   │   │   │   └── index.ts
+│   │   │   ├── problem-solution
+│   │   │   │   ├── AdoptionDiagram.tsx
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── ProblemCard.tsx
+│   │   │   │   ├── ProblemSolutionSection.tsx
+│   │   │   │   └── SolutionCard.tsx
+│   │   │   ├── public-development
+│   │   │   │   ├── DevelopmentActivity.tsx
+│   │   │   │   ├── index.ts
 │   │   │   │   ├── LatestCommit.tsx
-│   │   │   │   ├── LeftDashboard.tsx
-│   │   │   │   ├── RecentActivity.tsx
-│   │   │   │   └── RightDashboard.tsx
-│   │   │   ├── DevelopmentGrantSection.tsx
+│   │   │   │   └── PublicDevelopmentSection.tsx
+│   │   │   ├── roadmap
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── RoadmapMilestone.tsx
+│   │   │   │   ├── RoadmapSection.tsx
+│   │   │   │   └── RoadmapTimeline.tsx
+│   │   │   ├── team
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── TeamMemberCard.tsx
+│   │   │   │   └── TeamSection.tsx
+│   │   │   ├── why-support
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── SupportReasonCard.tsx
+│   │   │   │   ├── SupportTimeline.tsx
+│   │   │   │   └── WhySupportSection.tsx
 │   │   │   ├── DocumentsHub.tsx
 │   │   │   ├── GrantHero.tsx
-│   │   │   ├── GrantRequestSection.tsx
 │   │   │   ├── GrantsFooter.tsx
 │   │   │   ├── GrantsNavbar.tsx
-│   │   │   ├── LiveDevelopmentLog.tsx
 │   │   │   ├── PlayWarningModal.tsx
-│   │   │   ├── ProjectPurposeSection.tsx
 │   │   │   ├── ProjectSnapshot.tsx
-│   │   │   ├── ProjectVisionSection.tsx
 │   │   │   └── TechnologyIcon.tsx
 │   │   ├── data
 │   │   │   └── grants.ts
@@ -281,6 +308,7 @@ lifetopia-platform
 │   │   │       ├── main-website.jpg
 │   │   │       └── playable-game.jpg
 │   │   ├── .env.local
+│   │   ├── eslint.config.js
 │   │   ├── next-env.d.ts
 │   │   ├── next.config.ts
 │   │   ├── package.json

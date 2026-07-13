@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { GrantsNavbar } from "@/components/GrantsNavbar";
 
 type StatAccent = "green" | "blue" | "gold" | "purple";
 
@@ -81,8 +80,6 @@ export function GrantHero() {
       id="overview"
       className="relative overflow-hidden bg-[#f8f2e7]"
     >
-      <GrantsNavbar />
-
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(118deg,#fff8e9_0%,rgba(255,250,239,0.97)_40%,rgba(184,231,250,0.68)_70%,rgba(79,181,229,0.78)_100%)]" />
 
