@@ -1,193 +1,201 @@
+import Image from "next/image";
+
 import { TechnologyIcon } from "@/components/TechnologyIcon";
 
-type DevelopmentAccent = "green" | "blue" | "gold" | "purple";
+type EcosystemAccent =
+  | "green"
+  | "blue"
+  | "purple"
+  | "gold";
 
-type DevelopmentItem = {
+type EcosystemNode = {
   title: string;
-  description: string;
+  detail: string;
   status: string;
   icon: string;
-  accent: DevelopmentAccent;
+  accent: EcosystemAccent;
 };
 
-const deliveredFoundations: DevelopmentItem[] = [
+type TechnologyItem =
+  | {
+      name: string;
+      category: string;
+      type: "icon";
+      icon: string;
+    }
+  | {
+      name: string;
+      category: string;
+      type: "image";
+      image: string;
+    };
+
+const ecosystemNodes: EcosystemNode[] = [
   {
-    title: "Playable Game Foundation",
-    description:
-      "The MVP and Alpha phases validated the core cozy life-sim concept, player movement, world exploration, farming, inventory, quests, and persistent player data.",
-    status: "Delivered",
+    title: "Playable World",
+    detail: "Gameplay and life-simulation foundation",
+    status: "Alpha Public",
     icon: "mdi:gamepad-variant-outline",
     accent: "green",
   },
   {
-    title: "Community Platform",
-    description:
-      "A working social platform already supports player accounts, profiles, posts, comments, likes, bookmarks, and community interaction.",
+    title: "Community",
+    detail: "Profiles, posts, and player interaction",
     status: "Live Beta",
     icon: "mdi:account-group-outline",
     accent: "blue",
   },
   {
-    title: "Shared Platform Foundation",
-    description:
-      "The website, community platform, and grant portal are managed through one monorepo with shared authentication, services, types, and reusable infrastructure.",
-    status: "Operational",
-    icon: "mdi:source-branch",
-    accent: "purple",
-  },
-];
-
-const activeBetaWork: DevelopmentItem[] = [
-  {
-    title: "Community Completion",
-    description:
-      "Improving authentication stability, player interaction, notifications, account synchronization, and Android distribution readiness.",
-    status: "In Progress",
-    icon: "mdi:account-cog-outline",
-    accent: "blue",
-  },
-  {
-    title: "Gameplay Expansion",
-    description:
-      "Expanding farming, fishing, exploration, quests, progression, social activities, locations, and long-term replayability.",
-    status: "In Progress",
-    icon: "mdi:island",
-    accent: "green",
-  },
-  {
-    title: "Connected Player Experience",
-    description:
-      "Connecting game identity, community profiles, player progress, and future marketplace activity into one consistent ecosystem.",
-    status: "In Progress",
-    icon: "mdi:link-variant",
+    title: "Shared Identity",
+    detail: "One player account across products",
+    status: "Integrating",
+    icon: "mdi:account-key-outline",
     accent: "purple",
   },
   {
-    title: "Solana & Marketplace Foundation",
-    description:
-      "Preparing wallet connectivity, devnet transactions, player ownership, and the foundation for a connected digital marketplace.",
-    status: "Next Integration",
+    title: "Solana Economy",
+    detail: "Wallet, marketplace, and ownership",
+    status: "Next",
     icon: "mdi:wallet-outline",
     accent: "gold",
   },
 ];
 
-const technologies = [
+const deliveryFocus = [
+  {
+    number: "01",
+    label: "Connect",
+    description: "Unify accounts and player identity.",
+  },
+  {
+    number: "02",
+    label: "Expand",
+    description: "Improve gameplay and community systems.",
+  },
+  {
+    number: "03",
+    label: "Integrate",
+    description: "Add Solana and marketplace foundations.",
+  },
+];
+
+const technologies: TechnologyItem[] = [
   {
     name: "Unity",
     category: "Game",
+    type: "icon",
     icon: "logos:unity",
   },
   {
     name: "Next.js",
     category: "Platform",
+    type: "icon",
     icon: "logos:nextjs-icon",
-  },
-  {
-    name: "TypeScript",
-    category: "Language",
-    icon: "logos:typescript-icon",
-  },
-  {
-    name: "Turborepo",
-    category: "Monorepo",
-    icon: "logos:turborepo-icon",
   },
   {
     name: "Supabase",
     category: "Backend",
+    type: "icon",
     icon: "logos:supabase-icon",
   },
   {
     name: "Solana",
     category: "Blockchain",
-    icon: "logos:solana",
+    type: "image",
+    image: "/brand/solana-logo.svg",
   },
   {
-    name: "Vercel",
-    category: "Deployment",
-    icon: "logos:vercel-icon",
+    name: "TypeScript",
+    category: "Language",
+    type: "icon",
+    icon: "logos:typescript-icon",
   },
   {
     name: "GitHub",
     category: "Source",
+    type: "icon",
     icon: "mdi:github",
   },
 ];
 
-function getAccentClasses(accent: DevelopmentAccent) {
+function getNodeClasses(accent: EcosystemAccent) {
   if (accent === "blue") {
     return {
-      card: "border-[#73afd1]/25 bg-[#f2f9fd]",
-      icon: "border-[#5da5cf]/20 bg-[#e4f4fc] text-[#347ba5]",
-      status: "border-[#c8e2f1] bg-[#e9f6fd] text-[#347ba5]",
-      title: "text-[#2f7399]",
-    };
-  }
-
-  if (accent === "gold") {
-    return {
-      card: "border-[#ddb866]/30 bg-[#fffaf0]",
-      icon: "border-[#d7aa48]/20 bg-[#fff0ca] text-[#9c731c]",
-      status: "border-[#ead6a4] bg-[#fff4d8] text-[#946b1b]",
-      title: "text-[#8d681b]",
+      card: "border-[#72afd2]/30 bg-[#f1f9fd]",
+      icon: "border-[#6badd2]/20 bg-[#e3f3fc] text-[#347ca6]",
+      badge: "border-[#c9e3f1] bg-[#e8f6fd] text-[#347ca6]",
+      glow: "bg-[#75c7ec]/18",
     };
   }
 
   if (accent === "purple") {
     return {
-      card: "border-[#9b84dc]/25 bg-[#f8f5ff]",
-      icon: "border-[#9178d5]/20 bg-[#eee9ff] text-[#6c4fb2]",
-      status: "border-[#dad0f1] bg-[#f2edff] text-[#674aab]",
-      title: "text-[#674aab]",
+      card: "border-[#9b84dc]/30 bg-[#f8f5ff]",
+      icon: "border-[#9278d7]/20 bg-[#eee9ff] text-[#6d50b4]",
+      badge: "border-[#dad0f1] bg-[#f1edff] text-[#674aab]",
+      glow: "bg-[#9b7de5]/18",
+    };
+  }
+
+  if (accent === "gold") {
+    return {
+      card: "border-[#ddb866]/35 bg-[#fffaf0]",
+      icon: "border-[#d8aa45]/20 bg-[#fff0cb] text-[#9e741d]",
+      badge: "border-[#ead7a5] bg-[#fff5dc] text-[#946c1c]",
+      glow: "bg-[#f4c45e]/20",
     };
   }
 
   return {
-    card: "border-[#79ad62]/25 bg-[#f4faf0]",
-    icon: "border-[#6da954]/20 bg-[#e7f4dd] text-[#4e8039]",
-    status: "border-[#d1e4c7] bg-[#edf7e7] text-[#477a34]",
-    title: "text-[#477a34]",
+    card: "border-[#79ad62]/30 bg-[#f4faf0]",
+    icon: "border-[#6ca852]/20 bg-[#e7f4dd] text-[#4f8239]",
+    badge: "border-[#d1e4c7] bg-[#edf7e7] text-[#477a34]",
+    glow: "bg-[#9fd969]/20",
   };
 }
 
-function DevelopmentCard({
-  item,
+function EcosystemNodeCard({
+  node,
 }: {
-  item: DevelopmentItem;
+  node: EcosystemNode;
 }) {
-  const accent = getAccentClasses(item.accent);
+  const classes = getNodeClasses(node.accent);
 
   return (
     <article
-      className={`min-w-0 rounded-[clamp(0.9rem,1.5vw,1.2rem)] border p-[clamp(1rem,1.6vw,1.3rem)] shadow-[0_0.8rem_2.5rem_rgba(64,48,27,0.06)] ${accent.card}`}
+      className={`group relative z-10 min-w-0 overflow-hidden rounded-[0.9rem] border p-[clamp(0.75rem,1.15vw,0.95rem)] shadow-[0_0.65rem_2rem_rgba(61,47,27,0.055)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_1rem_2.8rem_rgba(61,47,27,0.1)] ${classes.card}`}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none absolute -right-10 -top-10 size-28 rounded-full blur-3xl ${classes.glow}`}
+      />
+
+      <div className="relative flex items-start gap-3">
         <span
-          className={`flex size-[clamp(2.8rem,4.2vw,3.5rem)] shrink-0 items-center justify-center rounded-[clamp(0.7rem,1.1vw,0.9rem)] border ${accent.icon}`}
+          className={`flex size-[clamp(2.5rem,3.7vw,3rem)] shrink-0 items-center justify-center rounded-[0.7rem] border transition duration-200 group-hover:scale-105 ${classes.icon}`}
         >
           <TechnologyIcon
-            icon={item.icon}
-            label={item.title}
+            icon={node.icon}
+            label={node.title}
           />
         </span>
 
-        <span
-          className={`rounded-full border px-3 py-1.5 text-[clamp(0.68rem,0.78vw,0.84rem)] font-black ${accent.status}`}
-        >
-          {item.status}
-        </span>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[clamp(0.86rem,0.98vw,1.04rem)] font-black leading-[1.2] text-[#30251c]">
+            {node.title}
+          </h3>
+
+          <p className="mt-1 text-[clamp(0.66rem,0.74vw,0.8rem)] font-semibold leading-[1.4] text-[#7b6f5d]">
+            {node.detail}
+          </p>
+        </div>
       </div>
 
-      <h3
-        className={`mt-[clamp(0.8rem,1.3vw,1rem)] text-[clamp(1.05rem,1.25vw,1.28rem)] font-black leading-[1.3] ${accent.title}`}
+      <span
+        className={`relative mt-3 inline-flex rounded-full border px-2.5 py-1 text-[clamp(0.62rem,0.7vw,0.76rem)] font-black ${classes.badge}`}
       >
-        {item.title}
-      </h3>
-
-      <p className="mt-2 text-[clamp(0.84rem,0.94vw,1rem)] leading-[1.65] text-[#706452]">
-        {item.description}
-      </p>
+        {node.status}
+      </span>
     </article>
   );
 }
@@ -196,188 +204,196 @@ export function CurrentDevelopmentSection() {
   return (
     <section
       id="current-development"
-      className="relative overflow-hidden bg-[#fff9ef] py-[clamp(4rem,8vw,7rem)]"
+      className="relative flex overflow-hidden bg-[#f6efe1] py-[clamp(3rem,5vw,4.5rem)] lg:min-h-[calc(100svh-3.75rem)] lg:items-center"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-[-8rem] top-[4rem] size-[22rem] rounded-full bg-[#e2f1d7]/60 blur-[7rem]"
+        className="pointer-events-none absolute -left-28 top-8 size-80 rounded-full bg-[#dcefd0]/55 blur-[7rem]"
       />
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-[2rem] right-[-9rem] size-[24rem] rounded-full bg-[#e1eef9]/55 blur-[7rem]"
+        className="pointer-events-none absolute -right-28 bottom-0 size-80 rounded-full bg-[#dceefa]/55 blur-[7rem]"
       />
 
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 bottom-0 h-[24%] bg-[linear-gradient(to_top,rgba(126,177,94,0.12),transparent)]"
+      />
+
+      <div className="grants-grid-pattern absolute inset-0 opacity-[0.12]" />
+
       <div className="grants-container relative">
-        <header className="grid gap-[clamp(1rem,2vw,1.5rem)] lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.68fr)] lg:items-end">
+        <div className="grid gap-[clamp(1.2rem,2.5vw,2rem)] lg:grid-cols-[minmax(16rem,0.68fr)_minmax(0,1.32fr)] lg:items-center">
           <div className="min-w-0">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#c7d8b9] bg-[#edf6e6] px-4 py-2 text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.14em] text-[#557f43]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#c7d8b9] bg-[#edf6e6] px-3.5 py-1.5 text-[clamp(0.68rem,0.78vw,0.84rem)] font-black uppercase tracking-[0.12em] text-[#557f43]">
               <span className="size-2 animate-pulse rounded-full bg-[#68ad4a]" />
               Current Development
             </span>
 
-            <h2 className="mt-[clamp(1rem,1.8vw,1.4rem)] max-w-[52rem] text-[clamp(2rem,4.2vw,3.9rem)] font-black leading-[1.03] tracking-[-0.045em] text-[#2f2118]">
-              Existing foundations are now becoming one connected Beta
-              ecosystem.
+            <h2 className="mt-[clamp(0.7rem,1.2vw,0.95rem)] max-w-[16ch] text-[clamp(1.75rem,3vw,2.85rem)] font-black leading-[1.02] tracking-[-0.04em] text-[#2f2118]">
+              Turning working products into one connected Beta.
             </h2>
 
-            <p className="mt-[clamp(0.9rem,1.6vw,1.2rem)] max-w-[47rem] text-[clamp(0.98rem,1.16vw,1.14rem)] leading-[1.75] text-[#706452]">
-              Lifetopia World has completed its early validation phases. Current
-              development is focused on connecting the game, community
-              platform, marketplace, and Solana infrastructure into a stable
-              public experience.
+            <p className="mt-[clamp(0.55rem,1vw,0.8rem)] max-w-[34rem] text-[clamp(0.84rem,0.96vw,1rem)] leading-[1.6] text-[#706452]">
+              Lifetopia has already validated its core products. Development
+              now focuses on integration, expansion, and public readiness.
             </p>
-          </div>
 
-          <aside className="rounded-[clamp(1rem,1.6vw,1.25rem)] border border-[#203d28]/15 bg-[#173b21] p-[clamp(1rem,1.6vw,1.25rem)] text-white shadow-[0_1rem_3rem_rgba(31,64,37,0.16)]">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-[clamp(0.7rem,0.8vw,0.86rem)] font-black uppercase tracking-[0.1em] text-[#a8df8f]">
-                  Current Project Phase
-                </p>
+            <div className="mt-[clamp(0.9rem,1.5vw,1.15rem)] overflow-hidden rounded-[0.95rem] border border-[#254f30]/15 bg-[#173b21] text-white shadow-[0_0.9rem_2.8rem_rgba(31,64,37,0.15)]">
+              <div className="flex items-start justify-between gap-4 px-[clamp(0.85rem,1.3vw,1.05rem)] py-[clamp(0.8rem,1.2vw,1rem)]">
+                <div>
+                  <p className="text-[clamp(0.66rem,0.74vw,0.8rem)] font-black uppercase tracking-[0.09em] text-[#a8df8f]">
+                    Current Project Phase
+                  </p>
 
-                <p className="mt-2 text-[clamp(1.7rem,2.5vw,2.3rem)] font-black leading-none text-white">
-                  Beta
-                </p>
+                  <p className="mt-1.5 text-[clamp(1.55rem,2.2vw,2rem)] font-black leading-none">
+                    Beta
+                  </p>
+                </div>
+
+                <span className="flex items-center gap-2 rounded-full border border-[#9be879]/15 bg-[#9be879]/10 px-3 py-1.5 text-[clamp(0.66rem,0.74vw,0.8rem)] font-black text-[#afe994]">
+                  <span className="size-2 rounded-full bg-[#8ee46a]" />
+                  Active
+                </span>
               </div>
 
-              <span className="flex items-center gap-2 rounded-full border border-[#98e477]/15 bg-[#98e477]/10 px-3 py-1.5 text-[clamp(0.7rem,0.8vw,0.86rem)] font-black text-[#afe994]">
-                <span className="size-2 animate-pulse rounded-full bg-[#8ee46a]" />
-                Active
-              </span>
+              <div className="border-t border-white/10 bg-[#102d19] px-[clamp(0.85rem,1.3vw,1.05rem)] py-[clamp(0.7rem,1vw,0.85rem)]">
+                <p className="text-[clamp(0.74rem,0.84vw,0.9rem)] leading-[1.5] text-white/62">
+                  The public game remains the previous Alpha build while the
+                  connected Beta is completed.
+                </p>
+              </div>
             </div>
 
-            <div className="mt-4 border-t border-white/10 pt-4">
-              <p className="text-[clamp(0.84rem,0.94vw,1rem)] leading-[1.65] text-white/68">
-                The overall project is in Beta development. The publicly
-                accessible game remains the previous Alpha build while the
-                connected Beta is being completed.
-              </p>
-            </div>
-          </aside>
-        </header>
-
-        <section className="mt-[clamp(2rem,4vw,3.2rem)]">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.11em] text-[#668255]">
-                Delivered Foundations
-              </p>
-
-              <h3 className="mt-2 text-[clamp(1.45rem,2.2vw,2rem)] font-black tracking-[-0.03em] text-[#2f2118]">
-                The project is already beyond the idea stage.
-              </h3>
-            </div>
-
-            <p className="max-w-[34rem] text-[clamp(0.84rem,0.94vw,1rem)] leading-[1.65] text-[#746753]">
-              These foundations reduce execution risk and allow grant funding
-              to focus on integration, expansion, testing, and public delivery.
-            </p>
-          </div>
-
-          <div className="mt-[clamp(1rem,1.8vw,1.4rem)] grid gap-[clamp(0.75rem,1.4vw,1.05rem)] md:grid-cols-3">
-            {deliveredFoundations.map((item) => (
-              <DevelopmentCard
-                key={item.title}
-                item={item}
-              />
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-[clamp(1.5rem,3vw,2.4rem)] overflow-hidden rounded-[clamp(1rem,1.7vw,1.35rem)] border border-[#203d28]/15 bg-[#173b21] text-white shadow-[0_1.2rem_3.5rem_rgba(31,64,37,0.16)]">
-          <div className="border-b border-white/10 p-[clamp(1rem,1.8vw,1.5rem)]">
-            <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.11em] text-[#a8df8f]">
-              Active Beta Work
-            </p>
-
-            <h3 className="mt-2 text-[clamp(1.4rem,2.1vw,1.95rem)] font-black tracking-[-0.03em]">
-              What the team is building now
-            </h3>
-
-            <p className="mt-3 max-w-[48rem] text-[clamp(0.88rem,0.98vw,1.04rem)] leading-[1.7] text-white/65">
-              Current development is concentrated on product integration and
-              public readiness rather than starting new disconnected
-              experiments.
-            </p>
-          </div>
-
-          <div className="grid gap-px bg-white/10 sm:grid-cols-2">
-            {activeBetaWork.map((item, index) => (
-              <article
-                key={item.title}
-                className="bg-[#173b21] p-[clamp(1rem,1.7vw,1.35rem)]"
-              >
-                <div className="flex items-start gap-3">
-                  <span className="flex size-[clamp(2.7rem,4vw,3.3rem)] shrink-0 items-center justify-center rounded-[clamp(0.65rem,1vw,0.82rem)] border border-[#9be879]/15 bg-[#9be879]/10 text-[#a9ed8d]">
-                    <TechnologyIcon
-                      icon={item.icon}
-                      label={item.title}
-                    />
+            <div className="mt-3 grid gap-2">
+              {deliveryFocus.map((item) => (
+                <article
+                  key={item.number}
+                  className="group flex items-center gap-3 rounded-[0.75rem] border border-[#ded2ba] bg-white/68 px-3 py-2.5 transition duration-200 hover:translate-x-1 hover:border-[#9fbe8d] hover:bg-white"
+                >
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#e7f3df] font-mono text-[0.64rem] font-black text-[#4f803b]">
+                    {item.number}
                   </span>
 
                   <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-mono text-[clamp(0.68rem,0.78vw,0.84rem)] font-black text-[#91df72]">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
+                    <p className="text-[clamp(0.76rem,0.86vw,0.92rem)] font-black text-[#3f5636]">
+                      {item.label}
+                    </p>
 
-                      <span className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[clamp(0.66rem,0.76vw,0.82rem)] font-black text-white/64">
-                        {item.status}
-                      </span>
-                    </div>
-
-                    <h4 className="mt-2 text-[clamp(1.02rem,1.2vw,1.24rem)] font-black text-white">
-                      {item.title}
-                    </h4>
-
-                    <p className="mt-2 text-[clamp(0.82rem,0.92vw,0.98rem)] leading-[1.65] text-white/65">
+                    <p className="mt-0.5 text-[clamp(0.66rem,0.74vw,0.8rem)] font-semibold text-[#7e725f]">
                       {item.description}
                     </p>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-[clamp(1rem,2vw,1.5rem)] overflow-hidden rounded-[clamp(1rem,1.7vw,1.35rem)] border border-[#d9c9a8] bg-white shadow-[0_1rem_3.5rem_rgba(62,47,27,0.07)]">
-          <div className="border-b border-[#eadfc8] bg-[#faf6ed] px-[clamp(1rem,1.7vw,1.35rem)] py-[clamp(0.8rem,1.3vw,1rem)]">
-            <p className="text-[clamp(0.72rem,0.82vw,0.88rem)] font-black uppercase tracking-[0.11em] text-[#668255]">
-              Technical Foundation
-            </p>
-
-            <h3 className="mt-2 text-[clamp(1.3rem,1.9vw,1.8rem)] font-black tracking-[-0.03em] text-[#2f2118]">
-              Built with production-ready tools and shared infrastructure
-            </h3>
+                </article>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-px bg-[#eadfc8] sm:grid-cols-4 xl:grid-cols-8">
-            {technologies.map((technology) => (
-              <article
-                key={technology.name}
-                className="flex min-w-0 items-center gap-3 bg-white p-[clamp(0.8rem,1.3vw,1rem)]"
-              >
-                <span className="flex size-[clamp(2.3rem,3.4vw,2.8rem)] shrink-0 items-center justify-center rounded-[clamp(0.55rem,0.9vw,0.72rem)] border border-[#ded4c0] bg-[#faf7f0]">
-                  <TechnologyIcon
-                    icon={technology.icon}
-                    label={technology.name}
+          <div className="min-w-0 overflow-hidden rounded-[1.15rem] border border-[#d7c8aa] bg-white/76 p-[clamp(0.8rem,1.4vw,1.1rem)] shadow-[0_1.2rem_3.8rem_rgba(62,47,27,0.09)] backdrop-blur-md">
+            <header className="flex flex-col gap-3 border-b border-[#eadfc8] px-1 pb-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-[clamp(0.66rem,0.74vw,0.8rem)] font-black uppercase tracking-[0.1em] text-[#668255]">
+                  Connected Ecosystem
+                </p>
+
+                <h3 className="mt-1.5 text-[clamp(1.05rem,1.35vw,1.32rem)] font-black text-[#30251c]">
+                  Existing foundations converging into one product
+                </h3>
+              </div>
+
+              <span className="w-fit rounded-full border border-[#c9ddbd] bg-[#edf7e7] px-3 py-1.5 text-[clamp(0.64rem,0.72vw,0.78rem)] font-black text-[#4e7e3b]">
+                Integration in progress
+              </span>
+            </header>
+
+            <div className="relative mt-4">
+              <span
+                aria-hidden="true"
+                className="absolute left-1/2 top-3 hidden h-[calc(100%-1.5rem)] w-px -translate-x-1/2 bg-[linear-gradient(to_bottom,transparent,#a8c796_16%,#a8c796_84%,transparent)] sm:block"
+              />
+
+              <span
+                aria-hidden="true"
+                className="absolute left-3 top-1/2 hidden h-px w-[calc(100%-1.5rem)] -translate-y-1/2 bg-[linear-gradient(to_right,transparent,#a8c796_16%,#a8c796_84%,transparent)] sm:block"
+              />
+
+              <div className="grid grid-cols-2 gap-[clamp(2.2rem,4vw,3.5rem)]">
+                {ecosystemNodes.map((node) => (
+                  <EcosystemNodeCard
+                    key={node.title}
+                    node={node}
                   />
-                </span>
+                ))}
+              </div>
 
-                <div className="min-w-0">
-                  <p className="truncate text-[clamp(0.82rem,0.92vw,0.98rem)] font-black text-[#30251c]">
-                    {technology.name}
-                  </p>
+              <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 sm:flex">
+                <div className="relative flex size-[clamp(5.2rem,8vw,6.4rem)] items-center justify-center rounded-full border-[0.28rem] border-white bg-[#173b21] text-center text-white shadow-[0_0_0_0.45rem_rgba(104,173,74,0.12),0_1rem_2.5rem_rgba(31,64,37,0.22)]">
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-[-0.55rem] animate-pulse rounded-full border border-[#75bd59]/25"
+                  />
 
-                  <p className="mt-1 truncate text-[clamp(0.68rem,0.76vw,0.82rem)] font-bold text-[#8a7b64]">
-                    {technology.category}
-                  </p>
+                  <div>
+                    <p className="text-[clamp(0.66rem,0.76vw,0.82rem)] font-black uppercase tracking-[0.08em] text-[#a8df8f]">
+                      Connected
+                    </p>
+
+                    <p className="mt-1 text-[clamp(0.95rem,1.2vw,1.12rem)] font-black leading-none">
+                      Beta
+                    </p>
+                  </div>
                 </div>
-              </article>
-            ))}
+              </div>
+            </div>
+
+            <section className="mt-4 overflow-hidden rounded-[0.85rem] border border-[#ded2ba]">
+              <div className="flex items-center justify-between gap-4 border-b border-[#e8dcc5] bg-[#faf6ed] px-3 py-2.5">
+                <p className="text-[clamp(0.66rem,0.74vw,0.8rem)] font-black uppercase tracking-[0.09em] text-[#668255]">
+                  Technical Foundation
+                </p>
+
+                <span className="text-[clamp(0.62rem,0.7vw,0.76rem)] font-bold text-[#8a7b64]">
+                  Production tools
+                </span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-px bg-[#e8dcc5] lg:grid-cols-6">
+                {technologies.map((technology) => (
+                  <article
+                    key={technology.name}
+                    className="group flex min-w-0 flex-col items-center justify-center bg-white px-2 py-3 text-center transition hover:bg-[#f7fbf4]"
+                  >
+                    <span className="flex size-[2.45rem] items-center justify-center rounded-[0.65rem] border border-[#ded4c0] bg-[#faf7f0] p-1.5 transition duration-200 group-hover:scale-105">
+                      {technology.type === "image" ? (
+                        <Image
+                          src={technology.image}
+                          alt={`${technology.name} logo`}
+                          width={32}
+                          height={32}
+                          className="h-[1.45rem] w-[1.45rem] object-contain"
+                        />
+                      ) : (
+                        <TechnologyIcon
+                          icon={technology.icon}
+                          label={technology.name}
+                        />
+                      )}
+                    </span>
+
+                    <p className="mt-2 truncate text-[clamp(0.66rem,0.74vw,0.8rem)] font-black text-[#30251c]">
+                      {technology.name}
+                    </p>
+
+                    <p className="mt-0.5 truncate text-[clamp(0.58rem,0.66vw,0.72rem)] font-semibold text-[#8a7b64]">
+                      {technology.category}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
           </div>
-        </section>
+        </div>
       </div>
     </section>
   );
