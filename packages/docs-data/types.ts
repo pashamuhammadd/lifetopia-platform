@@ -69,6 +69,7 @@ export type LifetopiaDocumentSource = {
   featured?: boolean;
   recentlyUpdated?: boolean;
 
+  keyTakeaways?: LocalizedText[];
   sections: DocumentSectionSource[];
 };
 
@@ -90,5 +91,6 @@ export type LifetopiaDocument = {
   featured: boolean;
   recentlyUpdated: boolean;
 
+  keyTakeaways: string[];
   sections: DocumentSection[];
 };

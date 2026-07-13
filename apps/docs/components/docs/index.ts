@@ -7,3 +7,4 @@ export * from "./DocsSidebar";
 export * from "./DocumentTableOfContents";
 export * from "./BackToTop";
 export * from "./DocumentContent";
+export * from "./ProjectOverviewVisual";

@@ -11,6 +11,7 @@ import { BackToTop } from "./BackToTop";
 import { DocsSidebar } from "./DocsSidebar";
 import { useDocsLanguage } from "./DocsLanguageProvider";
 import { DocumentStatusBadge } from "./DocumentStatusBadge";
+import { ProjectOverviewVisual } from "./ProjectOverviewVisual";
 import { DocumentTableOfContents } from "./DocumentTableOfContents";
 
 type DocumentContentProps = {
@@ -19,6 +20,9 @@ type DocumentContentProps = {
 
 const documentLabels = {
   en: {
+    keyTakeaways: "Key Takeaways",
+takeawayDescription:
+  "The most important points to understand before reading the complete document.",
     documentation: "Documentation",
     updated: "Updated",
     owner: "Owner",
@@ -31,6 +35,9 @@ const documentLabels = {
     contact: "Project Contact",
   },
   id: {
+    keyTakeaways: "Poin Utama",
+takeawayDescription:
+  "Hal-hal terpenting yang perlu dipahami sebelum membaca dokumen lengkap.",
     documentation: "Dokumentasi",
     updated: "Diperbarui",
     owner: "Penanggung Jawab",
@@ -221,7 +228,43 @@ export function DocumentContent({
               </div>
             </header>
 
-            <div className="docs-prose mt-4">
+{document.keyTakeaways.length > 0 ? (
+  <section className="mt-4 overflow-hidden rounded-[1rem] border border-[rgba(201,155,67,0.28)] bg-[linear-gradient(145deg,rgba(255,253,248,0.95),rgba(255,241,204,0.72))] shadow-[var(--docs-shadow-soft)]">
+    <header className="border-b border-[rgba(201,155,67,0.2)] px-[clamp(1rem,2vw,1.4rem)] py-3">
+      <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.09em] text-[var(--docs-gold-dark)]">
+        {labels.keyTakeaways}
+      </p>
+
+      <p className="mt-1 text-[0.7rem] font-medium text-[var(--docs-muted)]">
+        {labels.takeawayDescription}
+      </p>
+    </header>
+
+    <div className="grid gap-px bg-[rgba(201,155,67,0.17)] sm:grid-cols-2">
+      {document.keyTakeaways.map(
+        (takeaway, index) => (
+          <article
+            key={takeaway}
+            className="flex items-start gap-3 bg-[rgba(255,253,248,0.82)] px-[clamp(0.85rem,1.5vw,1.1rem)] py-3"
+          >
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--docs-gold-soft)] font-mono text-[0.6rem] font-black text-[var(--docs-gold-dark)]">
+              {String(index + 1).padStart(
+                2,
+                "0",
+              )}
+            </span>
+
+            <p className="text-[clamp(0.7rem,0.82vw,0.86rem)] font-semibold leading-[1.5] text-[var(--docs-ink-soft)]">
+              {takeaway}
+            </p>
+          </article>
+        ),
+      )}
+    </div>
+  </section>
+) : null}
+
+<div className="docs-prose mt-4">
               {document.sections.map((section) => (
                 <section
                   key={section.id}
@@ -233,14 +276,21 @@ export function DocumentContent({
                   </h2>
 
                   {section.paragraphs?.map(
-                    (paragraph) => (
-                      <p key={paragraph}>
-                        {paragraph}
-                      </p>
-                    ),
-                  )}
+  (paragraph) => (
+    <p key={paragraph}>
+      {paragraph}
+    </p>
+  ),
+)}
 
-                  {section.bullets ? (
+{document.slug === "project-overview" &&
+section.id === "product-ecosystem" ? (
+  <ProjectOverviewVisual
+    locale={locale}
+  />
+) : null}
+
+{section.bullets ? (
                     <ul className="mt-4 grid gap-2">
                       {section.bullets.map(
                         (bullet) => (

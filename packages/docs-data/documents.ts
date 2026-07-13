@@ -9,117 +9,258 @@ import type {
 
 export const lifetopiaDocumentSources: LifetopiaDocumentSource[] = [
   {
-    slug: "project-overview",
-    category: "start-here",
-    order: 1,
+  slug: "project-overview",
+  category: "start-here",
+  order: 1,
 
-    title: {
-      en: "Project Overview",
-      id: "Gambaran Umum Proyek",
-    },
-
-    eyebrow: {
-      en: "Lifetopia World",
-      id: "Lifetopia World",
-    },
-
-    description: {
-      en: "An overview of Lifetopia World, its products, current development phase, funding direction, and intended Beta outcome.",
-      id: "Gambaran Lifetopia World, produk yang dikembangkan, fase saat ini, arah pendanaan, dan hasil Beta yang ditargetkan.",
-    },
-
-    status: "Public Draft",
-    updatedAt: "2026-07-13",
-    owner: "Pasha Muhammad",
-    readingTime: 6,
-    version: "0.1",
-
-    featured: true,
-    recentlyUpdated: true,
-
-    sections: [
-      {
-        id: "project-summary",
-        title: {
-          en: "Project Summary",
-          id: "Ringkasan Proyek",
-        },
-        paragraphs: [
-          {
-            en: "Lifetopia World is a cozy life-simulation and social sandbox ecosystem combining a playable game, community platform, shared player identity, and future marketplace.",
-            id: "Lifetopia World adalah ekosistem life-simulation dan social sandbox bernuansa cozy yang menggabungkan game, platform komunitas, identitas pemain bersama, dan marketplace masa depan.",
-          },
-          {
-            en: "Solana provides the foundation for wallet connectivity, digital ownership, and future player-driven economic activity.",
-            id: "Solana menjadi fondasi untuk konektivitas wallet, kepemilikan digital, dan aktivitas ekonomi yang digerakkan pemain.",
-          },
-        ],
-      },
-      {
-        id: "current-products",
-        title: {
-          en: "Current Products",
-          id: "Produk Saat Ini",
-        },
-        bullets: [
-          {
-            en: "Official project website at lifetopiaworld.io",
-            id: "Website resmi proyek di lifetopiaworld.io",
-          },
-          {
-            en: "Community platform at community.lifetopiaworld.io",
-            id: "Platform komunitas di community.lifetopiaworld.io",
-          },
-          {
-            en: "Publicly accessible Alpha game at play.lifetopiaworld.io",
-            id: "Game Alpha publik di play.lifetopiaworld.io",
-          },
-          {
-            en: "Public development repository on GitHub",
-            id: "Repository pengembangan publik di GitHub",
-          },
-        ],
-      },
-      {
-        id: "current-phase",
-        title: {
-          en: "Current Phase",
-          id: "Fase Saat Ini",
-        },
-        paragraphs: [
-          {
-            en: "The project is in active Beta development. The publicly accessible game remains the previous Alpha build while the connected Beta is completed.",
-            id: "Proyek saat ini berada dalam pengembangan Beta. Game yang dapat diakses publik masih merupakan build Alpha sebelumnya sementara Beta yang terhubung sedang diselesaikan.",
-          },
-        ],
-      },
-      {
-        id: "funding-request",
-        title: {
-          en: "Funding Request",
-          id: "Permintaan Pendanaan",
-        },
-        bullets: [
-          {
-            en: "$10,000 total funding request",
-            id: "Total permintaan pendanaan sebesar $10.000",
-          },
-          {
-            en: "Estimated 8–12 week delivery period",
-            id: "Estimasi periode pengiriman 8–12 minggu",
-          },
-          {
-            en: "Three milestone-based delivery stages",
-            id: "Tiga tahap pengiriman berbasis milestone",
-          },
-          {
-            en: "Focused on product development, infrastructure, testing, and onboarding",
-            id: "Berfokus pada pengembangan produk, infrastruktur, pengujian, dan onboarding",
-          },
-        ],
-      },
-    ],
+  title: {
+    en: "Project Overview",
+    id: "Gambaran Umum Proyek",
   },
+
+  eyebrow: {
+    en: "Lifetopia World",
+    id: "Lifetopia World",
+  },
+
+  description: {
+    en: "A complete introduction to Lifetopia World, its connected products, current development phase, Solana direction, funding request, and intended Beta outcome.",
+    id: "Pengenalan lengkap mengenai Lifetopia World, produk yang terhubung, fase pengembangan, arah Solana, permintaan pendanaan, dan hasil Beta yang ditargetkan.",
+  },
+
+  status: "Public Draft",
+  updatedAt: "2026-07-13",
+  owner: "Pasha Muhammad",
+  readingTime: 10,
+  version: "0.2",
+
+  featured: true,
+  recentlyUpdated: true,
+
+  keyTakeaways: [
+    {
+      en: "Lifetopia already has working public products, including its website, community platform, playable Alpha, and public development repository.",
+      id: "Lifetopia sudah memiliki produk publik yang berjalan, termasuk website, platform komunitas, playable Alpha, dan repository pengembangan publik.",
+    },
+    {
+      en: "The project is currently in Beta development, while the publicly accessible game remains the previous Alpha build.",
+      id: "Proyek saat ini berada dalam pengembangan Beta, sementara game yang dapat diakses publik masih merupakan build Alpha sebelumnya.",
+    },
+    {
+      en: "The requested funding supports integration, expansion, testing, and public readiness rather than validating an unbuilt concept.",
+      id: "Pendanaan yang diajukan digunakan untuk integrasi, ekspansi, pengujian, dan kesiapan publik, bukan untuk memvalidasi konsep yang belum dibangun.",
+    },
+    {
+      en: "Solana is introduced through useful player experiences such as identity, wallet connectivity, ownership, and marketplace participation.",
+      id: "Solana diperkenalkan melalui pengalaman pemain yang berguna seperti identitas, konektivitas wallet, kepemilikan, dan partisipasi marketplace.",
+    },
+  ],
+
+  sections: [
+    {
+      id: "project-summary",
+      title: {
+        en: "Project Summary",
+        id: "Ringkasan Proyek",
+      },
+      paragraphs: [
+        {
+          en: "Lifetopia World is a cozy life-simulation and social sandbox ecosystem that combines a playable game, community platform, shared player identity, and future marketplace.",
+          id: "Lifetopia World adalah ekosistem life-simulation dan social sandbox bernuansa cozy yang menggabungkan game, platform komunitas, identitas pemain bersama, dan marketplace masa depan.",
+        },
+        {
+          en: "The project is designed as a connected world rather than a collection of isolated applications. Players should be able to create an identity, participate in the community, enter the game, and eventually interact with ownership and marketplace systems through one ecosystem.",
+          id: "Proyek ini dirancang sebagai dunia yang terhubung, bukan kumpulan aplikasi terpisah. Pemain nantinya dapat membuat identitas, berpartisipasi di komunitas, masuk ke game, serta berinteraksi dengan sistem kepemilikan dan marketplace melalui satu ekosistem.",
+        },
+      ],
+    },
+    {
+      id: "onboarding-problem",
+      title: {
+        en: "The Onboarding Problem",
+        id: "Masalah Onboarding",
+      },
+      paragraphs: [
+        {
+          en: "Many Web3 products introduce technical infrastructure before users understand the value of the experience. New users are often asked to learn wallets, networks, transaction fees, and unfamiliar terminology before they have a reason to participate.",
+          id: "Banyak produk Web3 memperkenalkan infrastruktur teknis sebelum pengguna memahami nilai dari pengalamannya. Pengguna baru sering diminta mempelajari wallet, network, biaya transaksi, dan istilah asing sebelum memiliki alasan untuk berpartisipasi.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Technical onboarding creates friction before users experience meaningful value.",
+          id: "Onboarding teknis menciptakan hambatan sebelum pengguna merasakan nilai yang berarti.",
+        },
+        {
+          en: "Games, communities, wallets, and marketplaces often exist as disconnected products.",
+          id: "Game, komunitas, wallet, dan marketplace sering tersedia sebagai produk yang tidak terhubung.",
+        },
+        {
+          en: "Fear of making mistakes prevents many first-time users from participating.",
+          id: "Kekhawatiran melakukan kesalahan membuat banyak pengguna baru enggan berpartisipasi.",
+        },
+      ],
+    },
+    {
+      id: "lifetopia-solution",
+      title: {
+        en: "The Lifetopia Approach",
+        id: "Pendekatan Lifetopia",
+      },
+      paragraphs: [
+        {
+          en: "Lifetopia begins with familiar activities such as exploration, farming, social interaction, progression, and community participation. Blockchain features are introduced gradually when they provide clear player utility.",
+          id: "Lifetopia dimulai dengan aktivitas yang familiar seperti eksplorasi, farming, interaksi sosial, progression, dan partisipasi komunitas. Fitur blockchain diperkenalkan secara bertahap ketika memberikan kegunaan yang jelas bagi pemain.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Experience first: players begin with gameplay and community value.",
+          id: "Pengalaman lebih dahulu: pemain memulai dari gameplay dan nilai komunitas.",
+        },
+        {
+          en: "Shared identity: one account connects the website, community, game, and future marketplace.",
+          id: "Identitas bersama: satu akun menghubungkan website, komunitas, game, dan marketplace mendatang.",
+        },
+        {
+          en: "Utility-driven Web3: wallets and ownership appear when they become useful.",
+          id: "Web3 berbasis kegunaan: wallet dan kepemilikan diperkenalkan ketika benar-benar berguna.",
+        },
+      ],
+    },
+    {
+      id: "product-ecosystem",
+      title: {
+        en: "Connected Product Ecosystem",
+        id: "Ekosistem Produk Terhubung",
+      },
+      paragraphs: [
+        {
+          en: "The Lifetopia ecosystem is being developed around four connected foundations. Some are already publicly available, while others are currently being integrated for the Beta.",
+          id: "Ekosistem Lifetopia dikembangkan melalui empat fondasi yang saling terhubung. Sebagiannya sudah tersedia untuk publik, sedangkan bagian lainnya sedang diintegrasikan untuk Beta.",
+        },
+      ],
+    },
+    {
+      id: "current-development-phase",
+      title: {
+        en: "Current Development Phase",
+        id: "Fase Pengembangan Saat Ini",
+      },
+      paragraphs: [
+        {
+          en: "Lifetopia World is currently in active Beta development. The MVP and Alpha phases have already been completed, and the current focus is building a stronger connected foundation for public Beta participation.",
+          id: "Lifetopia World saat ini berada dalam pengembangan Beta aktif. Fase MVP dan Alpha telah selesai, dan fokus sekarang adalah membangun fondasi terhubung yang lebih kuat untuk partisipasi Beta publik.",
+        },
+        {
+          en: "The game available at play.lifetopiaworld.io remains the previous Alpha build. It demonstrates the existing gameplay foundation but does not represent the final connected Beta experience.",
+          id: "Game yang tersedia di play.lifetopiaworld.io masih merupakan build Alpha sebelumnya. Build tersebut menunjukkan fondasi gameplay yang sudah ada, tetapi belum mewakili pengalaman Beta terhubung yang final.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Expand and stabilize gameplay systems.",
+          id: "Memperluas dan menstabilkan sistem gameplay.",
+        },
+        {
+          en: "Complete shared player identity across products.",
+          id: "Menyelesaikan identitas pemain bersama di seluruh produk.",
+        },
+        {
+          en: "Improve community systems and public moderation readiness.",
+          id: "Meningkatkan sistem komunitas dan kesiapan moderasi publik.",
+        },
+        {
+          en: "Introduce Solana connectivity and marketplace foundations.",
+          id: "Memperkenalkan konektivitas Solana dan fondasi marketplace.",
+        },
+      ],
+    },
+    {
+      id: "solana-role",
+      title: {
+        en: "The Role of Solana",
+        id: "Peran Solana",
+      },
+      paragraphs: [
+        {
+          en: "Solana provides the blockchain foundation for wallet connectivity, digital ownership, player-linked assets, devnet interaction, and the future marketplace.",
+          id: "Solana menyediakan fondasi blockchain untuk konektivitas wallet, kepemilikan digital, aset yang terhubung dengan pemain, interaksi devnet, dan marketplace masa depan.",
+        },
+        {
+          en: "The integration is intended to remain optional and utility-driven. Players should first understand the value of the ecosystem before being asked to interact with blockchain infrastructure.",
+          id: "Integrasi ini dirancang tetap opsional dan berbasis kegunaan. Pemain seharusnya memahami nilai ekosistem terlebih dahulu sebelum diminta berinteraksi dengan infrastruktur blockchain.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Phantom and Solflare wallet connectivity.",
+          id: "Konektivitas wallet Phantom dan Solflare.",
+        },
+        {
+          en: "Wallet-linked player identity.",
+          id: "Identitas pemain yang terhubung dengan wallet.",
+        },
+        {
+          en: "Devnet interactions during Beta testing.",
+          id: "Interaksi devnet selama pengujian Beta.",
+        },
+        {
+          en: "Future marketplace and digital ownership systems.",
+          id: "Marketplace dan sistem kepemilikan digital mendatang.",
+        },
+      ],
+    },
+    {
+      id: "funding-direction",
+      title: {
+        en: "Funding Direction",
+        id: "Arah Pendanaan",
+      },
+      paragraphs: [
+        {
+          en: "Lifetopia is requesting $10,000 to complete an 8–12 week Beta delivery period. The funding is divided into three milestone-based stages and four operational allocation categories.",
+          id: "Lifetopia mengajukan pendanaan sebesar $10.000 untuk menyelesaikan periode pengiriman Beta selama 8–12 minggu. Pendanaan dibagi menjadi tiga tahap berbasis milestone dan empat kategori alokasi operasional.",
+        },
+      ],
+      bullets: [
+        {
+          en: "$3,500 for Community Platform Completion.",
+          id: "$3.500 untuk Penyelesaian Platform Komunitas.",
+        },
+        {
+          en: "$4,000 for Playable Beta Expansion.",
+          id: "$4.000 untuk Ekspansi Playable Beta.",
+        },
+        {
+          en: "$2,500 for the Connected Solana Ecosystem.",
+          id: "$2.500 untuk Ekosistem Solana Terhubung.",
+        },
+        {
+          en: "Operational allocation covers product development, infrastructure, quality assurance, and community onboarding.",
+          id: "Alokasi operasional mencakup pengembangan produk, infrastruktur, quality assurance, dan onboarding komunitas.",
+        },
+      ],
+    },
+    {
+      id: "intended-beta-outcome",
+      title: {
+        en: "Intended Beta Outcome",
+        id: "Hasil Beta yang Ditargetkan",
+      },
+      paragraphs: [
+        {
+          en: "The intended outcome is a publicly reviewable Lifetopia Beta connecting the game, community platform, shared player identity, and Solana foundation.",
+          id: "Hasil yang ditargetkan adalah Beta Lifetopia yang dapat ditinjau publik dan menghubungkan game, platform komunitas, identitas pemain bersama, serta fondasi Solana.",
+        },
+        {
+          en: "The funded period is also expected to produce stronger technical evidence, public testing activity, user feedback, and measurable interaction with the ecosystem.",
+          id: "Periode pendanaan juga diharapkan menghasilkan bukti teknis yang lebih kuat, aktivitas pengujian publik, feedback pengguna, dan interaksi ekosistem yang terukur.",
+        },
+      ],
+    },
+  ],
+},
 
   {
     slug: "beta-roadmap",
@@ -632,10 +773,16 @@ function resolveDocument(
     version: document.version,
 
     featured: document.featured ?? false,
-    recentlyUpdated:
-      document.recentlyUpdated ?? false,
+recentlyUpdated:
+  document.recentlyUpdated ?? false,
 
-    sections: document.sections.map(
+keyTakeaways:
+  resolveTextList(
+    document.keyTakeaways,
+    locale,
+  ) ?? [],
+
+sections: document.sections.map(
     (section: DocumentSectionSource) =>
     resolveSection(section, locale),
     ),
