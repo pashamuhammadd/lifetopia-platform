@@ -3,4 +3,7 @@ export * from "./DocumentStatusBadge";
 export * from "./DocsSearch";
 export * from "./DocsNavbar";
 export * from "./DocsHomeContent";
+export * from "./DocsSidebar";
+export * from "./DocumentTableOfContents";
+export * from "./BackToTop";
 export * from "./DocumentContent";

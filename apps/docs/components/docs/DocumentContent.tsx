@@ -2,11 +2,16 @@
 
 import {
   getDocumentBySlug,
+  getDocumentCategory,
+  getDocuments,
 } from "@repo/docs-data";
 import Link from "next/link";
 
+import { BackToTop } from "./BackToTop";
+import { DocsSidebar } from "./DocsSidebar";
 import { useDocsLanguage } from "./DocsLanguageProvider";
 import { DocumentStatusBadge } from "./DocumentStatusBadge";
+import { DocumentTableOfContents } from "./DocumentTableOfContents";
 
 type DocumentContentProps = {
   slug: string;
@@ -14,20 +19,28 @@ type DocumentContentProps = {
 
 const documentLabels = {
   en: {
+    documentation: "Documentation",
     updated: "Updated",
     owner: "Owner",
     reading: "min read",
     version: "Version",
-    publicDocumentation:
-      "Public project documentation",
+    previous: "Previous Document",
+    next: "Next Document",
+    projectDocumentation:
+      "Official public project documentation",
+    contact: "Project Contact",
   },
   id: {
+    documentation: "Dokumentasi",
     updated: "Diperbarui",
     owner: "Penanggung Jawab",
     reading: "menit baca",
     version: "Versi",
-    publicDocumentation:
-      "Dokumentasi proyek publik",
+    previous: "Dokumen Sebelumnya",
+    next: "Dokumen Berikutnya",
+    projectDocumentation:
+      "Dokumentasi resmi proyek publik",
+    contact: "Kontak Proyek",
   },
 };
 
@@ -67,112 +80,258 @@ export function DocumentContent({
     return null;
   }
 
+  const documents = getDocuments(locale);
+
+  const documentIndex =
+    documents.findIndex(
+      (item) => item.slug === document.slug,
+    );
+
+  const previousDocument =
+    documentIndex > 0
+      ? documents[documentIndex - 1]
+      : undefined;
+
+  const nextDocument =
+    documentIndex >= 0 &&
+    documentIndex < documents.length - 1
+      ? documents[documentIndex + 1]
+      : undefined;
+
+  const category = getDocumentCategory(
+    document.category,
+    locale,
+  );
+
   const labels = documentLabels[locale];
 
   return (
-    <main className="min-h-[calc(100svh-4rem)]">
-      <article className="docs-reading-container py-[clamp(2rem,4vw,3.25rem)]">
-        <header className="border-b border-[var(--docs-line)] pb-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="docs-eyebrow">
-              {document.eyebrow}
-            </span>
-
-            <DocumentStatusBadge
-              status={document.status}
-            />
+    <main
+      id="document-top"
+      className="min-h-[calc(100svh-4rem)]"
+    >
+      <div className="docs-container py-[clamp(1.5rem,3vw,2.5rem)]">
+        <div className="grid min-w-0 gap-[clamp(1rem,2vw,1.5rem)] xl:grid-cols-[15rem_minmax(0,1fr)_13rem] 2xl:grid-cols-[17rem_minmax(0,1fr)_14rem]">
+          <div className="hidden min-w-0 xl:block">
+            <DocsSidebar />
           </div>
 
-          <h1 className="docs-heading mt-4 max-w-[48rem]">
-            {document.title}
-          </h1>
-
-          <p className="docs-description mt-3 max-w-[46rem]">
-            {document.description}
-          </p>
-
-          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[0.72rem] font-semibold text-[var(--docs-muted)]">
-            <span>
-              {labels.updated}:{" "}
-              {formatUpdatedDate(
-                document.updatedAt,
-                locale,
-              )}
-            </span>
-
-            <span>
-              {labels.owner}: {document.owner}
-            </span>
-
-            <span>
-              {document.readingTime}{" "}
-              {labels.reading}
-            </span>
-
-            <span>
-              {labels.version} {document.version}
-            </span>
-          </div>
-        </header>
-
-        <div className="docs-prose mt-6">
-          {document.sections.map((section) => (
-            <section
-              key={section.id}
-              id={section.id}
-              className="docs-book-surface mb-4 px-[clamp(1.25rem,3vw,2rem)] py-[clamp(1rem,2.5vw,1.6rem)]"
+          <article className="min-w-0">
+            <nav
+              aria-label="Breadcrumb"
+              className="mb-4 flex flex-wrap items-center gap-1.5 text-[0.66rem] font-bold text-[var(--docs-muted)]"
             >
-              <h2 className="mt-0">
-                {section.title}
-              </h2>
+              <Link
+                href="/"
+                className="transition hover:text-[var(--docs-brown-dark)]"
+              >
+                {labels.documentation}
+              </Link>
 
-              {section.paragraphs?.map(
-                (paragraph) => (
-                  <p key={paragraph}>
-                    {paragraph}
+              <span
+                aria-hidden="true"
+                className="text-[var(--docs-subtle)]"
+              >
+                /
+              </span>
+
+              <span className="text-[var(--docs-sky-dark)]">
+                {category?.label ??
+                  labels.documentation}
+              </span>
+
+              <span
+                aria-hidden="true"
+                className="text-[var(--docs-subtle)]"
+              >
+                /
+              </span>
+
+              <span
+                aria-current="page"
+                className="font-extrabold text-[var(--docs-brown-dark)]"
+              >
+                {document.title}
+              </span>
+            </nav>
+
+            <header className="docs-book-surface px-[clamp(1.25rem,3vw,2rem)] py-[clamp(1.25rem,3vw,2rem)]">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="docs-eyebrow">
+                  {document.eyebrow}
+                </span>
+
+                <DocumentStatusBadge
+                  status={document.status}
+                />
+              </div>
+
+              <h1 className="docs-heading mt-4 max-w-[52rem]">
+                {document.title}
+              </h1>
+
+              <p className="docs-description mt-3 max-w-[50rem]">
+                {document.description}
+              </p>
+
+              <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <article className="rounded-[0.68rem] border border-[var(--docs-line)] bg-[rgba(255,253,248,0.72)] px-3 py-2.5">
+                  <p className="text-[0.56rem] font-extrabold uppercase tracking-[0.07em] text-[var(--docs-subtle)]">
+                    {labels.updated}
                   </p>
-                ),
-              )}
 
-              {section.bullets ? (
-                <ul className="mt-4 grid gap-2">
-                  {section.bullets.map(
-                    (bullet) => (
-                      <li
-                        key={bullet}
-                        className="flex items-start gap-3 rounded-[0.7rem] border border-[var(--docs-line)] bg-[rgba(255,253,248,0.72)] px-3 py-2.5"
-                      >
-                        <span className="mt-[0.65rem] size-1.5 shrink-0 rounded-full bg-[var(--docs-gold)]" />
+                  <p className="mt-1 text-[0.7rem] font-extrabold text-[var(--docs-ink-soft)]">
+                    {formatUpdatedDate(
+                      document.updatedAt,
+                      locale,
+                    )}
+                  </p>
+                </article>
 
-                        <span>{bullet}</span>
-                      </li>
+                <article className="rounded-[0.68rem] border border-[var(--docs-line)] bg-[rgba(255,253,248,0.72)] px-3 py-2.5">
+                  <p className="text-[0.56rem] font-extrabold uppercase tracking-[0.07em] text-[var(--docs-subtle)]">
+                    {labels.owner}
+                  </p>
+
+                  <p className="mt-1 line-clamp-1 text-[0.7rem] font-extrabold text-[var(--docs-ink-soft)]">
+                    {document.owner}
+                  </p>
+                </article>
+
+                <article className="rounded-[0.68rem] border border-[var(--docs-line)] bg-[rgba(255,253,248,0.72)] px-3 py-2.5">
+                  <p className="text-[0.56rem] font-extrabold uppercase tracking-[0.07em] text-[var(--docs-subtle)]">
+                    Reading
+                  </p>
+
+                  <p className="mt-1 text-[0.7rem] font-extrabold text-[var(--docs-ink-soft)]">
+                    {document.readingTime}{" "}
+                    {labels.reading}
+                  </p>
+                </article>
+
+                <article className="rounded-[0.68rem] border border-[var(--docs-line)] bg-[rgba(255,253,248,0.72)] px-3 py-2.5">
+                  <p className="text-[0.56rem] font-extrabold uppercase tracking-[0.07em] text-[var(--docs-subtle)]">
+                    {labels.version}
+                  </p>
+
+                  <p className="mt-1 text-[0.7rem] font-extrabold text-[var(--docs-ink-soft)]">
+                    v{document.version}
+                  </p>
+                </article>
+              </div>
+            </header>
+
+            <div className="docs-prose mt-4">
+              {document.sections.map((section) => (
+                <section
+                  key={section.id}
+                  id={section.id}
+                  className="docs-book-surface mb-4 scroll-mt-24 px-[clamp(1.25rem,3vw,2rem)] py-[clamp(1rem,2.5vw,1.6rem)]"
+                >
+                  <h2 className="mt-0">
+                    {section.title}
+                  </h2>
+
+                  {section.paragraphs?.map(
+                    (paragraph) => (
+                      <p key={paragraph}>
+                        {paragraph}
+                      </p>
                     ),
                   )}
-                </ul>
+
+                  {section.bullets ? (
+                    <ul className="mt-4 grid gap-2">
+                      {section.bullets.map(
+                        (bullet) => (
+                          <li
+                            key={bullet}
+                            className="flex items-start gap-3 rounded-[0.7rem] border border-[var(--docs-line)] bg-[rgba(255,253,248,0.72)] px-3 py-2.5"
+                          >
+                            <span className="mt-[0.65rem] size-1.5 shrink-0 rounded-full bg-[var(--docs-gold)]" />
+
+                            <span>{bullet}</span>
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  ) : null}
+                </section>
+              ))}
+            </div>
+
+            <nav
+              aria-label="Document navigation"
+              className="mt-5 grid gap-3 sm:grid-cols-2"
+            >
+              {previousDocument ? (
+                <Link
+                  href={`/${previousDocument.slug}`}
+                  className="docs-card group flex min-h-[6rem] flex-col justify-center p-4"
+                >
+                  <p className="text-[0.6rem] font-extrabold uppercase tracking-[0.08em] text-[var(--docs-subtle)]">
+                    ← {labels.previous}
+                  </p>
+
+                  <p className="mt-2 text-[0.82rem] font-extrabold text-[var(--docs-ink)] transition group-hover:text-[var(--docs-brown)]">
+                    {previousDocument.title}
+                  </p>
+                </Link>
+              ) : (
+                <div />
+              )}
+
+              {nextDocument ? (
+                <Link
+                  href={`/${nextDocument.slug}`}
+                  className="docs-card group flex min-h-[6rem] flex-col justify-center p-4 text-left sm:text-right"
+                >
+                  <p className="text-[0.6rem] font-extrabold uppercase tracking-[0.08em] text-[var(--docs-subtle)]">
+                    {labels.next} →
+                  </p>
+
+                  <p className="mt-2 text-[0.82rem] font-extrabold text-[var(--docs-ink)] transition group-hover:text-[var(--docs-brown)]">
+                    {nextDocument.title}
+                  </p>
+                </Link>
               ) : null}
-            </section>
-          ))}
-        </div>
+            </nav>
 
-        <footer className="mt-6 flex flex-col gap-3 rounded-[1rem] bg-[var(--docs-brown-dark)] px-5 py-4 text-white sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="font-extrabold">
-              Official Lifetopia Documentation
-            </p>
+            <footer className="mt-5 flex flex-col gap-3 rounded-[1rem] bg-[var(--docs-brown-dark)] px-5 py-4 text-white sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-extrabold">
+                  Official Lifetopia Documentation
+                </p>
 
-            <p className="mt-1 text-sm text-white/55">
-              {labels.publicDocumentation}
-            </p>
+                <p className="mt-1 text-sm text-white/55">
+                  {labels.projectDocumentation}
+                </p>
+              </div>
+
+              <div className="sm:text-right">
+                <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.08em] text-white/38">
+                  {labels.contact}
+                </p>
+
+                <Link
+                  href="mailto:contact@lifetopiaworld.io"
+                  className="mt-1 block text-sm font-extrabold text-[#ffe5a5] hover:underline"
+                >
+                  contact@lifetopiaworld.io
+                </Link>
+              </div>
+            </footer>
+          </article>
+
+          <div className="hidden min-w-0 xl:block">
+            <DocumentTableOfContents
+              sections={document.sections}
+            />
           </div>
+        </div>
+      </div>
 
-          <Link
-            href="mailto:contact@lifetopiaworld.io"
-            className="text-sm font-extrabold text-[#ffe5a5] hover:underline"
-          >
-            contact@lifetopiaworld.io
-          </Link>
-        </footer>
-      </article>
+      <BackToTop />
     </main>
   );
 }
