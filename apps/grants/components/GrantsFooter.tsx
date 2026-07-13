@@ -36,9 +36,9 @@ const evidenceLinks: FooterLink[] = [
     href: "#products",
   },
   {
-    label: "Public Development",
-    href: "#public-development",
-  },
+  label: "Public Development",
+  href: "#public-development",
+},
   {
     label: "Expected Impact",
     href: "#impact",
