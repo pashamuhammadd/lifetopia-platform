@@ -263,137 +263,361 @@ export const lifetopiaDocumentSources: LifetopiaDocumentSource[] = [
 },
 
   {
-    slug: "beta-roadmap",
-    category: "development",
-    order: 2,
+  slug: "beta-roadmap",
+  category: "development",
+  order: 2,
 
-    title: {
-      en: "Beta Roadmap",
-      id: "Roadmap Beta",
-    },
-
-    eyebrow: {
-      en: "Delivery Plan",
-      id: "Rencana Pengiriman",
-    },
-
-    description: {
-      en: "The milestone-based delivery plan for moving Lifetopia from its existing foundations into a connected public Beta.",
-      id: "Rencana pengiriman berbasis milestone untuk membawa fondasi Lifetopia menuju Beta publik yang terhubung.",
-    },
-
-    status: "Public Draft",
-    updatedAt: "2026-07-13",
-    owner: "Pasha Muhammad",
-    readingTime: 5,
-    version: "0.1",
-
-    featured: true,
-    recentlyUpdated: true,
-
-    sections: [
-      {
-        id: "milestone-community",
-        title: {
-          en: "Milestone 01 — Community Platform Completion",
-          id: "Milestone 01 — Penyelesaian Platform Komunitas",
-        },
-        bullets: [
-          {
-            en: "$3,500 funding allocation",
-            id: "Alokasi pendanaan $3.500",
-          },
-          {
-            en: "3–4 week delivery period",
-            id: "Periode pengiriman 3–4 minggu",
-          },
-          {
-            en: "Shared player identity",
-            id: "Identitas pemain bersama",
-          },
-          {
-            en: "Community feature improvements",
-            id: "Peningkatan fitur komunitas",
-          },
-          {
-            en: "Moderation and public readiness",
-            id: "Moderasi dan kesiapan publik",
-          },
-        ],
-      },
-      {
-        id: "milestone-game",
-        title: {
-          en: "Milestone 02 — Playable Beta Expansion",
-          id: "Milestone 02 — Ekspansi Playable Beta",
-        },
-        bullets: [
-          {
-            en: "$4,000 funding allocation",
-            id: "Alokasi pendanaan $4.000",
-          },
-          {
-            en: "3–4 week delivery period",
-            id: "Periode pengiriman 3–4 minggu",
-          },
-          {
-            en: "Expanded gameplay systems",
-            id: "Ekspansi sistem gameplay",
-          },
-          {
-            en: "Progression and economy improvements",
-            id: "Peningkatan progression dan ekonomi",
-          },
-          {
-            en: "Testing and public Beta preparation",
-            id: "Pengujian dan persiapan Beta publik",
-          },
-        ],
-      },
-      {
-        id: "milestone-solana",
-        title: {
-          en: "Milestone 03 — Connected Solana Ecosystem",
-          id: "Milestone 03 — Ekosistem Solana Terhubung",
-        },
-        bullets: [
-          {
-            en: "$2,500 funding allocation",
-            id: "Alokasi pendanaan $2.500",
-          },
-          {
-            en: "2–4 week delivery period",
-            id: "Periode pengiriman 2–4 minggu",
-          },
-          {
-            en: "Solana wallet integration",
-            id: "Integrasi wallet Solana",
-          },
-          {
-            en: "Marketplace foundation",
-            id: "Fondasi marketplace",
-          },
-          {
-            en: "Connected ecosystem verification",
-            id: "Verifikasi ekosistem terhubung",
-          },
-        ],
-      },
-      {
-        id: "final-outcome",
-        title: {
-          en: "Final Outcome",
-          id: "Hasil Akhir",
-        },
-        paragraphs: [
-          {
-            en: "The intended outcome is a more complete and publicly reviewable Lifetopia Beta connecting the game, community, player identity, and Solana foundation.",
-            id: "Hasil yang ditargetkan adalah Beta Lifetopia yang lebih lengkap dan dapat ditinjau publik, menghubungkan game, komunitas, identitas pemain, dan fondasi Solana.",
-          },
-        ],
-      },
-    ],
+  title: {
+    en: "Beta Roadmap",
+    id: "Roadmap Beta",
   },
+
+  eyebrow: {
+    en: "Milestone Delivery Plan",
+    id: "Rencana Pengiriman Milestone",
+  },
+
+  description: {
+    en: "A milestone-based delivery plan for connecting Lifetopia's existing website, community platform, playable game, shared identity, and Solana foundations into a publicly reviewable Beta.",
+    id: "Rencana pengiriman berbasis milestone untuk menghubungkan website, platform komunitas, game, identitas bersama, dan fondasi Solana Lifetopia menjadi Beta yang dapat ditinjau publik.",
+  },
+
+  status: "Public Draft",
+  updatedAt: "2026-07-14",
+  owner: "Pasha Muhammad",
+  readingTime: 12,
+  version: "0.2",
+
+  featured: true,
+  recentlyUpdated: true,
+
+  keyTakeaways: [
+    {
+      en: "The $10,000 request is divided into three delivery milestones with clear budgets, timelines, and inspectable outcomes.",
+      id: "Permintaan $10.000 dibagi menjadi tiga milestone dengan anggaran, timeline, dan hasil yang dapat diperiksa.",
+    },
+    {
+      en: "The roadmap focuses on completing and connecting foundations that already exist rather than starting the product from zero.",
+      id: "Roadmap berfokus menyelesaikan dan menghubungkan fondasi yang sudah tersedia, bukan memulai produk dari nol.",
+    },
+    {
+      en: "Each milestone produces public product evidence, repository activity, and reviewer-verifiable acceptance criteria.",
+      id: "Setiap milestone menghasilkan bukti produk publik, aktivitas repository, dan kriteria penerimaan yang dapat diverifikasi reviewer.",
+    },
+    {
+      en: "The intended final outcome is a connected Beta delivered within an estimated 8–12 week period.",
+      id: "Hasil akhir yang ditargetkan adalah Beta terhubung dalam estimasi periode 8–12 minggu.",
+    },
+  ],
+
+  sections: [
+    {
+      id: "roadmap-purpose",
+      title: {
+        en: "Roadmap Purpose",
+        id: "Tujuan Roadmap",
+      },
+      paragraphs: [
+        {
+          en: "The Beta roadmap defines how Lifetopia will move from its current collection of working products into one connected public ecosystem.",
+          id: "Roadmap Beta menjelaskan bagaimana Lifetopia bergerak dari kumpulan produk yang sudah berjalan menuju satu ekosistem publik yang terhubung.",
+        },
+        {
+          en: "The plan is structured around milestone delivery rather than a broad list of features. Each stage has a defined objective, funding allocation, estimated duration, acceptance criteria, and evidence that reviewers can inspect.",
+          id: "Rencana disusun berdasarkan pengiriman milestone, bukan sekadar daftar fitur. Setiap tahap memiliki objective, alokasi pendanaan, estimasi durasi, kriteria penerimaan, dan bukti yang dapat diperiksa reviewer.",
+        },
+      ],
+    },
+    {
+      id: "delivery-path",
+      title: {
+        en: "Three-Milestone Delivery Path",
+        id: "Jalur Pengiriman Tiga Milestone",
+      },
+      paragraphs: [
+        {
+          en: "The milestones follow a practical dependency order: complete the community and identity foundation, expand the playable Beta, then connect the broader Solana ecosystem.",
+          id: "Milestone mengikuti urutan dependency yang praktis: menyelesaikan fondasi komunitas dan identitas, memperluas playable Beta, lalu menghubungkan ekosistem Solana.",
+        },
+      ],
+    },
+    {
+      id: "milestone-community",
+      title: {
+        en: "Milestone 01 — Community Platform Completion",
+        id: "Milestone 01 — Penyelesaian Platform Komunitas",
+      },
+      paragraphs: [
+        {
+          en: "The first milestone strengthens the community platform and shared player identity that will connect users across Lifetopia products.",
+          id: "Milestone pertama memperkuat platform komunitas dan identitas pemain bersama yang akan menghubungkan pengguna di seluruh produk Lifetopia.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Funding allocation: $3,500.",
+          id: "Alokasi pendanaan: $3.500.",
+        },
+        {
+          en: "Estimated duration: 3–4 weeks.",
+          id: "Estimasi durasi: 3–4 minggu.",
+        },
+        {
+          en: "Complete shared profile and player identity foundations.",
+          id: "Menyelesaikan fondasi profil dan identitas pemain bersama.",
+        },
+        {
+          en: "Improve profiles, feeds, posting, comments, likes, and bookmarks.",
+          id: "Meningkatkan profil, feed, posting, komentar, like, dan bookmark.",
+        },
+        {
+          en: "Strengthen authentication and cross-subdomain account continuity.",
+          id: "Memperkuat autentikasi dan kesinambungan akun lintas subdomain.",
+        },
+        {
+          en: "Improve moderation readiness and community safety foundations.",
+          id: "Meningkatkan kesiapan moderasi dan fondasi keamanan komunitas.",
+        },
+      ],
+    },
+    {
+      id: "milestone-community-acceptance",
+      title: {
+        en: "Milestone 01 Acceptance Criteria",
+        id: "Kriteria Penerimaan Milestone 01",
+      },
+      bullets: [
+        {
+          en: "Players can register, sign in, and access their shared profile reliably.",
+          id: "Pemain dapat mendaftar, login, dan mengakses profil bersama secara stabil.",
+        },
+        {
+          en: "Core community interactions work in the production environment.",
+          id: "Interaksi utama komunitas berjalan di environment produksi.",
+        },
+        {
+          en: "Protected pages correctly reject unauthenticated access.",
+          id: "Halaman terproteksi menolak akses pengguna yang belum login dengan benar.",
+        },
+        {
+          en: "Reviewer-accessible deployment and related repository activity are available.",
+          id: "Deployment yang dapat diakses reviewer dan aktivitas repository terkait tersedia.",
+        },
+      ],
+    },
+    {
+      id: "milestone-game",
+      title: {
+        en: "Milestone 02 — Playable Beta Expansion",
+        id: "Milestone 02 — Ekspansi Playable Beta",
+      },
+      paragraphs: [
+        {
+          en: "The second milestone expands the playable experience and prepares the game for structured public Beta testing.",
+          id: "Milestone kedua memperluas pengalaman bermain dan mempersiapkan game untuk pengujian Beta publik yang terstruktur.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Funding allocation: $4,000.",
+          id: "Alokasi pendanaan: $4.000.",
+        },
+        {
+          en: "Estimated duration: 3–4 weeks.",
+          id: "Estimasi durasi: 3–4 minggu.",
+        },
+        {
+          en: "Expand and stabilize core gameplay systems.",
+          id: "Memperluas dan menstabilkan sistem gameplay utama.",
+        },
+        {
+          en: "Improve player progression, inventory, economy, and persistence.",
+          id: "Meningkatkan progression, inventory, ekonomi, dan penyimpanan data pemain.",
+        },
+        {
+          en: "Resolve priority bugs affecting public testing.",
+          id: "Menyelesaikan bug prioritas yang memengaruhi pengujian publik.",
+        },
+        {
+          en: "Prepare onboarding and feedback flows for Beta participants.",
+          id: "Mempersiapkan alur onboarding dan feedback untuk peserta Beta.",
+        },
+      ],
+    },
+    {
+      id: "milestone-game-acceptance",
+      title: {
+        en: "Milestone 02 Acceptance Criteria",
+        id: "Kriteria Penerimaan Milestone 02",
+      },
+      bullets: [
+        {
+          en: "The Beta build is accessible to the intended testing group.",
+          id: "Build Beta dapat diakses oleh kelompok pengujian yang ditargetkan.",
+        },
+        {
+          en: "Core gameplay progression can be completed without critical blockers.",
+          id: "Progression gameplay utama dapat diselesaikan tanpa blocker kritis.",
+        },
+        {
+          en: "Player progress and important account data persist correctly.",
+          id: "Progress pemain dan data akun penting tersimpan dengan benar.",
+        },
+        {
+          en: "Testing feedback and issue reports can be recorded and reviewed.",
+          id: "Feedback pengujian dan laporan masalah dapat dicatat serta ditinjau.",
+        },
+      ],
+    },
+    {
+      id: "milestone-solana",
+      title: {
+        en: "Milestone 03 — Connected Solana Ecosystem",
+        id: "Milestone 03 — Ekosistem Solana Terhubung",
+      },
+      paragraphs: [
+        {
+          en: "The final milestone introduces the blockchain and marketplace foundations needed to connect player identity, ownership, and ecosystem participation.",
+          id: "Milestone terakhir memperkenalkan fondasi blockchain dan marketplace yang diperlukan untuk menghubungkan identitas pemain, kepemilikan, dan partisipasi ekosistem.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Funding allocation: $2,500.",
+          id: "Alokasi pendanaan: $2.500.",
+        },
+        {
+          en: "Estimated duration: 2–4 weeks.",
+          id: "Estimasi durasi: 2–4 minggu.",
+        },
+        {
+          en: "Add Phantom and Solflare wallet connectivity.",
+          id: "Menambahkan konektivitas wallet Phantom dan Solflare.",
+        },
+        {
+          en: "Connect wallet information with the player's Lifetopia identity.",
+          id: "Menghubungkan informasi wallet dengan identitas pemain Lifetopia.",
+        },
+        {
+          en: "Introduce verifiable Solana devnet interactions.",
+          id: "Memperkenalkan interaksi Solana devnet yang dapat diverifikasi.",
+        },
+        {
+          en: "Build the initial marketplace and ownership foundation.",
+          id: "Membangun fondasi awal marketplace dan kepemilikan.",
+        },
+      ],
+    },
+    {
+      id: "milestone-solana-acceptance",
+      title: {
+        en: "Milestone 03 Acceptance Criteria",
+        id: "Kriteria Penerimaan Milestone 03",
+      },
+      bullets: [
+        {
+          en: "Supported wallets can connect and disconnect through the public interface.",
+          id: "Wallet yang didukung dapat connect dan disconnect melalui interface publik.",
+        },
+        {
+          en: "Wallet-linked activity does not prevent users from accessing non-blockchain features.",
+          id: "Aktivitas yang terhubung wallet tidak menghalangi pengguna mengakses fitur non-blockchain.",
+        },
+        {
+          en: "Selected devnet interactions can be independently verified.",
+          id: "Interaksi devnet terpilih dapat diverifikasi secara independen.",
+        },
+        {
+          en: "Marketplace foundations are documented and connected to the broader product architecture.",
+          id: "Fondasi marketplace terdokumentasi dan terhubung ke arsitektur produk yang lebih luas.",
+        },
+      ],
+    },
+    {
+      id: "delivery-evidence",
+      title: {
+        en: "Delivery Evidence",
+        id: "Bukti Pengiriman",
+      },
+      paragraphs: [
+        {
+          en: "Each milestone is expected to produce evidence that can be inspected without relying only on written progress reports.",
+          id: "Setiap milestone diharapkan menghasilkan bukti yang dapat diperiksa tanpa hanya bergantung pada laporan perkembangan tertulis.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Public or reviewer-accessible product deployments.",
+          id: "Deployment produk yang dapat diakses publik atau reviewer.",
+        },
+        {
+          en: "GitHub commits and repository changes related to the milestone.",
+          id: "Commit GitHub dan perubahan repository terkait milestone.",
+        },
+        {
+          en: "Updated documentation describing delivered systems.",
+          id: "Dokumentasi terbaru yang menjelaskan sistem yang telah dikirim.",
+        },
+        {
+          en: "Testing records, feedback summaries, and resolved issues where applicable.",
+          id: "Catatan pengujian, ringkasan feedback, dan masalah yang diselesaikan jika relevan.",
+        },
+        {
+          en: "Solana explorer evidence for selected blockchain interactions.",
+          id: "Bukti Solana Explorer untuk interaksi blockchain terpilih.",
+        },
+      ],
+    },
+    {
+      id: "dependencies-and-risks",
+      title: {
+        en: "Dependencies and Delivery Risks",
+        id: "Dependency dan Risiko Pengiriman",
+      },
+      paragraphs: [
+        {
+          en: "The roadmap is designed to remain achievable within the proposed period, but delivery may be affected by integration complexity, testing discoveries, infrastructure issues, or dependencies between applications.",
+          id: "Roadmap dirancang agar tetap dapat dicapai dalam periode yang diajukan, tetapi pengiriman dapat dipengaruhi kompleksitas integrasi, temuan pengujian, masalah infrastruktur, atau dependency antar-aplikasi.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Shared authentication changes must remain compatible across applications.",
+          id: "Perubahan autentikasi bersama harus tetap kompatibel di seluruh aplikasi.",
+        },
+        {
+          en: "Gameplay stabilization may reveal additional priority bugs.",
+          id: "Stabilisasi gameplay dapat menemukan bug prioritas tambahan.",
+        },
+        {
+          en: "Blockchain integration must not reduce access for non-wallet users.",
+          id: "Integrasi blockchain tidak boleh mengurangi akses pengguna tanpa wallet.",
+        },
+        {
+          en: "Scope adjustments should preserve milestone outcomes and public evidence.",
+          id: "Penyesuaian scope harus tetap mempertahankan hasil milestone dan bukti publik.",
+        },
+      ],
+    },
+    {
+      id: "final-outcome",
+      title: {
+        en: "Final Beta Outcome",
+        id: "Hasil Akhir Beta",
+      },
+      paragraphs: [
+        {
+          en: "The final intended outcome is a connected, stable, and publicly reviewable Lifetopia Beta delivered over an estimated 8–12 week period.",
+          id: "Hasil akhir yang ditargetkan adalah Beta Lifetopia yang terhubung, stabil, dan dapat ditinjau publik dalam estimasi periode 8–12 minggu.",
+        },
+        {
+          en: "The completed Beta should connect the community platform, player identity, playable world, Solana wallet foundation, and early marketplace direction into one coherent ecosystem.",
+          id: "Beta yang selesai harus menghubungkan platform komunitas, identitas pemain, playable world, fondasi wallet Solana, dan arah awal marketplace menjadi satu ekosistem yang utuh.",
+        },
+      ],
+    },
+  ],
+},
 
   {
     slug: "technical-architecture",

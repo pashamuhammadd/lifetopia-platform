@@ -13,6 +13,7 @@ import { useDocsLanguage } from "./DocsLanguageProvider";
 import { DocumentStatusBadge } from "./DocumentStatusBadge";
 import { ProjectOverviewVisual } from "./ProjectOverviewVisual";
 import { DocumentTableOfContents } from "./DocumentTableOfContents";
+import { BetaRoadmapVisual } from "./BetaRoadmapVisual";
 
 type DocumentContentProps = {
   slug: string;
@@ -288,6 +289,11 @@ section.id === "product-ecosystem" ? (
   <ProjectOverviewVisual
     locale={locale}
   />
+) : null}
+
+{document.slug === "beta-roadmap" &&
+section.id === "delivery-path" ? (
+  <BetaRoadmapVisual locale={locale} />
 ) : null}
 
 {section.bullets ? (
