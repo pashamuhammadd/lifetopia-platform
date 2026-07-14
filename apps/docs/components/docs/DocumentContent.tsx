@@ -21,6 +21,8 @@ import {
   TechnicalArchitectureVisual,
 } from "./TechnicalArchitectureVisual";
 
+import { PitchDeckPreview } from "./PitchDeckPreview";
+
 type DocumentContentProps = {
   slug: string;
 };
@@ -324,6 +326,11 @@ section.id === "solana-integration" ? (
   <SolanaIntegrationVisual
     locale={locale}
   />
+) : null}
+
+{document.slug === "pitch-deck" &&
+section.id === "deck-preview" ? (
+  <PitchDeckPreview locale={locale} />
 ) : null}
 
 {section.bullets ? (

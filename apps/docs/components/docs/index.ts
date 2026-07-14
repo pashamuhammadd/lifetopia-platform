@@ -10,3 +10,4 @@ export * from "./DocumentContent";
 export * from "./ProjectOverviewVisual";
 export * from "./BetaRoadmapVisual";
 export * from "./TechnicalArchitectureVisual";
+export * from "./PitchDeckPreview";

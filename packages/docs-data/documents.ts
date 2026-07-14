@@ -1075,92 +1075,293 @@ export const lifetopiaDocumentSources: LifetopiaDocumentSource[] = [
   ],
 },
 
-  {
-    slug: "pitch-deck",
-    category: "funding",
-    order: 4,
+ {
+  slug: "pitch-deck",
+  category: "funding",
+  order: 4,
 
-    title: {
-      en: "Pitch Deck",
-      id: "Pitch Deck",
-    },
-
-    eyebrow: {
-      en: "Funding Presentation",
-      id: "Presentasi Pendanaan",
-    },
-
-    description: {
-      en: "A visual presentation covering Lifetopia's opportunity, products, execution evidence, funding plan, team, and expected Beta impact.",
-      id: "Presentasi visual mengenai peluang Lifetopia, produk, bukti eksekusi, rencana pendanaan, tim, dan dampak Beta yang ditargetkan.",
-    },
-
-    status: "In Preparation",
-    updatedAt: "2026-07-13",
-    owner: "Pasha Muhammad",
-    readingTime: 2,
-    version: "0.1",
-
-    featured: true,
-    recentlyUpdated: false,
-
-    sections: [
-      {
-        id: "deck-structure",
-        title: {
-          en: "Planned Deck Structure",
-          id: "Struktur Pitch Deck",
-        },
-        bullets: [
-          {
-            en: "Project vision",
-            id: "Visi proyek",
-          },
-          {
-            en: "Web3 onboarding problem",
-            id: "Masalah onboarding Web3",
-          },
-          {
-            en: "Lifetopia solution",
-            id: "Solusi Lifetopia",
-          },
-          {
-            en: "Existing live products",
-            id: "Produk live yang sudah tersedia",
-          },
-          {
-            en: "Current development status",
-            id: "Status pengembangan saat ini",
-          },
-          {
-            en: "Roadmap and funding allocation",
-            id: "Roadmap dan alokasi pendanaan",
-          },
-          {
-            en: "Expected Beta impact",
-            id: "Dampak Beta yang ditargetkan",
-          },
-          {
-            en: "Team and delivery ownership",
-            id: "Tim dan tanggung jawab pengiriman",
-          },
-        ],
-      },
-      {
-        id: "current-status",
-        title: {
-          en: "Current Status",
-          id: "Status Saat Ini",
-        },
-        paragraphs: [
-          {
-            en: "The presentation is currently being prepared. This page will provide a preview and PDF download when the deck is ready.",
-            id: "Presentasi saat ini sedang dipersiapkan. Halaman ini akan menyediakan preview dan download PDF ketika pitch deck sudah selesai.",
-          },
-        ],
-      },
-    ],
+  title: {
+    en: "Pitch Deck",
+    id: "Pitch Deck",
   },
+
+  eyebrow: {
+    en: "Funding Presentation",
+    id: "Presentasi Pendanaan",
+  },
+
+  description: {
+    en: "A reviewer-facing presentation covering Lifetopia's opportunity, connected products, execution evidence, Beta roadmap, funding allocation, team, and intended ecosystem impact.",
+    id: "Presentasi untuk reviewer yang membahas peluang Lifetopia, produk terhubung, bukti eksekusi, roadmap Beta, alokasi pendanaan, tim, dan dampak ekosistem yang ditargetkan.",
+  },
+
+  status: "In Preparation",
+  updatedAt: "2026-07-14",
+  owner: "Pasha Muhammad",
+  readingTime: 7,
+  version: "0.2",
+
+  featured: true,
+  recentlyUpdated: true,
+
+  keyTakeaways: [
+    {
+      en: "The pitch deck is being prepared as a concise visual summary of the evidence already available across the Funding Hub, documentation portal, live products, and public repository.",
+      id: "Pitch deck sedang dipersiapkan sebagai ringkasan visual dari bukti yang sudah tersedia di Funding Hub, portal dokumentasi, produk live, dan repository publik.",
+    },
+    {
+      en: "The presentation will clearly distinguish the current Beta project phase from the publicly accessible previous Alpha game build.",
+      id: "Presentasi akan membedakan secara jelas fase proyek Beta saat ini dengan build game Alpha sebelumnya yang masih dapat diakses publik.",
+    },
+    {
+      en: "The funding narrative focuses on connecting and expanding working foundations rather than financing an unbuilt concept.",
+      id: "Narasi pendanaan berfokus menghubungkan dan memperluas fondasi yang sudah berjalan, bukan membiayai konsep yang belum dibangun.",
+    },
+    {
+      en: "A downloadable PDF will be published only after its claims, numbers, links, and visual evidence have been reviewed.",
+      id: "PDF yang dapat diunduh hanya akan dipublikasikan setelah klaim, angka, tautan, dan bukti visualnya diperiksa.",
+    },
+  ],
+
+  sections: [
+    {
+      id: "presentation-purpose",
+      title: {
+        en: "Presentation Purpose",
+        id: "Tujuan Presentasi",
+      },
+      paragraphs: [
+        {
+          en: "The Lifetopia World Pitch Deck is designed as a concise entry point for grant reviewers, ecosystem partners, and potential supporters who need to understand the project quickly.",
+          id: "Pitch Deck Lifetopia World dirancang sebagai entry point ringkas bagi reviewer grant, partner ekosistem, dan calon pendukung yang perlu memahami proyek dengan cepat.",
+        },
+        {
+          en: "The deck does not replace the detailed documentation portal. It summarizes the strongest project information and directs reviewers toward live products, technical documents, public development evidence, and milestone details.",
+          id: "Pitch deck tidak menggantikan portal dokumentasi lengkap. Dokumen ini merangkum informasi terkuat dan mengarahkan reviewer menuju produk live, dokumen teknis, bukti pengembangan publik, dan detail milestone.",
+        },
+      ],
+    },
+    {
+      id: "deck-preview",
+      title: {
+        en: "Pitch Deck Preview",
+        id: "Preview Pitch Deck",
+      },
+      paragraphs: [
+        {
+          en: "The preview below represents the planned presentation structure. Slide wording, screenshots, and visual evidence may continue to change before the PDF is published.",
+          id: "Preview di bawah menunjukkan struktur presentasi yang direncanakan. Teks slide, screenshot, dan bukti visual dapat terus berubah sebelum PDF dipublikasikan.",
+        },
+      ],
+    },
+    {
+      id: "planned-slide-structure",
+      title: {
+        en: "Planned Slide Structure",
+        id: "Struktur Slide yang Direncanakan",
+      },
+      bullets: [
+        {
+          en: "01 — Cover and funding request.",
+          id: "01 — Cover dan permintaan pendanaan.",
+        },
+        {
+          en: "02 — The Web3 onboarding problem.",
+          id: "02 — Masalah onboarding Web3.",
+        },
+        {
+          en: "03 — Lifetopia's experience-first solution.",
+          id: "03 — Solusi Lifetopia yang berfokus pada pengalaman.",
+        },
+        {
+          en: "04 — Connected product ecosystem.",
+          id: "04 — Ekosistem produk terhubung.",
+        },
+        {
+          en: "05 — Existing products and execution evidence.",
+          id: "05 — Produk yang sudah tersedia dan bukti eksekusi.",
+        },
+        {
+          en: "06 — Current Beta development phase.",
+          id: "06 — Fase pengembangan Beta saat ini.",
+        },
+        {
+          en: "07 — Three-milestone delivery roadmap.",
+          id: "07 — Roadmap pengiriman tiga milestone.",
+        },
+        {
+          en: "08 — Funding allocation and operational use.",
+          id: "08 — Alokasi pendanaan dan penggunaan operasional.",
+        },
+        {
+          en: "09 — Team and delivery ownership.",
+          id: "09 — Tim dan tanggung jawab pengiriman.",
+        },
+        {
+          en: "10 — Expected Beta impact and closing request.",
+          id: "10 — Dampak Beta yang ditargetkan dan permintaan penutup.",
+        },
+      ],
+    },
+    {
+      id: "evidence-included",
+      title: {
+        en: "Evidence Included in the Deck",
+        id: "Bukti yang Dimasukkan ke Pitch Deck",
+      },
+      paragraphs: [
+        {
+          en: "The presentation will prioritize evidence that reviewers can verify independently rather than relying only on descriptive claims.",
+          id: "Presentasi akan memprioritaskan bukti yang dapat diverifikasi reviewer secara independen, bukan hanya mengandalkan klaim deskriptif.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Main website, community platform, and playable Alpha links.",
+          id: "Tautan website utama, platform komunitas, dan playable Alpha.",
+        },
+        {
+          en: "Selected product screenshots from current public builds.",
+          id: "Screenshot produk terpilih dari build publik saat ini.",
+        },
+        {
+          en: "Public GitHub repository and recent development activity.",
+          id: "Repository GitHub publik dan aktivitas pengembangan terbaru.",
+        },
+        {
+          en: "Previous $5,000 grant delivery reference.",
+          id: "Referensi pengiriman grant sebelumnya sebesar $5.000.",
+        },
+        {
+          en: "Three milestone budgets and acceptance outcomes.",
+          id: "Anggaran tiga milestone dan hasil penerimaannya.",
+        },
+        {
+          en: "Links to the Project Overview, Beta Roadmap, and Technical Architecture documents.",
+          id: "Tautan menuju Project Overview, Beta Roadmap, dan Technical Architecture.",
+        },
+      ],
+    },
+    {
+      id: "funding-narrative",
+      title: {
+        en: "Funding Narrative",
+        id: "Narasi Pendanaan",
+      },
+      paragraphs: [
+        {
+          en: "The core funding message is that Lifetopia has already moved beyond its earliest validation stages. The project has working public foundations but still requires integration, stabilization, testing, and ecosystem connectivity.",
+          id: "Pesan utama pendanaan adalah Lifetopia sudah melewati tahap validasi awal. Proyek memiliki fondasi publik yang berjalan, tetapi masih memerlukan integrasi, stabilisasi, pengujian, dan konektivitas ekosistem.",
+        },
+        {
+          en: "The requested $10,000 is intended to fund an estimated 8–12 week Beta delivery period divided into three milestones.",
+          id: "Pendanaan sebesar $10.000 ditujukan untuk periode pengiriman Beta sekitar 8–12 minggu yang dibagi menjadi tiga milestone.",
+        },
+      ],
+      bullets: [
+        {
+          en: "$3,500 — Community Platform Completion.",
+          id: "$3.500 — Penyelesaian Platform Komunitas.",
+        },
+        {
+          en: "$4,000 — Playable Beta Expansion.",
+          id: "$4.000 — Ekspansi Playable Beta.",
+        },
+        {
+          en: "$2,500 — Connected Solana Ecosystem.",
+          id: "$2.500 — Ekosistem Solana Terhubung.",
+        },
+      ],
+    },
+    {
+      id: "reviewer-journey",
+      title: {
+        en: "Reviewer Journey",
+        id: "Perjalanan Reviewer",
+      },
+      paragraphs: [
+        {
+          en: "The pitch deck is intended to lead reviewers through a clear verification journey rather than ending at the final slide.",
+          id: "Pitch deck dirancang untuk membawa reviewer melalui perjalanan verifikasi yang jelas, bukan berhenti di slide terakhir.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Understand the opportunity and proposed solution.",
+          id: "Memahami peluang dan solusi yang diajukan.",
+        },
+        {
+          en: "Review existing public products.",
+          id: "Meninjau produk publik yang sudah tersedia.",
+        },
+        {
+          en: "Inspect public development evidence.",
+          id: "Memeriksa bukti pengembangan publik.",
+        },
+        {
+          en: "Read detailed roadmap and technical documents.",
+          id: "Membaca roadmap dan dokumen teknis secara lengkap.",
+        },
+        {
+          en: "Evaluate the funding request against milestone outcomes.",
+          id: "Mengevaluasi permintaan pendanaan berdasarkan hasil milestone.",
+        },
+      ],
+    },
+    {
+      id: "publication-plan",
+      title: {
+        en: "Publication Plan",
+        id: "Rencana Publikasi",
+      },
+      paragraphs: [
+        {
+          en: "The deck is currently in preparation. A final PDF download will be enabled after the visual presentation and all reviewer-facing claims have been checked.",
+          id: "Pitch deck saat ini masih dipersiapkan. Download PDF final akan diaktifkan setelah presentasi visual dan seluruh klaim untuk reviewer selesai diperiksa.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Complete slide copy and visual hierarchy.",
+          id: "Menyelesaikan teks slide dan hierarki visual.",
+        },
+        {
+          en: "Capture current product screenshots.",
+          id: "Mengambil screenshot produk terbaru.",
+        },
+        {
+          en: "Verify funding, roadmap, team, and impact data.",
+          id: "Memverifikasi data pendanaan, roadmap, tim, dan impact.",
+        },
+        {
+          en: "Export and test the final presentation PDF.",
+          id: "Mengekspor dan menguji PDF presentasi final.",
+        },
+        {
+          en: "Publish the PDF and activate the download button.",
+          id: "Mempublikasikan PDF dan mengaktifkan tombol download.",
+        },
+      ],
+    },
+    {
+      id: "draft-disclaimer",
+      title: {
+        en: "Draft Disclaimer",
+        id: "Disclaimer Draft",
+      },
+      paragraphs: [
+        {
+          en: "This page describes a presentation that is still being prepared. The preview should not be interpreted as a completed or final funding deck.",
+          id: "Halaman ini menjelaskan presentasi yang masih dipersiapkan. Preview tidak boleh dianggap sebagai pitch deck pendanaan yang sudah selesai atau final.",
+        },
+        {
+          en: "The final deck may adjust wording, ordering, screenshots, and supporting evidence while preserving the documented funding request and milestone direction unless an official update is published.",
+          id: "Pitch deck final dapat menyesuaikan teks, urutan, screenshot, dan bukti pendukung sambil mempertahankan permintaan pendanaan serta arah milestone yang terdokumentasi, kecuali pembaruan resmi dipublikasikan.",
+        },
+      ],
+    },
+  ],
+},
 
   {
     slug: "whitepaper",
