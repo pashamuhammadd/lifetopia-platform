@@ -1364,87 +1364,590 @@ export const lifetopiaDocumentSources: LifetopiaDocumentSource[] = [
 },
 
   {
-    slug: "whitepaper",
-    category: "economy",
-    order: 5,
+  slug: "whitepaper",
+  category: "economy",
+  order: 5,
 
-    title: {
-      en: "Whitepaper",
-      id: "Whitepaper",
-    },
-
-    eyebrow: {
-      en: "Long-Term Ecosystem",
-      id: "Ekosistem Jangka Panjang",
-    },
-
-    description: {
-      en: "The long-form document for Lifetopia's game systems, player economy, GOLD, marketplace, ownership, Solana integration, and long-term direction.",
-      id: "Dokumen lengkap mengenai sistem game Lifetopia, ekonomi pemain, GOLD, marketplace, kepemilikan, integrasi Solana, dan arah jangka panjang.",
-    },
-
-    status: "Public Draft",
-    updatedAt: "2026-07-13",
-    owner: "Pasha Muhammad",
-    readingTime: 10,
-    version: "0.1",
-
-    featured: true,
-    recentlyUpdated: false,
-
-    sections: [
-      {
-        id: "planned-coverage",
-        title: {
-          en: "Document Coverage",
-          id: "Cakupan Dokumen",
-        },
-        bullets: [
-          {
-            en: "Game and social ecosystem design",
-            id: "Desain ekosistem game dan sosial",
-          },
-          {
-            en: "Player identity and progression",
-            id: "Identitas dan progression pemain",
-          },
-          {
-            en: "COIN and GOLD economy",
-            id: "Ekonomi COIN dan GOLD",
-          },
-          {
-            en: "Digital ownership and marketplace",
-            id: "Kepemilikan digital dan marketplace",
-          },
-          {
-            en: "Solana integration principles",
-            id: "Prinsip integrasi Solana",
-          },
-          {
-            en: "Community governance direction",
-            id: "Arah governance komunitas",
-          },
-          {
-            en: "Long-term development phases",
-            id: "Fase pengembangan jangka panjang",
-          },
-        ],
-      },
-      {
-        id: "draft-disclaimer",
-        title: {
-          en: "Draft Disclaimer",
-          id: "Disclaimer Draft",
-        },
-        paragraphs: [
-          {
-            en: "The Whitepaper may continue to change until the connected Beta economy and blockchain systems are finalized.",
-            id: "Whitepaper dapat terus berubah sampai ekonomi Beta dan sistem blockchain yang terhubung telah difinalisasi.",
-          },
-        ],
-      },
-    ],
+  title: {
+    en: "Whitepaper",
+    id: "Whitepaper",
   },
+
+  eyebrow: {
+    en: "Ecosystem Design Draft",
+    id: "Draft Desain Ekosistem",
+  },
+
+  description: {
+    en: "A public draft describing Lifetopia's connected game and community ecosystem, player identity, progression, COIN and GOLD economy, marketplace direction, digital ownership, Solana integration, and long-term governance principles.",
+    id: "Draft publik yang menjelaskan ekosistem game dan komunitas Lifetopia, identitas pemain, progression, ekonomi COIN dan GOLD, arah marketplace, kepemilikan digital, integrasi Solana, dan prinsip governance jangka panjang.",
+  },
+
+  status: "Public Draft",
+  updatedAt: "2026-07-14",
+  owner: "Pasha Muhammad",
+  readingTime: 18,
+  version: "0.2",
+
+  featured: true,
+  recentlyUpdated: true,
+
+  keyTakeaways: [
+    {
+      en: "Lifetopia is designed as a connected game and community ecosystem rather than a blockchain product with gameplay added afterward.",
+      id: "Lifetopia dirancang sebagai ekosistem game dan komunitas yang terhubung, bukan produk blockchain yang kemudian ditambahkan gameplay.",
+    },
+    {
+      en: "Most high-frequency gameplay and social data can remain off-chain, while Solana is used selectively for wallets, ownership, marketplace activity, and verifiable transactions.",
+      id: "Sebagian besar data gameplay dan sosial berfrekuensi tinggi dapat tetap off-chain, sedangkan Solana digunakan secara selektif untuk wallet, ownership, marketplace, dan transaksi yang dapat diverifikasi.",
+    },
+    {
+      en: "COIN supports the normal gameplay loop, while GOLD is intended for selected premium and ecosystem utility without replacing the complete player economy.",
+      id: "COIN mendukung gameplay loop normal, sedangkan GOLD ditujukan untuk utilitas premium dan ekosistem tertentu tanpa menggantikan seluruh ekonomi pemain.",
+    },
+    {
+      en: "Tokenomics, marketplace rules, ownership rights, and governance mechanisms remain subject to testing and must not be interpreted as final commitments.",
+      id: "Tokenomics, aturan marketplace, hak kepemilikan, dan mekanisme governance masih harus diuji dan tidak boleh dianggap sebagai komitmen final.",
+    },
+  ],
+
+  sections: [
+    {
+      id: "whitepaper-purpose",
+      title: {
+        en: "Purpose of This Whitepaper",
+        id: "Tujuan Whitepaper",
+      },
+      paragraphs: [
+        {
+          en: "This Whitepaper describes the current direction of Lifetopia World as a connected cozy life-simulation, social sandbox, community platform, and future player economy.",
+          id: "Whitepaper ini menjelaskan arah Lifetopia World sebagai life-simulation cozy, social sandbox, platform komunitas, dan ekonomi pemain masa depan yang saling terhubung.",
+        },
+        {
+          en: "It is published as a working document so reviewers, contributors, and community members can understand the intended product model while development continues.",
+          id: "Dokumen ini dipublikasikan sebagai working document agar reviewer, kontributor, dan anggota komunitas dapat memahami model produk yang ditargetkan selama pengembangan berlangsung.",
+        },
+        {
+          en: "Sections describing economy, GOLD, ownership, marketplace systems, and governance represent design direction rather than final legal, financial, or technical commitments.",
+          id: "Bagian mengenai ekonomi, GOLD, ownership, marketplace, dan governance merupakan arah desain, bukan komitmen legal, finansial, atau teknis yang final.",
+        },
+      ],
+    },
+    {
+      id: "ecosystem-vision",
+      title: {
+        en: "Ecosystem Vision",
+        id: "Visi Ekosistem",
+      },
+      paragraphs: [
+        {
+          en: "Lifetopia aims to become a welcoming digital world where players can explore, build routines, participate in a community, develop an identity, and gradually access digital ownership features.",
+          id: "Lifetopia bertujuan menjadi dunia digital yang ramah, tempat pemain dapat menjelajah, membangun rutinitas, berpartisipasi dalam komunitas, mengembangkan identitas, dan secara bertahap mengakses fitur kepemilikan digital.",
+        },
+        {
+          en: "The project combines a playable world, community platform, shared account system, future marketplace, and Solana utility layer into one coherent player journey.",
+          id: "Proyek menggabungkan playable world, platform komunitas, sistem akun bersama, marketplace mendatang, dan lapisan utilitas Solana menjadi satu perjalanan pemain yang utuh.",
+        },
+      ],
+      bullets: [
+        {
+          en: "A cozy and accessible experience for players with or without prior Web3 knowledge.",
+          id: "Pengalaman cozy dan mudah diakses oleh pemain dengan atau tanpa pengetahuan Web3.",
+        },
+        {
+          en: "One player identity across the game, community, and future marketplace.",
+          id: "Satu identitas pemain di game, komunitas, dan marketplace mendatang.",
+        },
+        {
+          en: "Optional blockchain participation introduced through practical utility.",
+          id: "Partisipasi blockchain opsional yang diperkenalkan melalui utilitas praktis.",
+        },
+        {
+          en: "A public development process with reviewable products and documentation.",
+          id: "Proses pengembangan publik dengan produk dan dokumentasi yang dapat ditinjau.",
+        },
+      ],
+    },
+    {
+      id: "core-game-experience",
+      title: {
+        en: "Core Game Experience",
+        id: "Pengalaman Utama Game",
+      },
+      paragraphs: [
+        {
+          en: "The playable world is structured around relaxing life-simulation activities, social interaction, collection, progression, and player-driven routines.",
+          id: "Playable world disusun berdasarkan aktivitas life-simulation yang santai, interaksi sosial, koleksi, progression, dan rutinitas yang dibentuk pemain.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Farming and resource production.",
+          id: "Farming dan produksi sumber daya.",
+        },
+        {
+          en: "Fishing, gathering, mining, and exploration.",
+          id: "Fishing, gathering, mining, dan eksplorasi.",
+        },
+        {
+          en: "Cooking, crafting, and item collection.",
+          id: "Cooking, crafting, dan koleksi item.",
+        },
+        {
+          en: "Animal care and world activities.",
+          id: "Perawatan hewan dan aktivitas dunia.",
+        },
+        {
+          en: "Trading, marketplace participation, and social interaction.",
+          id: "Trading, partisipasi marketplace, dan interaksi sosial.",
+        },
+        {
+          en: "Daily quests, achievements, events, and long-term progression.",
+          id: "Daily quest, achievement, event, dan progression jangka panjang.",
+        },
+      ],
+    },
+    {
+      id: "social-and-community-layer",
+      title: {
+        en: "Social and Community Layer",
+        id: "Lapisan Sosial dan Komunitas",
+      },
+      paragraphs: [
+        {
+          en: "The community platform extends the player experience beyond the game. It provides a place for identity, discussion, development updates, feedback, and future ecosystem participation.",
+          id: "Platform komunitas memperluas pengalaman pemain di luar game. Platform menyediakan tempat untuk identitas, diskusi, update pengembangan, feedback, dan partisipasi ekosistem mendatang.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Public player profiles and Lifetopia-themed roles.",
+          id: "Profil pemain publik dan role bertema Lifetopia.",
+        },
+        {
+          en: "Posts, comments, likes, bookmarks, and community feeds.",
+          id: "Post, komentar, like, bookmark, dan feed komunitas.",
+        },
+        {
+          en: "Tester communication and structured feedback.",
+          id: "Komunikasi tester dan feedback terstruktur.",
+        },
+        {
+          en: "Development updates and public project evidence.",
+          id: "Update pengembangan dan bukti proyek publik.",
+        },
+        {
+          en: "Future guild, event, and governance participation.",
+          id: "Partisipasi guild, event, dan governance di masa mendatang.",
+        },
+      ],
+    },
+    {
+      id: "player-identity",
+      title: {
+        en: "Player Identity",
+        id: "Identitas Pemain",
+      },
+      paragraphs: [
+        {
+          en: "A Lifetopia account represents the canonical player identity across connected products. Authentication credentials remain separate from public profile and gameplay information.",
+          id: "Akun Lifetopia mewakili identitas canonical pemain di seluruh produk terhubung. Kredensial autentikasi tetap terpisah dari informasi profil publik dan gameplay.",
+        },
+        {
+          en: "Wallet connectivity may later be attached to the player identity, but a wallet is not required to create an account or access normal non-blockchain features.",
+          id: "Konektivitas wallet nantinya dapat dihubungkan ke identitas pemain, tetapi wallet tidak diwajibkan untuk membuat akun atau mengakses fitur non-blockchain normal.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Username, display name, avatar, country, and player role.",
+          id: "Username, display name, avatar, negara, dan role pemain.",
+        },
+        {
+          en: "Community activity and social reputation.",
+          id: "Aktivitas komunitas dan reputasi sosial.",
+        },
+        {
+          en: "Gameplay progression and achievement records.",
+          id: "Data progression gameplay dan achievement.",
+        },
+        {
+          en: "Optional connected wallet information.",
+          id: "Informasi wallet terhubung yang bersifat opsional.",
+        },
+        {
+          en: "Future marketplace and ownership history.",
+          id: "Riwayat marketplace dan ownership mendatang.",
+        },
+      ],
+    },
+    {
+      id: "progression-model",
+      title: {
+        en: "Player Progression Model",
+        id: "Model Progression Pemain",
+      },
+      paragraphs: [
+        {
+          en: "Progression should reward continued participation without making financial spending the primary path to advancement.",
+          id: "Progression harus menghargai partisipasi berkelanjutan tanpa menjadikan pengeluaran finansial sebagai jalur utama untuk berkembang.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Activity progression through farming, fishing, cooking, exploration, and other systems.",
+          id: "Progression aktivitas melalui farming, fishing, cooking, eksplorasi, dan sistem lainnya.",
+        },
+        {
+          en: "Account progression through quests, achievements, and participation.",
+          id: "Progression akun melalui quest, achievement, dan partisipasi.",
+        },
+        {
+          en: "Collection progression through items, cosmetics, resources, and optional ownership.",
+          id: "Progression koleksi melalui item, cosmetic, sumber daya, dan ownership opsional.",
+        },
+        {
+          en: "Community progression through contribution, testing, events, and roles.",
+          id: "Progression komunitas melalui kontribusi, testing, event, dan role.",
+        },
+      ],
+    },
+    {
+      id: "economy-design",
+      title: {
+        en: "Economy Design",
+        id: "Desain Ekonomi",
+      },
+      paragraphs: [
+        {
+          en: "The Lifetopia economy is designed as a layered system. Normal gameplay activity should not require every action to become a blockchain transaction.",
+          id: "Ekonomi Lifetopia dirancang sebagai sistem berlapis. Aktivitas gameplay normal tidak mengharuskan setiap tindakan menjadi transaksi blockchain.",
+        },
+        {
+          en: "High-frequency actions can remain off-chain for usability and performance, while selected premium utility, ownership, marketplace, and verification functions may use Solana.",
+          id: "Tindakan berfrekuensi tinggi dapat tetap off-chain untuk usability dan performa, sedangkan utilitas premium, ownership, marketplace, dan fungsi verifikasi tertentu dapat menggunakan Solana.",
+        },
+      ],
+    },
+    {
+      id: "coin-economy",
+      title: {
+        en: "COIN — Core Gameplay Currency",
+        id: "COIN — Mata Uang Utama Gameplay",
+      },
+      paragraphs: [
+        {
+          en: "COIN is intended as the normal off-chain gameplay currency used throughout the everyday player loop.",
+          id: "COIN ditujukan sebagai mata uang gameplay off-chain normal yang digunakan dalam aktivitas sehari-hari pemain.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Earned through gameplay activities, quests, production, and trading.",
+          id: "Diperoleh melalui aktivitas gameplay, quest, produksi, dan trading.",
+        },
+        {
+          en: "Used for common items, resources, upgrades, and routine services.",
+          id: "Digunakan untuk item umum, sumber daya, upgrade, dan layanan rutin.",
+        },
+        {
+          en: "Designed for frequent use without transaction fees.",
+          id: "Dirancang untuk penggunaan berfrekuensi tinggi tanpa biaya transaksi.",
+        },
+        {
+          en: "Balanced through gameplay sinks, rewards, and production systems.",
+          id: "Diseimbangkan melalui gameplay sink, reward, dan sistem produksi.",
+        },
+        {
+          en: "Not intended to function as a transferable blockchain token.",
+          id: "Tidak ditujukan sebagai token blockchain yang dapat ditransfer.",
+        },
+      ],
+    },
+    {
+      id: "gold-economy",
+      title: {
+        en: "GOLD — Premium Ecosystem Utility",
+        id: "GOLD — Utilitas Premium Ekosistem",
+      },
+      paragraphs: [
+        {
+          en: "GOLD is intended as a selected premium and ecosystem utility layer. Its role should remain narrower than the complete gameplay economy.",
+          id: "GOLD ditujukan sebagai lapisan utilitas premium dan ekosistem tertentu. Perannya harus tetap lebih terbatas daripada keseluruhan ekonomi gameplay.",
+        },
+        {
+          en: "The final GOLD utility, supply distribution, liquidity model, marketplace rules, and regulatory treatment are not finalized in this Whitepaper draft.",
+          id: "Utilitas GOLD final, distribusi supply, model liquidity, aturan marketplace, dan perlakuan regulasinya belum difinalisasi dalam draft Whitepaper ini.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Selected premium cosmetics or services.",
+          id: "Cosmetic atau layanan premium tertentu.",
+        },
+        {
+          en: "Marketplace settlement where blockchain utility is appropriate.",
+          id: "Penyelesaian marketplace ketika utilitas blockchain relevan.",
+        },
+        {
+          en: "Event, creator, or ecosystem participation mechanisms.",
+          id: "Mekanisme partisipasi event, creator, atau ekosistem.",
+        },
+        {
+          en: "Potential ownership and asset-related utility.",
+          id: "Potensi utilitas terkait ownership dan asset.",
+        },
+        {
+          en: "Utility must be reviewed through testing before becoming final.",
+          id: "Utilitas harus ditinjau melalui pengujian sebelum difinalisasi.",
+        },
+      ],
+    },
+    {
+      id: "marketplace-direction",
+      title: {
+        en: "Marketplace Direction",
+        id: "Arah Marketplace",
+      },
+      paragraphs: [
+        {
+          en: "The future marketplace is intended to connect player discovery, listing, trading, ownership verification, and ecosystem utility through a controlled interface.",
+          id: "Marketplace mendatang ditujukan untuk menghubungkan discovery, listing, trading, verifikasi ownership, dan utilitas ekosistem melalui interface yang terkontrol.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Clear distinction between normal off-chain items and blockchain-linked assets.",
+          id: "Pembedaan jelas antara item off-chain normal dan asset terhubung blockchain.",
+        },
+        {
+          en: "Server-side verification before sensitive marketplace operations.",
+          id: "Verifikasi server sebelum operasi marketplace sensitif.",
+        },
+        {
+          en: "Transparent fees, ownership state, and transaction confirmation.",
+          id: "Fee, status ownership, dan konfirmasi transaksi yang transparan.",
+        },
+        {
+          en: "Protection against duplicate listings and invalid ownership claims.",
+          id: "Perlindungan terhadap listing duplikat dan klaim ownership yang tidak valid.",
+        },
+        {
+          en: "Gradual rollout beginning with controlled Beta testing.",
+          id: "Peluncuran bertahap yang dimulai melalui pengujian Beta terkontrol.",
+        },
+      ],
+    },
+    {
+      id: "digital-ownership",
+      title: {
+        en: "Digital Ownership Principles",
+        id: "Prinsip Kepemilikan Digital",
+      },
+      paragraphs: [
+        {
+          en: "Digital ownership should provide understandable utility rather than requiring every game item to become an on-chain asset.",
+          id: "Kepemilikan digital harus memberikan utilitas yang mudah dipahami tanpa mengharuskan seluruh item game menjadi asset on-chain.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Ownership should be optional and clearly communicated.",
+          id: "Ownership harus opsional dan dikomunikasikan secara jelas.",
+        },
+        {
+          en: "Asset utility should be documented before sale or distribution.",
+          id: "Utilitas asset harus didokumentasikan sebelum penjualan atau distribusi.",
+        },
+        {
+          en: "On-chain ownership does not automatically grant intellectual property rights.",
+          id: "Ownership on-chain tidak otomatis memberikan hak kekayaan intelektual.",
+        },
+        {
+          en: "Game balance and access must not depend entirely on ownership spending.",
+          id: "Keseimbangan game dan akses tidak boleh sepenuhnya bergantung pada pengeluaran ownership.",
+        },
+        {
+          en: "Transferability may differ between asset classes and tester rewards.",
+          id: "Transferability dapat berbeda antara kelas asset dan reward tester.",
+        },
+      ],
+    },
+    {
+      id: "solana-integration-principles",
+      title: {
+        en: "Solana Integration Principles",
+        id: "Prinsip Integrasi Solana",
+      },
+      paragraphs: [
+        {
+          en: "Solana is used where public verification, wallet ownership, settlement, or asset transfer provides meaningful product value.",
+          id: "Solana digunakan ketika verifikasi publik, ownership wallet, settlement, atau transfer asset memberikan nilai produk yang berarti.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Wallet connection remains optional for normal product access.",
+          id: "Koneksi wallet tetap opsional untuk akses produk normal.",
+        },
+        {
+          en: "Phantom and Solflare are the planned initial wallet integrations.",
+          id: "Phantom dan Solflare menjadi integrasi wallet awal yang direncanakan.",
+        },
+        {
+          en: "Beta validation begins through selected devnet interactions.",
+          id: "Validasi Beta dimulai melalui interaksi devnet terpilih.",
+        },
+        {
+          en: "Transactions must display clear intent before signature.",
+          id: "Transaksi harus menampilkan maksud yang jelas sebelum signature.",
+        },
+        {
+          en: "The application must verify transaction results instead of trusting browser state alone.",
+          id: "Aplikasi harus memverifikasi hasil transaksi dan tidak hanya mempercayai state browser.",
+        },
+      ],
+    },
+    {
+      id: "community-governance",
+      title: {
+        en: "Community and Governance Direction",
+        id: "Arah Komunitas dan Governance",
+      },
+      paragraphs: [
+        {
+          en: "Lifetopia may gradually introduce community participation in product feedback, event selection, ecosystem proposals, and selected governance decisions.",
+          id: "Lifetopia dapat secara bertahap memperkenalkan partisipasi komunitas dalam feedback produk, pemilihan event, proposal ekosistem, dan keputusan governance tertentu.",
+        },
+        {
+          en: "Governance should not be activated only because a token exists. Responsibilities, safety boundaries, voter eligibility, and decision scope must first be defined.",
+          id: "Governance tidak boleh diaktifkan hanya karena token tersedia. Tanggung jawab, batasan keamanan, kelayakan voter, dan scope keputusan harus didefinisikan terlebih dahulu.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Structured feedback and community voting experiments.",
+          id: "Eksperimen feedback terstruktur dan voting komunitas.",
+        },
+        {
+          en: "Transparent proposal scope and decision authority.",
+          id: "Scope proposal dan otoritas keputusan yang transparan.",
+        },
+        {
+          en: "Protection against low-participation or manipulated outcomes.",
+          id: "Perlindungan terhadap hasil dengan partisipasi rendah atau manipulatif.",
+        },
+        {
+          en: "Administrative and security decisions remain with the responsible team where required.",
+          id: "Keputusan administratif dan keamanan tetap berada pada tim yang bertanggung jawab jika diperlukan.",
+        },
+      ],
+    },
+    {
+      id: "sustainability-principles",
+      title: {
+        en: "Economic Sustainability Principles",
+        id: "Prinsip Keberlanjutan Ekonomi",
+      },
+      bullets: [
+        {
+          en: "Gameplay value should not depend entirely on token price.",
+          id: "Nilai gameplay tidak boleh sepenuhnya bergantung pada harga token.",
+        },
+        {
+          en: "Rewards must be balanced with meaningful sinks and utility.",
+          id: "Reward harus diseimbangkan dengan sink dan utilitas yang berarti.",
+        },
+        {
+          en: "Premium systems should not remove the value of normal progression.",
+          id: "Sistem premium tidak boleh menghilangkan nilai progression normal.",
+        },
+        {
+          en: "Marketplace growth must follow actual player demand and product readiness.",
+          id: "Pertumbuhan marketplace harus mengikuti demand pemain dan kesiapan produk.",
+        },
+        {
+          en: "Economic rules should be tested before becoming permanent.",
+          id: "Aturan ekonomi harus diuji sebelum menjadi permanen.",
+        },
+      ],
+    },
+    {
+      id: "risks-and-limitations",
+      title: {
+        en: "Risks and Limitations",
+        id: "Risiko dan Keterbatasan",
+      },
+      paragraphs: [
+        {
+          en: "Game economies and blockchain systems introduce technical, economic, security, regulatory, and user-experience risks.",
+          id: "Ekonomi game dan sistem blockchain memperkenalkan risiko teknis, ekonomi, keamanan, regulasi, dan user experience.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Economic imbalance, inflation, or insufficient item demand.",
+          id: "Ketidakseimbangan ekonomi, inflasi, atau demand item yang tidak mencukupi.",
+        },
+        {
+          en: "Wallet security mistakes and transaction misunderstanding.",
+          id: "Kesalahan keamanan wallet dan kesalahpahaman transaksi.",
+        },
+        {
+          en: "Marketplace abuse, fraud, invalid listings, or manipulated activity.",
+          id: "Penyalahgunaan marketplace, fraud, listing tidak valid, atau aktivitas manipulatif.",
+        },
+        {
+          en: "Smart contract, integration, infrastructure, or availability failures.",
+          id: "Kegagalan smart contract, integrasi, infrastruktur, atau availability.",
+        },
+        {
+          en: "Changes in legal, regulatory, platform, or ecosystem requirements.",
+          id: "Perubahan persyaratan legal, regulasi, platform, atau ekosistem.",
+        },
+      ],
+    },
+    {
+      id: "draft-status",
+      title: {
+        en: "Draft Status and Future Updates",
+        id: "Status Draft dan Pembaruan Mendatang",
+      },
+      paragraphs: [
+        {
+          en: "This Whitepaper remains a Public Draft. Product development, testing, community feedback, security review, and ecosystem requirements may change its contents.",
+          id: "Whitepaper ini tetap berstatus Public Draft. Pengembangan produk, pengujian, feedback komunitas, review keamanan, dan kebutuhan ekosistem dapat mengubah isinya.",
+        },
+        {
+          en: "A separate Tokenomics document will be published only when GOLD supply use, distribution, vesting, liquidity, marketplace utility, and related commitments are ready for formal review.",
+          id: "Dokumen Tokenomics terpisah hanya akan dipublikasikan ketika penggunaan supply GOLD, distribusi, vesting, liquidity, utilitas marketplace, dan komitmen terkait siap untuk ditinjau secara formal.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Complete the connected Beta economy foundation.",
+          id: "Menyelesaikan fondasi ekonomi Beta terhubung.",
+        },
+        {
+          en: "Test COIN sources, sinks, progression, and pricing.",
+          id: "Menguji source, sink, progression, dan pricing COIN.",
+        },
+        {
+          en: "Define controlled GOLD utility and marketplace boundaries.",
+          id: "Mendefinisikan utilitas GOLD dan batasan marketplace secara terkontrol.",
+        },
+        {
+          en: "Perform security, economic, and compliance review.",
+          id: "Melakukan review keamanan, ekonomi, dan compliance.",
+        },
+        {
+          en: "Publish versioned updates as systems become final.",
+          id: "Mempublikasikan update berversi ketika sistem mulai final.",
+        },
+      ],
+    },
+  ],
+},
 ];
 
 function resolveText(

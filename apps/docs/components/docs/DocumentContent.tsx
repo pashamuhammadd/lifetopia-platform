@@ -22,6 +22,7 @@ import {
 } from "./TechnicalArchitectureVisual";
 
 import { PitchDeckPreview } from "./PitchDeckPreview";
+import { WhitepaperEconomyVisual } from "./WhitepaperEconomyVisual";
 
 type DocumentContentProps = {
   slug: string;
@@ -331,6 +332,13 @@ section.id === "solana-integration" ? (
 {document.slug === "pitch-deck" &&
 section.id === "deck-preview" ? (
   <PitchDeckPreview locale={locale} />
+) : null}
+
+{document.slug === "whitepaper" &&
+section.id === "economy-design" ? (
+  <WhitepaperEconomyVisual
+    locale={locale}
+  />
 ) : null}
 
 {section.bullets ? (

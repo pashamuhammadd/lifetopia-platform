@@ -11,3 +11,4 @@ export * from "./ProjectOverviewVisual";
 export * from "./BetaRoadmapVisual";
 export * from "./TechnicalArchitectureVisual";
 export * from "./PitchDeckPreview";
+export * from "./WhitepaperEconomyVisual";
