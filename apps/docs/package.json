@@ -4,11 +4,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3003",
-    "build": "next build",
-    "start": "next start --port 3003",
-    "lint": "eslint --max-warnings 0",
-    "check-types": "next typegen && tsc --noEmit"
+  "dev": "next dev --turbopack -p 3003",
+  "build": "next build",
+  "start": "next start",
+  "lint": "eslint --max-warnings 0",
+  "check-types": "next typegen && tsc --noEmit",
+  "validate-routes": "node scripts/validate-routes.mjs"
   },
   "dependencies": {
     "@fontsource/baloo-2": "^5.2.7",

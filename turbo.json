@@ -1,6 +1,10 @@
 {
-  "$schema": "https://turborepo.dev/schema.json",
+"$schema": "./.vscode/schemas/turbo.schema.json",
   "ui": "tui",
+  "globalEnv": [
+  "DOCS_VALIDATION_URL",
+  "NEXT_PUBLIC_PITCH_DECK_PDF_URL"
+],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

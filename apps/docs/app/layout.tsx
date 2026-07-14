@@ -22,28 +22,16 @@ export const metadata: Metadata = {
     "https://docs.lifetopiaworld.io",
   ),
 
-  applicationName:
-    "Lifetopia World Documentation",
-
   title: {
     default:
-      "Official Lifetopia World Documentation",
-    template:
-      "%s | Lifetopia World Documentation",
+      "Lifetopia Docs | Official Documentation",
+    template: "%s | Lifetopia Docs",
   },
 
   description:
-    "Official documentation for Lifetopia World, including project information, products, development, technical architecture, funding, economy, community, and security.",
+    "Official public documentation for Lifetopia World, covering the project, products, Beta development, technical architecture, funding, economy, and community.",
 
-  keywords: [
-    "Lifetopia World",
-    "Lifetopia documentation",
-    "Solana game",
-    "Web3 game",
-    "cozy life simulation",
-    "Lifetopia Beta",
-    "Lifetopia roadmap",
-  ],
+  applicationName: "Lifetopia Docs",
 
   authors: [
     {
@@ -55,38 +43,29 @@ export const metadata: Metadata = {
   creator: "Lifetopia World",
   publisher: "Lifetopia World",
 
+  category: "Technology",
+
+  keywords: [
+    "Lifetopia World",
+    "Lifetopia Docs",
+    "cozy game",
+    "life simulation",
+    "social sandbox",
+    "Solana game",
+    "Web3 game",
+    "game documentation",
+    "Beta roadmap",
+    "technical architecture",
+  ],
+
   alternates: {
     canonical: "/",
-  },
-
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "/",
-    siteName:
-      "Lifetopia World Documentation",
-    title:
-      "Official Lifetopia World Documentation",
-    description:
-      "Explore Lifetopia World's project, products, development, technical architecture, funding, economy, and community documentation.",
-  },
-
-  twitter: {
-    card: "summary",
-    title:
-      "Official Lifetopia World Documentation",
-    description:
-      "Explore Lifetopia World's official project and technical documentation.",
-  },
-
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
   },
 
   robots: {
     index: true,
     follow: true,
+
     googleBot: {
       index: true,
       follow: true,
@@ -94,6 +73,52 @@ export const metadata: Metadata = {
       "max-snippet": -1,
       "max-video-preview": -1,
     },
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: "Lifetopia Docs",
+
+    title:
+      "Lifetopia Docs | Official Documentation",
+
+    description:
+      "Explore Lifetopia World's project, products, Beta roadmap, technical architecture, funding, economy, and community.",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+
+    title:
+      "Lifetopia Docs | Official Documentation",
+
+    description:
+      "Official public documentation for Lifetopia World.",
+  },
+};
+
+const websiteStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+
+  name: "Lifetopia Docs",
+
+  alternateName:
+    "Lifetopia World Official Documentation",
+
+  url: "https://docs.lifetopiaworld.io",
+
+  description:
+    "Official public documentation for Lifetopia World.",
+
+  inLanguage: ["en", "id"],
+
+  publisher: {
+    "@type": "Organization",
+    name: "Lifetopia World",
+    url: "https://lifetopiaworld.io",
   },
 };
 
@@ -110,6 +135,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistMono.variable} antialiased`}>
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify(
+        websiteStructuredData,
+      ).replace(/</g, "\\u003c"),
+    }}
+  />
+
   <DocsLanguageProvider>
     <DocsNavbar />
     {children}
