@@ -467,3 +467,57 @@ svg {
     transition-duration: 0.01ms !important;
   }
 }
+
+.docs-skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 9999;
+  transform: translateY(-160%);
+  border: 2px solid var(--docs-gold);
+  border-radius: 0.7rem;
+  background: var(--docs-brown-dark);
+  padding: 0.7rem 1rem;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  box-shadow: var(--docs-shadow-floating);
+  transition: transform 160ms ease;
+}
+
+.docs-skip-link:focus {
+  transform: translateY(0);
+}
+
+:where(
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    summary,
+    [tabindex]:not([tabindex="-1"])
+  ):focus-visible {
+  outline: 3px solid rgba(79, 132, 163, 0.62);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: rgba(201, 155, 67, 0.3);
+  color: var(--docs-brown-dark);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -135,6 +135,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistMono.variable} antialiased`}>
+  <a
+    href="#main-content"
+    className="docs-skip-link"
+  >
+    Skip to content
+  </a>
+
   <script
     type="application/ld+json"
     dangerouslySetInnerHTML={{

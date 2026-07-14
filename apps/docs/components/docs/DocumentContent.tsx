@@ -124,9 +124,10 @@ export function DocumentContent({
 
   return (
     <main
-      id="document-top"
-      className="min-h-[calc(100svh-4rem)]"
-    >
+  id="main-content"
+  tabIndex={-1}
+  className="min-h-[calc(100svh-4rem)] outline-none"
+>
       <div className="docs-container py-[clamp(1.5rem,3vw,2.5rem)]">
         <div className="grid min-w-0 gap-[clamp(1rem,2vw,1.5rem)] xl:grid-cols-[15rem_minmax(0,1fr)_13rem] 2xl:grid-cols-[17rem_minmax(0,1fr)_14rem]">
           <div className="hidden min-w-0 xl:block">

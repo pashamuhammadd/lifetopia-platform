@@ -271,8 +271,12 @@ export function DocsHomeContent() {
   ).length;
 
   return (
-    <main className="min-h-[calc(100svh-4rem)]">
-      <section className="relative overflow-hidden border-b border-[var(--docs-line)] bg-[rgba(255,253,248,0.62)]">
+<main
+  id="main-content"
+  tabIndex={-1}
+  className="min-h-[calc(100svh-4rem)] outline-none"
+>
+        <section className="relative overflow-hidden border-b border-[var(--docs-line)] bg-[rgba(255,253,248,0.62)]">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -left-24 -top-24 size-72 rounded-full bg-[rgba(255,225,154,0.32)] blur-[6rem]"

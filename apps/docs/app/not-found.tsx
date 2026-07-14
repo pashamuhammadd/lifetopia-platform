@@ -8,8 +8,12 @@ export default function NotFound() {
     getFeaturedDocuments("en").slice(0, 3);
 
   return (
-    <main className="relative min-h-[calc(100svh-4rem)] overflow-hidden">
-      <div
+<main
+  id="main-content"
+  tabIndex={-1}
+  className="relative min-h-[calc(100svh-4rem)] overflow-hidden outline-none"
+>
+    <div
         aria-hidden="true"
         className="pointer-events-none absolute -left-28 top-0 size-80 rounded-full bg-[rgba(255,225,154,0.28)] blur-[7rem]"
       />
