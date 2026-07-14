@@ -369,10 +369,15 @@ export function DocumentsHub() {
               href={docsBaseUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[2.75rem] items-center justify-center gap-2 rounded-[0.72rem] border border-[#254e2e]/15 bg-[#173b21] px-4 text-[clamp(0.72rem,0.82vw,0.88rem)] font-black text-white shadow-[0_0.7rem_1.8rem_rgba(31,64,37,0.14)] transition hover:-translate-y-0.5 hover:bg-[#24502d]"
-            >
+            className="inline-flex min-h-[2.75rem] items-center justify-center gap-2 rounded-[0.72rem] border border-[#254e2e]/15 bg-[#173b21] px-4 text-[clamp(0.72rem,0.82vw,0.88rem)] font-black !text-white shadow-[0_0.7rem_1.8rem_rgba(31,64,37,0.14)] transition hover:-translate-y-0.5 hover:bg-[#24502d] hover:!text-white"
+>
               Open Docs Portal
-              <span aria-hidden="true">↗</span>
+              <span
+  aria-hidden="true"
+  className="!text-white"
+>
+  ↗
+</span>
             </Link>
           </div>
         </header>
@@ -488,10 +493,15 @@ export function DocumentsHub() {
                 href={activeResource.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-[2.65rem] shrink-0 items-center justify-center gap-2 rounded-[0.7rem] bg-[#173b21] px-4 text-[clamp(0.7rem,0.8vw,0.86rem)] font-black text-white shadow-[0_0.6rem_1.6rem_rgba(31,64,37,0.13)] transition hover:-translate-y-0.5 hover:bg-[#24502d]"
-              >
+                className="inline-flex min-h-[2.65rem] shrink-0 items-center justify-center gap-2 rounded-[0.7rem] bg-[#173b21] px-4 text-[clamp(0.7rem,0.8vw,0.86rem)] font-black !text-white shadow-[0_0.6rem_1.6rem_rgba(31,64,37,0.13)] transition hover:-translate-y-0.5 hover:bg-[#24502d] hover:!text-white"
+>
                 {activeResource.buttonLabel}
-                <span aria-hidden="true">↗</span>
+                <span
+  aria-hidden="true"
+  className="!text-white"
+>
+  ↗
+</span>
               </Link>
             </div>
 

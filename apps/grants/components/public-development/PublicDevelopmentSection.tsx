@@ -212,10 +212,15 @@ export async function PublicDevelopmentSection() {
               href={repositoryUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-flex min-h-[2.8rem] items-center justify-center gap-2 rounded-[0.75rem] bg-[#173b21] px-4 text-[clamp(0.74rem,0.84vw,0.9rem)] font-black text-white shadow-[0_0.7rem_1.8rem_rgba(31,64,37,0.16)] transition hover:-translate-y-0.5 hover:bg-[#24502d]"
-            >
+                className="mt-3 inline-flex min-h-[2.8rem] items-center justify-center gap-2 rounded-[0.75rem] bg-[#173b21] px-4 text-[clamp(0.74rem,0.84vw,0.9rem)] font-black !text-white shadow-[0_0.7rem_1.8rem_rgba(31,64,37,0.16)] transition hover:-translate-y-0.5 hover:bg-[#24502d] hover:!text-white"
+                  >
               Review GitHub Repository
-              <span aria-hidden="true">↗</span>
+              <span
+  aria-hidden="true"
+  className="!text-white"
+>
+  ↗
+</span>
             </Link>
           </div>
 
