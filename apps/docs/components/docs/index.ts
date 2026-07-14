@@ -9,3 +9,4 @@ export * from "./BackToTop";
 export * from "./DocumentContent";
 export * from "./ProjectOverviewVisual";
 export * from "./BetaRoadmapVisual";
+export * from "./TechnicalArchitectureVisual";

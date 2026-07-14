@@ -15,6 +15,12 @@ import { ProjectOverviewVisual } from "./ProjectOverviewVisual";
 import { DocumentTableOfContents } from "./DocumentTableOfContents";
 import { BetaRoadmapVisual } from "./BetaRoadmapVisual";
 
+import {
+  AuthenticationFlowVisual,
+  SolanaIntegrationVisual,
+  TechnicalArchitectureVisual,
+} from "./TechnicalArchitectureVisual";
+
 type DocumentContentProps = {
   slug: string;
 };
@@ -294,6 +300,30 @@ section.id === "product-ecosystem" ? (
 {document.slug === "beta-roadmap" &&
 section.id === "delivery-path" ? (
   <BetaRoadmapVisual locale={locale} />
+) : null}
+
+{document.slug ===
+  "technical-architecture" &&
+section.id === "system-landscape" ? (
+  <TechnicalArchitectureVisual
+    locale={locale}
+  />
+) : null}
+
+{document.slug ===
+  "technical-architecture" &&
+section.id === "authentication-flow" ? (
+  <AuthenticationFlowVisual
+    locale={locale}
+  />
+) : null}
+
+{document.slug ===
+  "technical-architecture" &&
+section.id === "solana-integration" ? (
+  <SolanaIntegrationVisual
+    locale={locale}
+  />
 ) : null}
 
 {section.bullets ? (

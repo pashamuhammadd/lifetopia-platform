@@ -620,151 +620,460 @@ export const lifetopiaDocumentSources: LifetopiaDocumentSource[] = [
 },
 
   {
-    slug: "technical-architecture",
-    category: "technical",
-    order: 3,
+  slug: "technical-architecture",
+  category: "technical",
+  order: 3,
 
-    title: {
-      en: "Technical Architecture",
-      id: "Arsitektur Teknis",
-    },
-
-    eyebrow: {
-      en: "Product Infrastructure",
-      id: "Infrastruktur Produk",
-    },
-
-    description: {
-      en: "An overview of Lifetopia applications, shared services, authentication, backend infrastructure, and planned blockchain integration.",
-      id: "Gambaran aplikasi Lifetopia, layanan bersama, autentikasi, infrastruktur backend, dan rencana integrasi blockchain.",
-    },
-
-    status: "Public Draft",
-    updatedAt: "2026-07-13",
-    owner: "Lifetopia Development Team",
-    readingTime: 8,
-    version: "0.1",
-
-    featured: true,
-    recentlyUpdated: true,
-
-    sections: [
-      {
-        id: "application-architecture",
-        title: {
-          en: "Application Architecture",
-          id: "Arsitektur Aplikasi",
-        },
-        bullets: [
-          {
-            en: "Next.js monorepo managed with Turborepo and pnpm",
-            id: "Monorepo Next.js yang dikelola dengan Turborepo dan pnpm",
-          },
-          {
-            en: "Main website application",
-            id: "Aplikasi website utama",
-          },
-          {
-            en: "Community platform application",
-            id: "Aplikasi platform komunitas",
-          },
-          {
-            en: "Funding review portal",
-            id: "Portal review pendanaan",
-          },
-          {
-            en: "Documentation portal",
-            id: "Portal dokumentasi",
-          },
-          {
-            en: "Playable game application",
-            id: "Aplikasi game yang dapat dimainkan",
-          },
-        ],
-      },
-      {
-        id: "shared-identity",
-        title: {
-          en: "Shared Identity",
-          id: "Identitas Bersama",
-        },
-        paragraphs: [
-          {
-            en: "Lifetopia is being developed around one player account that can be used across the website, community platform, game, and future marketplace.",
-            id: "Lifetopia dikembangkan menggunakan satu akun pemain yang dapat digunakan di website, platform komunitas, game, dan marketplace mendatang.",
-          },
-        ],
-        bullets: [
-          {
-            en: "Supabase authentication",
-            id: "Autentikasi Supabase",
-          },
-          {
-            en: "Shared player profile records",
-            id: "Data profil pemain bersama",
-          },
-          {
-            en: "Cross-subdomain session support",
-            id: "Dukungan sesi lintas subdomain",
-          },
-          {
-            en: "Player avatar and public identity",
-            id: "Avatar dan identitas publik pemain",
-          },
-        ],
-      },
-      {
-        id: "backend-foundation",
-        title: {
-          en: "Backend Foundation",
-          id: "Fondasi Backend",
-        },
-        bullets: [
-          {
-            en: "Supabase database and authentication",
-            id: "Database dan autentikasi Supabase",
-          },
-          {
-            en: "Row Level Security policies",
-            id: "Kebijakan Row Level Security",
-          },
-          {
-            en: "Community posts, comments, likes, and bookmarks",
-            id: "Post komunitas, komentar, like, dan bookmark",
-          },
-          {
-            en: "Public development activity records",
-            id: "Catatan aktivitas pengembangan publik",
-          },
-        ],
-      },
-      {
-        id: "solana-direction",
-        title: {
-          en: "Solana Direction",
-          id: "Arah Integrasi Solana",
-        },
-        bullets: [
-          {
-            en: "Phantom and Solflare wallet connectivity",
-            id: "Konektivitas wallet Phantom dan Solflare",
-          },
-          {
-            en: "Wallet-linked player identity",
-            id: "Identitas pemain yang terhubung ke wallet",
-          },
-          {
-            en: "Devnet interaction during Beta testing",
-            id: "Interaksi devnet selama pengujian Beta",
-          },
-          {
-            en: "Future marketplace and ownership systems",
-            id: "Marketplace dan sistem kepemilikan mendatang",
-          },
-        ],
-      },
-    ],
+  title: {
+    en: "Technical Architecture",
+    id: "Arsitektur Teknis",
   },
+
+  eyebrow: {
+    en: "Product Infrastructure",
+    id: "Infrastruktur Produk",
+  },
+
+  description: {
+    en: "A technical overview of Lifetopia's web applications, game foundation, shared identity, Supabase backend, deployment model, security boundaries, and planned Solana integration.",
+    id: "Gambaran teknis aplikasi web Lifetopia, fondasi game, identitas bersama, backend Supabase, model deployment, batasan keamanan, dan rencana integrasi Solana.",
+  },
+
+  status: "Public Draft",
+  updatedAt: "2026-07-14",
+  owner: "Lifetopia Development Team",
+  readingTime: 16,
+  version: "0.2",
+
+  featured: true,
+  recentlyUpdated: true,
+
+  keyTakeaways: [
+    {
+      en: "Lifetopia uses a monorepo for its public web products while the playable game remains a separate game application connected through shared product services.",
+      id: "Lifetopia menggunakan monorepo untuk produk web publik, sedangkan playable game tetap menjadi aplikasi game terpisah yang terhubung melalui layanan produk bersama.",
+    },
+    {
+      en: "One Supabase authentication and profile foundation is designed to support identity across the website, community platform, game, and future marketplace.",
+      id: "Satu fondasi autentikasi dan profil Supabase dirancang untuk mendukung identitas di website, platform komunitas, game, dan marketplace mendatang.",
+    },
+    {
+      en: "Row Level Security, protected server operations, and cross-subdomain session rules form the current backend security foundation.",
+      id: "Row Level Security, operasi server terproteksi, dan aturan sesi lintas subdomain menjadi fondasi keamanan backend saat ini.",
+    },
+    {
+      en: "Solana integration is planned as an optional utility layer and must not block players from accessing non-blockchain product features.",
+      id: "Integrasi Solana direncanakan sebagai lapisan utilitas opsional dan tidak boleh menghalangi pemain mengakses fitur produk non-blockchain.",
+    },
+  ],
+
+  sections: [
+    {
+      id: "architecture-principles",
+      title: {
+        en: "Architecture Principles",
+        id: "Prinsip Arsitektur",
+      },
+      paragraphs: [
+        {
+          en: "Lifetopia is being developed as a connected product ecosystem rather than one large application. Each product has a focused responsibility while sharing identity, data contracts, design foundations, and public development evidence.",
+          id: "Lifetopia dikembangkan sebagai ekosistem produk terhubung, bukan satu aplikasi besar. Setiap produk memiliki tanggung jawab khusus sambil berbagi identitas, kontrak data, fondasi desain, dan bukti pengembangan publik.",
+        },
+        {
+          en: "The architecture prioritizes incremental delivery. Existing products can remain independently accessible while deeper connections are introduced during Beta development.",
+          id: "Arsitektur memprioritaskan pengiriman bertahap. Produk yang sudah tersedia dapat tetap diakses secara independen sementara koneksi yang lebih dalam diperkenalkan selama pengembangan Beta.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Separate applications with clearly defined product responsibilities.",
+          id: "Aplikasi terpisah dengan tanggung jawab produk yang jelas.",
+        },
+        {
+          en: "Shared authentication, profile, types, services, and document metadata.",
+          id: "Autentikasi, profil, type, service, dan metadata dokumentasi bersama.",
+        },
+        {
+          en: "Public products remain usable during gradual integration.",
+          id: "Produk publik tetap dapat digunakan selama proses integrasi bertahap.",
+        },
+        {
+          en: "Blockchain functionality is introduced as an optional utility layer.",
+          id: "Fungsi blockchain diperkenalkan sebagai lapisan utilitas opsional.",
+        },
+      ],
+    },
+    {
+      id: "system-landscape",
+      title: {
+        en: "System Landscape",
+        id: "Lanskap Sistem",
+      },
+      paragraphs: [
+        {
+          en: "The current architecture consists of multiple public web applications, a playable game, shared workspace packages, Supabase services, and future Solana-connected systems.",
+          id: "Arsitektur saat ini terdiri dari beberapa aplikasi web publik, playable game, package workspace bersama, layanan Supabase, dan sistem terhubung Solana di masa mendatang.",
+        },
+      ],
+    },
+    {
+      id: "web-platform-monorepo",
+      title: {
+        en: "Web Platform Monorepo",
+        id: "Monorepo Platform Web",
+      },
+      paragraphs: [
+        {
+          en: "The public web platform uses Next.js App Router, TypeScript, Tailwind CSS, Turborepo, and pnpm workspaces. Applications are separated under the apps directory while reusable foundations are stored under packages.",
+          id: "Platform web publik menggunakan Next.js App Router, TypeScript, Tailwind CSS, Turborepo, dan pnpm workspace. Aplikasi dipisahkan di direktori apps, sedangkan fondasi reusable disimpan di packages.",
+        },
+      ],
+      bullets: [
+        {
+          en: "apps/website — the main project website and authentication entry point.",
+          id: "apps/website — website utama proyek dan entry point autentikasi.",
+        },
+        {
+          en: "apps/community — player community, profiles, posts, comments, likes, and bookmarks.",
+          id: "apps/community — komunitas pemain, profil, post, komentar, like, dan bookmark.",
+        },
+        {
+          en: "apps/grants — funding review portal and delivery proposal.",
+          id: "apps/grants — portal review pendanaan dan proposal pengiriman.",
+        },
+        {
+          en: "apps/docs — official public project documentation.",
+          id: "apps/docs — dokumentasi resmi proyek publik.",
+        },
+        {
+          en: "packages/lib — shared Supabase and application utilities.",
+          id: "packages/lib — utility Supabase dan aplikasi bersama.",
+        },
+        {
+          en: "packages/types — shared TypeScript contracts.",
+          id: "packages/types — kontrak TypeScript bersama.",
+        },
+        {
+          en: "packages/docs-data — shared bilingual documentation metadata and content.",
+          id: "packages/docs-data — metadata dan konten dokumentasi bilingual bersama.",
+        },
+        {
+          en: "packages/devtools — internal project status and documentation tooling.",
+          id: "packages/devtools — tooling internal untuk status proyek dan dokumentasi.",
+        },
+      ],
+    },
+    {
+      id: "game-application",
+      title: {
+        en: "Playable Game Application",
+        id: "Aplikasi Playable Game",
+      },
+      paragraphs: [
+        {
+          en: "The playable game is treated as a separate product application because its runtime, asset pipeline, performance requirements, and release process differ from the Next.js web platform.",
+          id: "Playable game diperlakukan sebagai aplikasi produk terpisah karena runtime, pipeline asset, kebutuhan performa, dan proses rilisnya berbeda dari platform web Next.js.",
+        },
+        {
+          en: "The publicly accessible build remains the previous Alpha version while the connected Beta foundation is being completed. Game integration should rely on defined identity and backend contracts rather than directly coupling the game to individual web application internals.",
+          id: "Build yang dapat diakses publik masih merupakan versi Alpha sebelumnya sementara fondasi Beta terhubung sedang diselesaikan. Integrasi game harus menggunakan kontrak identitas dan backend yang jelas, bukan terhubung langsung ke internal aplikasi web tertentu.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Separate game runtime and asset delivery.",
+          id: "Runtime game dan pengiriman asset yang terpisah.",
+        },
+        {
+          en: "Shared player identity through backend contracts.",
+          id: "Identitas pemain bersama melalui kontrak backend.",
+        },
+        {
+          en: "Progress, inventory, and economy data synchronized through approved services.",
+          id: "Data progression, inventory, dan ekonomi disinkronkan melalui layanan yang disetujui.",
+        },
+        {
+          en: "Public Alpha and future Beta builds remain clearly identified.",
+          id: "Build Alpha publik dan Beta mendatang tetap diberi identitas yang jelas.",
+        },
+      ],
+    },
+    {
+      id: "authentication-flow",
+      title: {
+        en: "Shared Authentication Flow",
+        id: "Alur Autentikasi Bersama",
+      },
+      paragraphs: [
+        {
+          en: "Lifetopia is designed around one account that can be used across its public products. Supabase Auth manages the underlying user identity, while the profiles table stores player-facing information.",
+          id: "Lifetopia dirancang menggunakan satu akun yang dapat digunakan di seluruh produk publik. Supabase Auth mengelola identitas pengguna utama, sedangkan tabel profiles menyimpan informasi yang ditampilkan kepada pemain.",
+        },
+        {
+          en: "When authentication begins from another Lifetopia application, the website receives a validated return destination. After successful sign-in, the user is returned to the originating product.",
+          id: "Ketika autentikasi dimulai dari aplikasi Lifetopia lain, website menerima tujuan kembali yang telah divalidasi. Setelah login berhasil, pengguna dikembalikan ke produk asal.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Registration and password authentication are handled through Supabase Auth.",
+          id: "Registrasi dan autentikasi password ditangani melalui Supabase Auth.",
+        },
+        {
+          en: "profiles.id corresponds directly to the authenticated user ID.",
+          id: "profiles.id berhubungan langsung dengan ID pengguna yang terautentikasi.",
+        },
+        {
+          en: "Cross-subdomain sessions use a shared cookie domain for lifetopiaworld.io.",
+          id: "Sesi lintas subdomain menggunakan shared cookie domain untuk lifetopiaworld.io.",
+        },
+        {
+          en: "Protected pages verify authentication before returning private content.",
+          id: "Halaman terproteksi memverifikasi autentikasi sebelum mengembalikan konten privat.",
+        },
+        {
+          en: "Return URLs must be validated to prevent unsafe external redirects.",
+          id: "Return URL harus divalidasi untuk mencegah redirect eksternal yang tidak aman.",
+        },
+      ],
+    },
+    {
+      id: "profile-and-identity",
+      title: {
+        en: "Player Profile and Identity",
+        id: "Profil dan Identitas Pemain",
+      },
+      paragraphs: [
+        {
+          en: "The public player identity is stored separately from authentication credentials. This separation allows applications to display usernames, display names, avatars, countries, roles, and other approved profile information without exposing sensitive authentication data.",
+          id: "Identitas publik pemain disimpan terpisah dari kredensial autentikasi. Pemisahan ini memungkinkan aplikasi menampilkan username, display name, avatar, negara, role, dan informasi profil yang disetujui tanpa mengekspos data autentikasi sensitif.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Authentication credentials remain managed by Supabase Auth.",
+          id: "Kredensial autentikasi tetap dikelola Supabase Auth.",
+        },
+        {
+          en: "Public profile fields are stored in the profiles table.",
+          id: "Field profil publik disimpan di tabel profiles.",
+        },
+        {
+          en: "Profile access is constrained through database policies.",
+          id: "Akses profil dibatasi melalui kebijakan database.",
+        },
+        {
+          en: "Game and marketplace systems should reference the same canonical player identity.",
+          id: "Sistem game dan marketplace harus menggunakan identitas pemain canonical yang sama.",
+        },
+      ],
+    },
+    {
+      id: "database-foundation",
+      title: {
+        en: "Database Foundation",
+        id: "Fondasi Database",
+      },
+      paragraphs: [
+        {
+          en: "Supabase PostgreSQL provides the current database foundation. Tables are organized around authenticated profiles, community interaction, public development evidence, and future connected product systems.",
+          id: "Supabase PostgreSQL menyediakan fondasi database saat ini. Tabel disusun berdasarkan profil terautentikasi, interaksi komunitas, bukti pengembangan publik, dan sistem produk terhubung di masa mendatang.",
+        },
+      ],
+      bullets: [
+        {
+          en: "profiles — canonical public player profile records.",
+          id: "profiles — data profil publik pemain canonical.",
+        },
+        {
+          en: "community_posts — community posts created by authenticated users.",
+          id: "community_posts — post komunitas yang dibuat pengguna terautentikasi.",
+        },
+        {
+          en: "community_comments — comments connected to community posts.",
+          id: "community_comments — komentar yang terhubung dengan post komunitas.",
+        },
+        {
+          en: "community_likes — per-user post reaction records.",
+          id: "community_likes — data reaksi post per pengguna.",
+        },
+        {
+          en: "community_bookmarks — private saved-post relationships.",
+          id: "community_bookmarks — relasi post tersimpan yang bersifat privat.",
+        },
+        {
+          en: "development_logs — public repository and development activity records.",
+          id: "development_logs — data repository dan aktivitas pengembangan publik.",
+        },
+      ],
+    },
+    {
+      id: "database-security",
+      title: {
+        en: "Database Security and RLS",
+        id: "Keamanan Database dan RLS",
+      },
+      paragraphs: [
+        {
+          en: "Row Level Security is used to restrict direct database operations. Public content can be readable where appropriate, while user-owned records require authenticated ownership checks.",
+          id: "Row Level Security digunakan untuk membatasi operasi database langsung. Konten publik dapat dibaca jika sesuai, sedangkan data milik pengguna memerlukan pemeriksaan kepemilikan terautentikasi.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Users can only modify profile and community records permitted by policy.",
+          id: "Pengguna hanya dapat mengubah data profil dan komunitas yang diizinkan kebijakan.",
+        },
+        {
+          en: "Private relationships such as bookmarks remain scoped to their owner.",
+          id: "Relasi privat seperti bookmark tetap dibatasi kepada pemiliknya.",
+        },
+        {
+          en: "Administrative operations should be performed through protected server environments.",
+          id: "Operasi administratif harus dilakukan melalui environment server terproteksi.",
+        },
+        {
+          en: "Service-role credentials must never be exposed to browser applications.",
+          id: "Kredensial service role tidak boleh pernah diekspos ke aplikasi browser.",
+        },
+      ],
+    },
+    {
+      id: "deployment-architecture",
+      title: {
+        en: "Deployment Architecture",
+        id: "Arsitektur Deployment",
+      },
+      paragraphs: [
+        {
+          en: "Each public web application is deployed independently so it can have its own domain, environment variables, release lifecycle, and rollback path.",
+          id: "Setiap aplikasi web publik di-deploy secara independen agar memiliki domain, environment variable, lifecycle rilis, dan jalur rollback masing-masing.",
+        },
+      ],
+      bullets: [
+        {
+          en: "lifetopiaworld.io — main website and authentication entry point.",
+          id: "lifetopiaworld.io — website utama dan entry point autentikasi.",
+        },
+        {
+          en: "community.lifetopiaworld.io — community platform.",
+          id: "community.lifetopiaworld.io — platform komunitas.",
+        },
+        {
+          en: "grants.lifetopiaworld.io — funding review portal.",
+          id: "grants.lifetopiaworld.io — portal review pendanaan.",
+        },
+        {
+          en: "docs.lifetopiaworld.io — public documentation portal.",
+          id: "docs.lifetopiaworld.io — portal dokumentasi publik.",
+        },
+        {
+          en: "play.lifetopiaworld.io — public playable game build.",
+          id: "play.lifetopiaworld.io — build game publik.",
+        },
+        {
+          en: "Shared production configuration is coordinated through environment variables and documented domain rules.",
+          id: "Konfigurasi produksi bersama dikoordinasikan melalui environment variable dan aturan domain yang terdokumentasi.",
+        },
+      ],
+    },
+    {
+      id: "solana-integration",
+      title: {
+        en: "Solana Integration Direction",
+        id: "Arah Integrasi Solana",
+      },
+      paragraphs: [
+        {
+          en: "Solana integration is planned as a gradual product layer. The system should first establish a normal Lifetopia account, then allow the player to connect a supported wallet when blockchain utility becomes relevant.",
+          id: "Integrasi Solana direncanakan sebagai lapisan produk bertahap. Sistem terlebih dahulu membentuk akun Lifetopia biasa, kemudian memungkinkan pemain menghubungkan wallet yang didukung ketika utilitas blockchain menjadi relevan.",
+        },
+        {
+          en: "Blockchain state should not replace all application data. Game progression, social interaction, moderation, and other high-frequency product data can remain off-chain while selected ownership and transaction records use Solana.",
+          id: "State blockchain tidak harus menggantikan seluruh data aplikasi. Progression game, interaksi sosial, moderasi, dan data produk berfrekuensi tinggi lainnya dapat tetap off-chain, sedangkan data kepemilikan dan transaksi terpilih menggunakan Solana.",
+        },
+      ],
+      bullets: [
+        {
+          en: "Phantom and Solflare are the planned wallet entry points.",
+          id: "Phantom dan Solflare menjadi entry point wallet yang direncanakan.",
+        },
+        {
+          en: "Wallet connection remains optional for normal non-blockchain access.",
+          id: "Koneksi wallet tetap opsional untuk akses non-blockchain normal.",
+        },
+        {
+          en: "Initial Beta verification uses Solana devnet interactions.",
+          id: "Verifikasi awal Beta menggunakan interaksi Solana devnet.",
+        },
+        {
+          en: "Ownership and marketplace functions should use explicit server and transaction validation.",
+          id: "Fungsi kepemilikan dan marketplace harus menggunakan validasi server dan transaksi yang eksplisit.",
+        },
+      ],
+    },
+    {
+      id: "security-boundaries",
+      title: {
+        en: "Public Security Boundaries",
+        id: "Batasan Keamanan Publik",
+      },
+      paragraphs: [
+        {
+          en: "This documentation describes the product architecture at a level useful for reviewers and contributors without publishing secrets or operational details that could weaken system security.",
+          id: "Dokumentasi ini menjelaskan arsitektur produk pada tingkat yang berguna bagi reviewer dan kontributor tanpa mempublikasikan secret atau detail operasional yang dapat melemahkan keamanan sistem.",
+        },
+      ],
+      bullets: [
+        {
+          en: "No private keys, service-role secrets, or privileged environment values are published.",
+          id: "Tidak ada private key, service-role secret, atau environment value istimewa yang dipublikasikan.",
+        },
+        {
+          en: "Detailed policy definitions may be summarized rather than copied in full.",
+          id: "Definisi policy detail dapat diringkas daripada disalin sepenuhnya.",
+        },
+        {
+          en: "Internal administrative routes and security response procedures remain private.",
+          id: "Route administratif internal dan prosedur respons keamanan tetap privat.",
+        },
+        {
+          en: "Public contract or mint addresses should only be published after their intended network and status are verified.",
+          id: "Alamat contract atau mint publik hanya boleh dipublikasikan setelah network dan statusnya diverifikasi.",
+        },
+      ],
+    },
+    {
+      id: "architecture-next-steps",
+      title: {
+        en: "Architecture Next Steps",
+        id: "Langkah Arsitektur Berikutnya",
+      },
+      bullets: [
+        {
+          en: "Complete shared identity integration across public products.",
+          id: "Menyelesaikan integrasi identitas bersama di seluruh produk publik.",
+        },
+        {
+          en: "Formalize game-to-platform service contracts.",
+          id: "Memformalkan kontrak layanan game ke platform.",
+        },
+        {
+          en: "Document database relationships and data ownership boundaries.",
+          id: "Mendokumentasikan relasi database dan batasan kepemilikan data.",
+        },
+        {
+          en: "Implement and test optional wallet connection flows.",
+          id: "Mengimplementasikan dan menguji alur koneksi wallet opsional.",
+        },
+        {
+          en: "Add architecture verification records as Beta systems are delivered.",
+          id: "Menambahkan data verifikasi arsitektur saat sistem Beta dikirim.",
+        },
+      ],
+    },
+  ],
+},
 
   {
     slug: "pitch-deck",
