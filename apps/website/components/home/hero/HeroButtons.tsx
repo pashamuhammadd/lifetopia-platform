@@ -1,35 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useCallback,
+  useState,
+} from "react";
+
 import { PlayWarningModal } from "./PlayWarningModal";
 
+const tutorialUrl =
+  "https://youtu.be/i9tl4hjukVo?si=VhGO9fihftxXIDDO";
+
 export function HeroButtons() {
-  const [isPlayWarningOpen, setIsPlayWarningOpen] = useState(false);
+  const [
+    isPlayWarningOpen,
+    setIsPlayWarningOpen,
+  ] = useState(false);
+
+  const closePlayWarning = useCallback(() => {
+    setIsPlayWarningOpen(false);
+  }, []);
 
   return (
     <>
-      <div className="mt-[1.7vw] flex flex-wrap gap-[1vw]">
+      <div
+        className="lt-animate-fade-up mt-5 flex flex-wrap gap-3"
+        style={{
+          animationDelay: "360ms",
+        }}
+      >
         <button
           type="button"
-          onClick={() => setIsPlayWarningOpen(true)}
-          className="lt-button-primary px-[2vw] py-[0.9vw] text-[clamp(0.36rem,1.15vw,1.15rem)]"
+          onClick={() =>
+            setIsPlayWarningOpen(true)
+          }
+          aria-haspopup="dialog"
+          aria-expanded={isPlayWarningOpen}
+          className="lt-button-primary min-h-11 px-[clamp(1.25rem,2.2vw,1.8rem)] text-[clamp(0.8rem,0.95vw,0.94rem)]"
         >
-          Play Game 🍃
+          Play Now
         </button>
 
         <a
-        href="https://youtu.be/i9tl4hjukVo?si=VhGO9fihftxXIDDO"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="lt-button-secondary px-[2vw] py-[0.9vw] text-[clamp(0.36rem,1.15vw,1.15rem)]"
+          href={tutorialUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="lt-button-secondary min-h-11 px-[clamp(1.25rem,2.2vw,1.8rem)] text-[clamp(0.8rem,0.95vw,0.94rem)]"
         >
-        Watch Tutorial 📖
+          Watch Tutorial
         </a>
       </div>
 
       <PlayWarningModal
         isOpen={isPlayWarningOpen}
-        onClose={() => setIsPlayWarningOpen(false)}
+        onClose={closePlayWarning}
       />
     </>
   );

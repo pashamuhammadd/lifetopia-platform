@@ -2,20 +2,25 @@ import Image from "next/image";
 
 export function HeroBackground() {
   return (
-    <div className="relative w-full bg-[#fff7e8]">
+    <div
+      aria-hidden="true"
+      className="absolute inset-0"
+    >
       <Image
         src="/images/hero/LT-011-hero-village.png"
-        alt="Lifetopia World Hero"
-        width={2560}
-        height={1200}
+        alt=""
+        fill
         priority
+        quality={92}
         sizes="100vw"
-        className="h-auto w-full"
+        className="object-cover object-[62%_center] sm:object-[58%_center] lg:object-center"
       />
 
-      <div className="absolute inset-0 bg-gradient-to-r from-black/28 via-black/10 to-transparent" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(24,31,19,0.8)_0%,rgba(24,31,19,0.6)_34%,rgba(24,31,19,0.18)_64%,rgba(24,31,19,0.02)_100%)]" />
 
-      <div className="absolute inset-x-0 bottom-0 h-[clamp(56px,8vw,128px)] bg-gradient-to-t from-[#fff7e8] via-[#fff7e8]/35 to-transparent" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(19,31,21,0.24)_0%,transparent_28%,transparent_68%,rgba(255,247,232,0.88)_100%)]" />
+
+      <div className="absolute inset-x-0 bottom-0 h-[clamp(5rem,12vw,10rem)] bg-gradient-to-t from-[#fff7e8] via-[#fff7e8]/45 to-transparent" />
     </div>
   );
 }

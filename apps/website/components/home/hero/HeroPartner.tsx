@@ -2,21 +2,26 @@ import Image from "next/image";
 
 export function HeroPartner() {
   return (
-    <div className="mt-[1.2vw] inline-flex items-center gap-[0.5vw] rounded-full border border-white/70 bg-white/86 px-[1vw] py-[0.45vw] shadow-[0_10px_24px_rgba(88,60,28,0.12)] backdrop-blur-xl">
-      <span className="text-[clamp(0.32rem,0.78vw,0.85rem)] font-black text-[#6b5b4a]">
+    <div
+      className="lt-animate-fade-up mt-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/90 px-3 py-2 shadow-[0_0.8rem_2rem_rgba(32,48,25,0.16)] backdrop-blur-xl"
+      style={{
+        animationDelay: "290ms",
+      }}
+    >
+      <span className="text-[clamp(0.7rem,0.8vw,0.8rem)] font-black text-[#6b5b4a]">
         Supported by
       </span>
 
-      <span className="flex items-center gap-[0.5vw] rounded-full bg-[#fff1f4] px-[0.8vw] py-[0.35vw]">
+      <span className="flex items-center gap-2 rounded-full bg-[#fff1f4] px-2.5 py-1.5">
         <Image
           src="/images/logo/logo-superteam-id.jpg"
-          alt="Superteam Indonesia"
+          alt=""
           width={24}
           height={24}
-          className="h-[clamp(10px,1.7vw,24px)] w-[clamp(10px,1.7vw,24px)] rounded-full border border-white/60 bg-white object-cover p-0.5 shadow-sm"
+          className="size-5 rounded-full border border-white bg-white object-cover p-0.5 shadow-sm"
         />
 
-        <span className="text-[clamp(0.32rem,0.78vw,0.85rem)] font-black text-[#e83b5f]">
+        <span className="text-[clamp(0.7rem,0.8vw,0.8rem)] font-black text-[#d93658]">
           Superteam Indonesia
         </span>
       </span>
