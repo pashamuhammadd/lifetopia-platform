@@ -282,6 +282,10 @@ importers:
       react-icons:
         specifier: ^5.5.0
         version: 5.7.0(react@19.2.4)
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
 
   packages/docs-data:
     devDependencies:
