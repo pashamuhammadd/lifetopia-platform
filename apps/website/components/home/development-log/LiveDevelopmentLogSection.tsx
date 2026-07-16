@@ -92,7 +92,10 @@ export async function LiveDevelopmentLogSection() {
   const latestLog = logs[0];
 
   return (
-    <section className="relative overflow-hidden bg-[#fff8e8] px-[clamp(1rem,5vw,5rem)] py-[clamp(2.8rem,6vw,4.8rem)]">
+    <section
+      id="development-log"
+      className="relative overflow-hidden bg-[#fff8e8] px-[clamp(1rem,5vw,5rem)] py-[clamp(2.8rem,6vw,4.8rem)]"
+    >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-[-10rem] top-[-9rem] h-[clamp(16rem,30vw,25rem)] w-[clamp(16rem,30vw,25rem)] rounded-full bg-[#6fa83a]/18 blur-3xl" />
         <div className="absolute bottom-[-10rem] right-[-9rem] h-[clamp(17rem,32vw,27rem)] w-[clamp(17rem,32vw,27rem)] rounded-full bg-[#ffd58a]/28 blur-3xl" />

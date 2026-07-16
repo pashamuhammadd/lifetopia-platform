@@ -27,7 +27,7 @@
   --flower: #f6c453;
   --border-soft: #ead9b8;
 
-  --section-space: clamp(2.75rem, 4.8vw, 4.25rem);
+  --section-space: clamp(2.25rem, 3vw, 3rem);
   --content-width: 70rem;
 
   --shadow-soft:
@@ -323,7 +323,7 @@ svg {
 
 @media (max-width: 48rem) {
   :root {
-    --section-space: clamp(2.25rem, 9vw, 3.25rem);
+    --section-space: clamp(2rem, 7vw, 2.75rem);
   }
 
   html {
