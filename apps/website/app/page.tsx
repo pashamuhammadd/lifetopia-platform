@@ -9,6 +9,8 @@ import { HeroSection } from "@/components/home/hero/HeroSection";
 import { RoadmapSection } from "@/components/home/RoadmapSection";
 import { Navbar } from "@/components/layout/Navbar";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "A Cozy Connected Digital Society",
   description:

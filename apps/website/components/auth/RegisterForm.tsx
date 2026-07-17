@@ -1,22 +1,58 @@
 "use client";
 
+import {
+  AlertCircle,
+  Check,
+  CheckCircle2,
+  MailCheck,
+  ShieldCheck,
+  UserRoundCheck,
+  X,
+} from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+} from "react";
+
 import { AvatarPicker } from "@/components/auth/AvatarPicker";
 import { CountryPicker } from "@/components/auth/CountryPicker";
+import { PasswordField } from "@/components/auth/PasswordField";
+import { RegisterProgress } from "@/components/auth/RegisterProgress";
+import {
+  LEGAL_DOCUMENTS,
+} from "@/data/legal-documents";
 import { playerAvatars } from "@repo/data/auth";
 import {
-  isAbsoluteAuthRedirect,
-  sanitizeAuthRedirect,
-} from "@repo/lib/auth-redirect";
-import { createClient } from "@repo/lib/supabase/client";
-import { checkUsernameAvailability } from "@repo/services/auth";
-import type { RegisterStep } from "@repo/types/auth";
+  assessPassword,
+  normalizeDisplayName,
+  normalizeEmail,
+  normalizeUsername,
+  type LifetopiaGender,
+  type RegistrationField,
+  type RegistrationInput,
+  validateAvatarId,
+  validateCountryCode,
+  validateCountryName,
+  validateDateOfBirth,
+  validateDisplayName,
+  validateEmail,
+  validateGender,
+  validatePassword,
+  validateRegistrationInput,
+  validateUsername,
+} from "@repo/services/auth-validation";
+import {
+  checkUsernameAvailability,
+} from "@repo/services/auth";
 
-const steps: RegisterStep[] = ["avatar", "identity", "security", "terms"];
-
-type Gender = "male" | "female";
+type RegisterStep =
+  | "identity"
+  | "security"
+  | "profile"
+  | "confirmation";
 
 type UsernameStatus =
   | "idle"
@@ -30,333 +66,1225 @@ type RegisterFormProps = {
   nextUrl?: string;
 };
 
-export function RegisterForm({ nextUrl = "/dashboard" }: RegisterFormProps) {
-  const router = useRouter();
-  const supabase = createClient();
+type RegisterApiResponse = {
+  success?: boolean;
+  status?: string;
+  code?: string;
+  error?: string;
+  requestId?: string;
+  next?: string;
+  guardianConsentRequired?: boolean;
+  fieldErrors?: Partial<
+    Record<RegistrationField, string>
+  >;
+};
 
-  const redirectTo = useMemo(() => sanitizeAuthRedirect(nextUrl), [nextUrl]);
+type CreatedAccount = {
+  email: string;
+  guardianConsentRequired: boolean;
+};
 
+const steps = [
+  {
+    id: "identity",
+    label: "Identity",
+  },
+  {
+    id: "security",
+    label: "Security",
+  },
+  {
+    id: "profile",
+    label: "Profile",
+  },
+  {
+    id: "confirmation",
+    label: "Confirmation",
+  },
+] as const;
+
+const INPUT_CLASS =
+  "w-full rounded-[clamp(0.8rem,1.5vw,1.2rem)] border bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)] text-[clamp(0.8rem,1vw,1rem)] text-[#2f1b12] outline-none transition placeholder:text-[#7a5635]/50 disabled:cursor-not-allowed disabled:opacity-60";
+
+const FIELD_TO_STEP: Record<
+  RegistrationField,
+  RegisterStep
+> = {
+  username: "identity",
+  displayName: "identity",
+  email: "security",
+  password: "security",
+  confirmPassword: "security",
+  avatarId: "profile",
+  dateOfBirth: "profile",
+  countryCode: "profile",
+  countryName: "profile",
+  gender: "profile",
+  termsAccepted: "confirmation",
+  privacyAccepted: "confirmation",
+};
+
+function getFirstFieldError(
+  errors: Partial<
+    Record<RegistrationField, string>
+  >,
+): string | undefined {
+  for (const step of steps) {
+    const field = (
+      Object.keys(errors) as RegistrationField[]
+    ).find(
+      (candidate) =>
+        FIELD_TO_STEP[candidate] ===
+          step.id &&
+        errors[candidate],
+    );
+
+    if (field) {
+      return errors[field];
+    }
+  }
+
+  return undefined;
+}
+
+function getFirstErrorStep(
+  errors: Partial<
+    Record<RegistrationField, string>
+  >,
+): RegisterStep | undefined {
+  for (const step of steps) {
+    const hasError = (
+      Object.keys(errors) as RegistrationField[]
+    ).some(
+      (field) =>
+        FIELD_TO_STEP[field] ===
+          step.id &&
+        errors[field],
+    );
+
+    if (hasError) {
+      return step.id;
+    }
+  }
+
+  return undefined;
+}
+
+function StepHeader({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div>
+      <h2 className="text-[clamp(1.15rem,2vw,1.7rem)] font-black text-[#2f1b12]">
+        {title}
+      </h2>
+
+      <p className="mt-[clamp(0.35rem,0.8vw,0.6rem)] text-[clamp(0.72rem,0.95vw,0.9rem)] leading-[1.6] text-[#7a5635]">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+function FieldError({
+  id,
+  message,
+}: {
+  id: string;
+  message?: string;
+}) {
+  if (!message) {
+    return null;
+  }
+
+  return (
+    <span
+      id={id}
+      className="text-xs font-bold text-red-600"
+    >
+      {message}
+    </span>
+  );
+}
+
+function PasswordRequirement({
+  met,
+  children,
+}: {
+  met: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <li
+      className={`flex items-center gap-2 text-xs font-bold ${
+        met
+          ? "text-[#4f8124]"
+          : "text-[#8f7458]"
+      }`}
+    >
+      <span
+        className={`grid size-4 place-items-center rounded-full ${
+          met
+            ? "bg-[#e5f3d8]"
+            : "bg-[#eee4d5]"
+        }`}
+      >
+        {met ? (
+          <Check size={11} />
+        ) : (
+          <X size={10} />
+        )}
+      </span>
+
+      {children}
+    </li>
+  );
+}
+
+export function RegisterForm({
+  nextUrl = "/",
+}: RegisterFormProps) {
   const loginHref =
-    redirectTo === "/dashboard"
+    nextUrl === "/"
       ? "/login"
-      : `/login?next=${encodeURIComponent(redirectTo)}`;
+      : `/login?next=${encodeURIComponent(nextUrl)}`;
 
-  const [currentStep, setCurrentStep] = useState<RegisterStep>("avatar");
+  const [currentStep, setCurrentStep] =
+    useState<RegisterStep>("identity");
 
-  const [avatarId, setAvatarId] = useState(playerAvatars[0]?.id ?? "");
-  const [username, setUsername] = useState("");
-  const [usernameStatus, setUsernameStatus] =
-    useState<UsernameStatus>("idle");
-  const [usernameMessage, setUsernameMessage] = useState("");
+  const [username, setUsername] =
+    useState("");
+  const [
+    usernameStatus,
+    setUsernameStatus,
+  ] = useState<UsernameStatus>("idle");
+  const [
+    usernameMessage,
+    setUsernameMessage,
+  ] = useState("");
 
-  const [displayName, setDisplayName] = useState("");
-  const [gender, setGender] = useState<Gender>("male");
-  const [country, setCountry] = useState("");
-  const [countryName, setCountryName] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [displayName, setDisplayName] =
+    useState("");
+  const [email, setEmail] =
+    useState("");
+  const [password, setPassword] =
+    useState("");
+  const [
+    confirmPassword,
+    setConfirmPassword,
+  ] = useState("");
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [avatarId, setAvatarId] =
+    useState(
+      playerAvatars[0]?.id ?? "",
+    );
+  const [gender, setGender] =
+    useState<LifetopiaGender>("male");
+  const [country, setCountry] =
+    useState("");
+  const [
+    countryName,
+    setCountryName,
+  ] = useState("");
+  const [
+    dateOfBirth,
+    setDateOfBirth,
+  ] = useState("");
 
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [agreePrivacy, setAgreePrivacy] = useState(false);
+  const [
+    agreeTerms,
+    setAgreeTerms,
+  ] = useState(false);
+  const [
+    agreePrivacy,
+    setAgreePrivacy,
+  ] = useState(false);
 
-  const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [
+    fieldErrors,
+    setFieldErrors,
+  ] = useState<
+    Partial<
+      Record<RegistrationField, string>
+    >
+  >({});
 
-  const currentStepIndex = steps.indexOf(currentStep);
-  const usernamePattern = /^[a-zA-Z0-9_]{4,10}$/;
+  const [message, setMessage] =
+    useState("");
+  const [isLoading, setIsLoading] =
+    useState(false);
+  const [
+    isStepChecking,
+    setIsStepChecking,
+  ] = useState(false);
+  const [
+    createdAccount,
+    setCreatedAccount,
+  ] = useState<CreatedAccount | null>(
+    null,
+  );
+
+  const currentStepIndex =
+    steps.findIndex(
+      (step) =>
+        step.id === currentStep,
+    );
+
+  const passwordAssessment =
+    useMemo(
+      () => assessPassword(password),
+      [password],
+    );
+
+  const dateOfBirthAssessment =
+    useMemo(() => {
+      if (!dateOfBirth) {
+        return null;
+      }
+
+      return validateDateOfBirth(
+        dateOfBirth,
+      );
+    }, [dateOfBirth]);
 
   useEffect(() => {
-    const normalizedUsername = username.trim();
+    const validation =
+      validateUsername(username);
 
-    if (!normalizedUsername) {
+    if (!username.trim()) {
       setUsernameStatus("idle");
       setUsernameMessage("");
       return;
     }
 
-    const timeout = setTimeout(async () => {
-      setUsernameStatus("checking");
-
-      const result = await checkUsernameAvailability(normalizedUsername);
-
-      setUsernameStatus(result.status);
-      setUsernameMessage(result.message);
-    }, 400);
-
-    return () => clearTimeout(timeout);
-  }, [username]);
-
-  function goToNextStep() {
-    setMessage("");
-
-    if (currentStep === "avatar") {
-      if (!avatarId) {
-        setMessage("Please choose your avatar.");
-        return;
-      }
-
-      setCurrentStep("identity");
+    if (!validation.valid) {
+      setUsernameStatus("invalid");
+      setUsernameMessage(
+        validation.message,
+      );
       return;
     }
 
-    if (currentStep === "identity") {
-      const normalizedUsername = username.trim();
-      const normalizedDisplayName = displayName.trim();
-      const displayNamePattern = /^.{4,10}$/;
+    let cancelled = false;
 
-      if (!usernamePattern.test(normalizedUsername)) {
-        setMessage(
-          "Username must be 4-10 characters and only use letters, numbers, or underscore.",
+    setUsernameStatus("checking");
+    setUsernameMessage(
+      "Checking username...",
+    );
+
+    const timeout = window.setTimeout(
+      async () => {
+        const result =
+          await checkUsernameAvailability(
+            validation.value,
+          );
+
+        if (cancelled) {
+          return;
+        }
+
+        setUsernameStatus(
+          result.status,
         );
-        return;
+        setUsernameMessage(
+          result.message,
+        );
+      },
+      450,
+    );
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeout);
+    };
+  }, [username]);
+
+  function clearFieldError(
+    field: RegistrationField,
+  ) {
+    setFieldErrors((current) => {
+      if (!current[field]) {
+        return current;
       }
 
-      if (!displayNamePattern.test(normalizedDisplayName)) {
-        setMessage("Display Name must be 4-10 characters.");
-        return;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+  }
+
+  function setStepError(
+    field: RegistrationField,
+    error: string,
+  ) {
+    setFieldErrors((current) => ({
+      ...current,
+      [field]: error,
+    }));
+    setMessage(error);
+  }
+
+  function buildRegistrationInput():
+    RegistrationInput {
+    return {
+      username,
+      displayName,
+      email,
+      password,
+      confirmPassword,
+      avatarId,
+      dateOfBirth,
+      countryCode: country,
+      countryName,
+      gender,
+      termsAccepted: agreeTerms,
+      privacyAccepted: agreePrivacy,
+    };
+  }
+
+  async function validateIdentityStep() {
+    const usernameValidation =
+      validateUsername(username);
+
+    if (!usernameValidation.valid) {
+      setStepError(
+        "username",
+        usernameValidation.message,
+      );
+      return false;
+    }
+
+    const displayNameValidation =
+      validateDisplayName(
+        displayName,
+      );
+
+    if (!displayNameValidation.valid) {
+      setStepError(
+        "displayName",
+        displayNameValidation.message,
+      );
+      return false;
+    }
+
+    setIsStepChecking(true);
+
+    const availability =
+      await checkUsernameAvailability(
+        usernameValidation.value,
+      );
+
+    setIsStepChecking(false);
+    setUsernameStatus(
+      availability.status,
+    );
+    setUsernameMessage(
+      availability.message,
+    );
+
+    if (
+      availability.status !==
+      "available"
+    ) {
+      setStepError(
+        "username",
+        availability.message,
+      );
+      return false;
+    }
+
+    setUsername(
+      usernameValidation.value,
+    );
+    setDisplayName(
+      displayNameValidation.value,
+    );
+
+    return true;
+  }
+
+  function validateSecurityStep() {
+    const emailValidation =
+      validateEmail(email);
+
+    if (!emailValidation.valid) {
+      setStepError(
+        "email",
+        emailValidation.message,
+      );
+      return false;
+    }
+
+    const passwordValidation =
+      validatePassword(password, {
+        username,
+        email:
+          emailValidation.value,
+      });
+
+    if (!passwordValidation.valid) {
+      setStepError(
+        "password",
+        passwordValidation.message,
+      );
+      return false;
+    }
+
+    if (
+      password !==
+      confirmPassword
+    ) {
+      setStepError(
+        "confirmPassword",
+        "Password confirmation does not match.",
+      );
+      return false;
+    }
+
+    setEmail(emailValidation.value);
+
+    return true;
+  }
+
+  function validateProfileStep() {
+    const avatarValidation =
+      validateAvatarId(avatarId);
+
+    if (!avatarValidation.valid) {
+      setStepError(
+        "avatarId",
+        avatarValidation.message,
+      );
+      return false;
+    }
+
+    const genderValidation =
+      validateGender(gender);
+
+    if (!genderValidation.valid) {
+      setStepError(
+        "gender",
+        genderValidation.message,
+      );
+      return false;
+    }
+
+    const countryCodeValidation =
+      validateCountryCode(country);
+
+    if (!countryCodeValidation.valid) {
+      setStepError(
+        "countryCode",
+        countryCodeValidation.message,
+      );
+      return false;
+    }
+
+    const countryNameValidation =
+      validateCountryName(
+        countryName,
+      );
+
+    if (!countryNameValidation.valid) {
+      setStepError(
+        "countryName",
+        countryNameValidation.message,
+      );
+      return false;
+    }
+
+    const birthDateValidation =
+      validateDateOfBirth(
+        dateOfBirth,
+      );
+
+    if (!birthDateValidation.valid) {
+      setStepError(
+        "dateOfBirth",
+        birthDateValidation.message,
+      );
+      return false;
+    }
+
+    setCountry(
+      countryCodeValidation.value,
+    );
+    setCountryName(
+      countryNameValidation.value,
+    );
+
+    return true;
+  }
+
+  async function goToNextStep() {
+    setMessage("");
+    setFieldErrors({});
+
+    if (currentStep === "identity") {
+      const valid =
+        await validateIdentityStep();
+
+      if (valid) {
+        setCurrentStep("security");
       }
 
-      if (!gender || !country || !dateOfBirth) {
-        setMessage("Please choose your gender, country, and date of birth.");
-        return;
-      }
-
-      if (usernameStatus !== "available") {
-        setMessage("Please choose an available username.");
-        return;
-      }
-
-      setUsername(normalizedUsername);
-      setDisplayName(normalizedDisplayName);
-      setCurrentStep("security");
       return;
     }
 
     if (currentStep === "security") {
-      const strongPasswordPattern =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
-
-      if (!email || !password || !confirmPassword) {
-        setMessage("Please fill all security fields.");
-        return;
+      if (validateSecurityStep()) {
+        setCurrentStep("profile");
       }
 
-      if (!strongPasswordPattern.test(password)) {
-        setMessage(
-          "Password must contain uppercase, lowercase, number, symbol, and at least 8 characters.",
+      return;
+    }
+
+    if (currentStep === "profile") {
+      if (validateProfileStep()) {
+        setCurrentStep(
+          "confirmation",
         );
-        return;
       }
-
-      if (password !== confirmPassword) {
-        setMessage("Password confirmation does not match.");
-        return;
-      }
-
-      setCurrentStep("terms");
     }
   }
 
   function goToPreviousStep() {
     setMessage("");
+    setFieldErrors({});
 
-    if (currentStep === "identity") setCurrentStep("avatar");
-    if (currentStep === "security") setCurrentStep("identity");
-    if (currentStep === "terms") setCurrentStep("security");
+    if (currentStep === "security") {
+      setCurrentStep("identity");
+    }
+
+    if (currentStep === "profile") {
+      setCurrentStep("security");
+    }
+
+    if (
+      currentStep === "confirmation"
+    ) {
+      setCurrentStep("profile");
+    }
   }
 
-  async function handleRegister(event: React.FormEvent<HTMLFormElement>) {
+  async function handleRegister(
+    event: FormEvent<HTMLFormElement>,
+  ) {
     event.preventDefault();
 
     setIsLoading(true);
     setMessage("");
+    setFieldErrors({});
 
-    if (!agreeTerms || !agreePrivacy) {
-      setMessage("Please agree to the Terms of Service and Privacy Policy.");
+    const validation =
+      validateRegistrationInput(
+        buildRegistrationInput(),
+      );
+
+    if (!validation.valid) {
+      const firstStep =
+        getFirstErrorStep(
+          validation.errors,
+        );
+      const firstMessage =
+        getFirstFieldError(
+          validation.errors,
+        );
+
+      setFieldErrors(
+        validation.errors,
+      );
+      setMessage(
+        firstMessage ??
+          "Some registration fields are invalid.",
+      );
+
+      if (firstStep) {
+        setCurrentStep(firstStep);
+      }
+
       setIsLoading(false);
       return;
     }
 
-    const emailRedirectTo =
-      typeof window !== "undefined"
-        ? `${window.location.origin}/login?next=${encodeURIComponent(
-            redirectTo,
-          )}`
-        : undefined;
-
-    const { data, error } = await supabase.auth.signUp({
-      email: email.trim(),
-      password,
-      options: {
-        emailRedirectTo,
-        data: {
-          account_type: "player",
-          username: username.trim(),
-          display_name: displayName.trim(),
-          gender,
-          avatar_id: avatarId,
-          country,
-          country_name: countryName,
-          date_of_birth: dateOfBirth,
+    try {
+      const response = await fetch(
+        "/api/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          cache: "no-store",
+          body: JSON.stringify({
+            ...validation.value,
+            confirmPassword,
+            termsVersion:
+              LEGAL_DOCUMENTS.terms
+                .version,
+            privacyVersion:
+              LEGAL_DOCUMENTS.privacy
+                .version,
+            next: nextUrl,
+          }),
         },
-      },
-    });
+      );
 
-    if (error) {
-      setMessage(error.message);
-      setIsLoading(false);
-      return;
-    }
+      const payload =
+        (await response.json()) as
+          RegisterApiResponse;
 
-    if (data.session) {
-      if (isAbsoluteAuthRedirect(redirectTo)) {
-        window.location.assign(redirectTo);
+      if (
+        !response.ok ||
+        !payload.success
+      ) {
+        if (payload.fieldErrors) {
+          setFieldErrors(
+            payload.fieldErrors,
+          );
+
+          const firstStep =
+            getFirstErrorStep(
+              payload.fieldErrors,
+            );
+
+          if (firstStep) {
+            setCurrentStep(firstStep);
+          }
+        }
+
+        setMessage(
+          payload.error ??
+            "Unable to create the account right now.",
+        );
+        setIsLoading(false);
         return;
       }
 
-      router.replace(redirectTo);
-      router.refresh();
-      return;
-    }
+      setPassword("");
+      setConfirmPassword("");
 
-    setMessage(
-      "Account created successfully. Please check your email or login to continue.",
+      setCreatedAccount({
+        email:
+          validation.value.email,
+        guardianConsentRequired:
+          payload.guardianConsentRequired ??
+          validation.value
+            .guardianConsentRequired,
+      });
+    } catch {
+      setMessage(
+        "Unable to reach the registration service. Check your connection and try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  if (createdAccount) {
+    return (
+      <div className="flex flex-col items-center gap-5 py-2 text-center">
+        <span className="grid size-16 place-items-center rounded-full border border-[#bcd89c] bg-[#edf7e4] text-[#4f8124] shadow-[0_14px_32px_rgba(79,129,36,0.15)]">
+          <MailCheck size={30} />
+        </span>
+
+        <div>
+          <h2 className="text-[clamp(1.35rem,3vw,2rem)] font-black text-[#2f1b12]">
+            Account created.
+          </h2>
+
+          <p className="mx-auto mt-2 max-w-md text-[clamp(0.78rem,1vw,0.94rem)] font-semibold leading-7 text-[#76583a]">
+            Your Lifetopia account for{" "}
+            <strong className="text-[#2f1b12]">
+              {createdAccount.email}
+            </strong>{" "}
+            has been created. Email
+            verification is required
+            before social, reward, and
+            wallet features become
+            available.
+          </p>
+        </div>
+
+        {createdAccount.guardianConsentRequired ? (
+          <div className="w-full rounded-[20px] border border-amber-300 bg-amber-50 px-4 py-3 text-left text-sm font-semibold leading-6 text-amber-900">
+            Because this account belongs
+            to a user aged 13–17, parent
+            or guardian approval will
+            also be required.
+          </div>
+        ) : null}
+
+        <div className="w-full rounded-[20px] border border-[#d9c99f] bg-[#fff8e8] px-4 py-3 text-sm font-semibold leading-6 text-[#76583a]">
+          The verification and resend
+          experience is completed in the
+          next authentication phase.
+        </div>
+
+        <Link
+          href={loginHref}
+          className="lt-button-primary w-full justify-center"
+        >
+          Continue to Login
+        </Link>
+      </div>
     );
-    setIsLoading(false);
   }
 
   return (
     <form
       onSubmit={handleRegister}
+      noValidate
       className="flex flex-col gap-[clamp(1rem,2.4vw,1.6rem)]"
     >
-      <div className="grid grid-cols-4 gap-[clamp(0.35rem,1vw,0.75rem)]">
-        {steps.map((step, index) => (
-          <div
-            key={step}
-            className={`h-[clamp(0.35rem,0.8vw,0.55rem)] rounded-full transition ${
-              index <= currentStepIndex ? "bg-[#4f8124]" : "bg-[#d9c99f]/60"
-            }`}
-          />
-        ))}
-      </div>
-
-      {currentStep === "avatar" ? (
-        <div className="flex flex-col gap-[clamp(0.9rem,2vw,1.4rem)]">
-          <div>
-            <h2 className="text-[clamp(1.15rem,2vw,1.7rem)] font-black text-[#2f1b12]">
-              Choose Your Avatar
-            </h2>
-            <p className="mt-[clamp(0.35rem,0.8vw,0.6rem)] text-[clamp(0.72rem,0.95vw,0.9rem)] leading-[1.6] text-[#7a5635]">
-              Select the character that will represent you in Lifetopia World.
-            </p>
-          </div>
-
-          <AvatarPicker
-            avatars={playerAvatars}
-            selectedAvatarId={avatarId}
-            onSelectAvatar={setAvatarId}
-          />
-        </div>
-      ) : null}
+      <RegisterProgress
+        steps={steps}
+        currentStep={currentStep}
+      />
 
       {currentStep === "identity" ? (
         <div className="flex flex-col gap-[clamp(0.8rem,2vw,1.2rem)]">
-          <div>
-            <h2 className="text-[clamp(1.15rem,2vw,1.7rem)] font-black text-[#2f1b12]">
-              Create Your Identity
-            </h2>
-            <p className="mt-[clamp(0.35rem,0.8vw,0.6rem)] text-[clamp(0.72rem,0.95vw,0.9rem)] leading-[1.6] text-[#7a5635]">
-              This identity will be used across the platform, forum, and game.
-            </p>
-          </div>
+          <StepHeader
+            title="Create Your Identity"
+            description="Choose the public name used across the Lifetopia website, community, and game."
+          />
 
           <label className="flex flex-col gap-[clamp(0.35rem,0.8vw,0.6rem)]">
-            <span className="text-[clamp(0.72rem,0.95vw,0.9rem)] font-bold text-[#2f1b12]">
+            <span className="flex items-center justify-between gap-3 text-[clamp(0.72rem,0.95vw,0.9rem)] font-bold text-[#2f1b12]">
               Username
+              <span className="text-xs font-semibold text-[#8f7458]">
+                4–16 characters
+              </span>
             </span>
 
             <input
               type="text"
               required
               minLength={4}
-              maxLength={10}
-              placeholder="Bent"
+              maxLength={16}
+              autoComplete="username"
+              spellCheck={false}
+              placeholder="player_01"
               value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)] text-[clamp(0.8rem,1vw,1rem)] text-[#2f1b12] outline-none transition placeholder:text-[#7a5635]/50 focus:border-[#4f8124]"
+              disabled={isLoading}
+              aria-invalid={Boolean(
+                fieldErrors.username,
+              )}
+              aria-describedby="register-username-help register-username-status"
+              onChange={(event) => {
+                setUsername(
+                  event.target.value
+                    .toLowerCase(),
+                );
+                clearFieldError(
+                  "username",
+                );
+              }}
+              onBlur={() =>
+                setUsername(
+                  normalizeUsername(
+                    username,
+                  ),
+                )
+              }
+              className={`${INPUT_CLASS} ${
+                fieldErrors.username
+                  ? "border-red-400 focus:border-red-500"
+                  : "border-[#d9c99f] focus:border-[#4f8124]"
+              }`}
             />
 
+            <span
+              id="register-username-help"
+              className="text-xs font-semibold leading-5 text-[#8f7458]"
+            >
+              Lowercase letters, numbers,
+              and underscores. Up to two
+              consecutive underscores.
+            </span>
+
             {usernameStatus !== "idle" ? (
-              <p
-                className={`text-[clamp(0.65rem,0.9vw,0.85rem)] font-semibold ${
-                  usernameStatus === "available"
+              <span
+                id="register-username-status"
+                aria-live="polite"
+                className={`flex items-center gap-1.5 text-xs font-bold ${
+                  usernameStatus ===
+                  "available"
                     ? "text-[#4f8124]"
-                    : usernameStatus === "checking"
-                      ? "text-[#7a5635]"
+                    : usernameStatus ===
+                        "checking"
+                      ? "text-[#76583a]"
                       : "text-red-600"
                 }`}
               >
-                {usernameStatus === "checking"
+                {usernameStatus ===
+                "available" ? (
+                  <CheckCircle2
+                    size={14}
+                  />
+                ) : null}
+
+                {usernameStatus ===
+                "checking"
                   ? "Checking username..."
                   : usernameMessage}
-              </p>
+              </span>
             ) : null}
+
+            <FieldError
+              id="register-username-error"
+              message={
+                fieldErrors.username
+              }
+            />
           </label>
 
           <label className="flex flex-col gap-[clamp(0.35rem,0.8vw,0.6rem)]">
-            <span className="text-[clamp(0.72rem,0.95vw,0.9rem)] font-bold text-[#2f1b12]">
+            <span className="flex items-center justify-between gap-3 text-[clamp(0.72rem,0.95vw,0.9rem)] font-bold text-[#2f1b12]">
               Display Name
+              <span className="text-xs font-semibold text-[#8f7458]">
+                2–32 characters
+              </span>
             </span>
 
             <input
               type="text"
               required
-              minLength={4}
-              maxLength={10}
-              placeholder="Lifetopian"
+              minLength={2}
+              maxLength={32}
+              autoComplete="name"
+              placeholder="Pasha Muhammad"
               value={displayName}
-              onChange={(event) => setDisplayName(event.target.value)}
-              className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)] text-[clamp(0.8rem,1vw,1rem)] text-[#2f1b12] outline-none transition placeholder:text-[#7a5635]/50 focus:border-[#4f8124]"
+              disabled={isLoading}
+              aria-invalid={Boolean(
+                fieldErrors.displayName,
+              )}
+              onChange={(event) => {
+                setDisplayName(
+                  event.target.value,
+                );
+                clearFieldError(
+                  "displayName",
+                );
+              }}
+              onBlur={() =>
+                setDisplayName(
+                  normalizeDisplayName(
+                    displayName,
+                  ),
+                )
+              }
+              className={`${INPUT_CLASS} ${
+                fieldErrors.displayName
+                  ? "border-red-400 focus:border-red-500"
+                  : "border-[#d9c99f] focus:border-[#4f8124]"
+              }`}
+            />
+
+            <span className="text-xs font-semibold leading-5 text-[#8f7458]">
+              Letters, numbers, and spaces.
+              Display Names may be
+              duplicated.
+            </span>
+
+            <FieldError
+              id="register-display-name-error"
+              message={
+                fieldErrors.displayName
+              }
             />
           </label>
+        </div>
+      ) : null}
+
+      {currentStep === "security" ? (
+        <div className="flex flex-col gap-[clamp(0.8rem,2vw,1.2rem)]">
+          <StepHeader
+            title="Secure Your Account"
+            description="Use an email you can access and create a unique password for Lifetopia."
+          />
 
           <label className="flex flex-col gap-[clamp(0.35rem,0.8vw,0.6rem)]">
             <span className="text-[clamp(0.72rem,0.95vw,0.9rem)] font-bold text-[#2f1b12]">
-              Gender
+              Email
             </span>
 
-            <div className="flex items-center gap-[clamp(1rem,2vw,1.5rem)] rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)]">
-              <label className="flex cursor-pointer items-center gap-2 text-[clamp(0.78rem,1vw,0.95rem)] font-semibold text-[#2f1b12]">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="male"
-                  checked={gender === "male"}
-                  onChange={() => setGender("male")}
-                  className="accent-[#4f8124]"
-                />
-                Male
-              </label>
+            <input
+              type="email"
+              required
+              maxLength={254}
+              autoComplete="email"
+              inputMode="email"
+              placeholder="player@email.com"
+              value={email}
+              disabled={isLoading}
+              aria-invalid={Boolean(
+                fieldErrors.email,
+              )}
+              onChange={(event) => {
+                setEmail(
+                  event.target.value,
+                );
+                clearFieldError("email");
+              }}
+              onBlur={() =>
+                setEmail(
+                  normalizeEmail(email),
+                )
+              }
+              className={`${INPUT_CLASS} ${
+                fieldErrors.email
+                  ? "border-red-400 focus:border-red-500"
+                  : "border-[#d9c99f] focus:border-[#4f8124]"
+              }`}
+            />
 
-              <label className="flex cursor-pointer items-center gap-2 text-[clamp(0.78rem,1vw,0.95rem)] font-semibold text-[#2f1b12]">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="female"
-                  checked={gender === "female"}
-                  onChange={() => setGender("female")}
-                  className="accent-[#4f8124]"
-                />
-                Female
-              </label>
-            </div>
+            <FieldError
+              id="register-email-error"
+              message={fieldErrors.email}
+            />
           </label>
 
-          <div className="grid grid-cols-2 gap-[clamp(0.6rem,1.5vw,1rem)]">
+          <PasswordField
+            id="register-password"
+            label="Password"
+            value={password}
+            placeholder="Create a strong password"
+            autoComplete="new-password"
+            disabled={isLoading}
+            error={fieldErrors.password}
+            onChange={(value) => {
+              setPassword(value);
+              clearFieldError(
+                "password",
+              );
+            }}
+          />
+
+          {password ? (
+            <div className="rounded-[18px] border border-[#e0d1b7] bg-[#fffaf1] p-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-black uppercase tracking-[0.1em] text-[#76583a]">
+                  Password strength
+                </p>
+
+                <span
+                  className={`text-xs font-black capitalize ${
+                    passwordAssessment.strength ===
+                    "strong"
+                      ? "text-[#4f8124]"
+                      : passwordAssessment.strength ===
+                          "fair"
+                        ? "text-amber-700"
+                        : "text-red-600"
+                  }`}
+                >
+                  {
+                    passwordAssessment.strength
+                  }
+                </span>
+              </div>
+
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#e8dcc9]">
+                <div
+                  className={`h-full rounded-full transition-all ${
+                    passwordAssessment.strength ===
+                    "strong"
+                      ? "bg-[#4f8124]"
+                      : passwordAssessment.strength ===
+                          "fair"
+                        ? "bg-amber-500"
+                        : "bg-red-500"
+                  }`}
+                  style={{
+                    width: `${Math.round(
+                      (
+                        passwordAssessment.score /
+                        6
+                      ) * 100,
+                    )}%`,
+                  }}
+                />
+              </div>
+
+              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                <PasswordRequirement
+                  met={
+                    passwordAssessment
+                      .requirements
+                      .hasMinimumLength
+                  }
+                >
+                  8–72 characters
+                </PasswordRequirement>
+
+                <PasswordRequirement
+                  met={
+                    passwordAssessment
+                      .requirements
+                      .hasUppercase
+                  }
+                >
+                  Uppercase letter
+                </PasswordRequirement>
+
+                <PasswordRequirement
+                  met={
+                    passwordAssessment
+                      .requirements
+                      .hasLowercase
+                  }
+                >
+                  Lowercase letter
+                </PasswordRequirement>
+
+                <PasswordRequirement
+                  met={
+                    passwordAssessment
+                      .requirements
+                      .hasNumber
+                  }
+                >
+                  Number
+                </PasswordRequirement>
+
+                <PasswordRequirement
+                  met={
+                    passwordAssessment
+                      .requirements
+                      .hasSymbol
+                  }
+                >
+                  Symbol
+                </PasswordRequirement>
+
+                <PasswordRequirement
+                  met={
+                    passwordAssessment
+                      .requirements
+                      .isWithinMaximumLength
+                  }
+                >
+                  Maximum 72 characters
+                </PasswordRequirement>
+              </ul>
+            </div>
+          ) : null}
+
+          <PasswordField
+            id="register-confirm-password"
+            label="Confirm Password"
+            value={confirmPassword}
+            placeholder="Repeat your password"
+            autoComplete="new-password"
+            disabled={isLoading}
+            error={
+              fieldErrors.confirmPassword
+            }
+            onChange={(value) => {
+              setConfirmPassword(value);
+              clearFieldError(
+                "confirmPassword",
+              );
+            }}
+          />
+
+          {confirmPassword &&
+          password === confirmPassword ? (
+            <p className="flex items-center gap-1.5 text-xs font-bold text-[#4f8124]">
+              <CheckCircle2 size={14} />
+              Passwords match.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {currentStep === "profile" ? (
+        <div className="flex flex-col gap-[clamp(0.8rem,2vw,1.2rem)]">
+          <StepHeader
+            title="Build Your Profile"
+            description="Choose an official avatar and provide the basic information used for your Lifetopia profile."
+          />
+
+          <div className="flex flex-col gap-2">
+            <span className="text-[clamp(0.72rem,0.95vw,0.9rem)] font-bold text-[#2f1b12]">
+              Official Avatar
+            </span>
+
+            <AvatarPicker
+              avatars={playerAvatars}
+              selectedAvatarId={avatarId}
+              onSelectAvatar={(value) => {
+                setAvatarId(value);
+                clearFieldError(
+                  "avatarId",
+                );
+              }}
+            />
+
+            <FieldError
+              id="register-avatar-error"
+              message={
+                fieldErrors.avatarId
+              }
+            />
+          </div>
+
+          <fieldset className="flex flex-col gap-[clamp(0.35rem,0.8vw,0.6rem)]">
+            <legend className="text-[clamp(0.72rem,0.95vw,0.9rem)] font-bold text-[#2f1b12]">
+              Gender
+            </legend>
+
+            <div className="flex items-center gap-[clamp(1rem,2vw,1.5rem)] rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)]">
+              {(
+                [
+                  ["male", "Male"],
+                  ["female", "Female"],
+                ] as const
+              ).map(
+                ([
+                  value,
+                  label,
+                ]) => (
+                  <label
+                    key={value}
+                    className="flex cursor-pointer items-center gap-2 text-[clamp(0.78rem,1vw,0.95rem)] font-semibold text-[#2f1b12]"
+                  >
+                    <input
+                      type="radio"
+                      name="gender"
+                      value={value}
+                      checked={
+                        gender === value
+                      }
+                      disabled={isLoading}
+                      onChange={() => {
+                        setGender(value);
+                        clearFieldError(
+                          "gender",
+                        );
+                      }}
+                      className="accent-[#4f8124]"
+                    />
+
+                    {label}
+                  </label>
+                ),
+              )}
+            </div>
+
+            <FieldError
+              id="register-gender-error"
+              message={fieldErrors.gender}
+            />
+          </fieldset>
+
+          <div className="grid gap-[clamp(0.6rem,1.5vw,1rem)] sm:grid-cols-2">
             <label className="flex flex-col gap-[clamp(0.35rem,0.8vw,0.6rem)]">
               <span className="text-[clamp(0.72rem,0.95vw,0.9rem)] font-bold text-[#2f1b12]">
                 Country
@@ -364,10 +1292,29 @@ export function RegisterForm({ nextUrl = "/dashboard" }: RegisterFormProps) {
 
               <CountryPicker
                 value={country}
-                onChange={(countryCode, selectedCountryName) => {
+                onChange={(
+                  countryCode,
+                  selectedCountryName,
+                ) => {
                   setCountry(countryCode);
-                  setCountryName(selectedCountryName);
+                  setCountryName(
+                    selectedCountryName,
+                  );
+                  clearFieldError(
+                    "countryCode",
+                  );
+                  clearFieldError(
+                    "countryName",
+                  );
                 }}
+              />
+
+              <FieldError
+                id="register-country-error"
+                message={
+                  fieldErrors.countryCode ??
+                  fieldErrors.countryName
+                }
               />
             </label>
 
@@ -379,120 +1326,243 @@ export function RegisterForm({ nextUrl = "/dashboard" }: RegisterFormProps) {
               <input
                 type="date"
                 required
+                autoComplete="bday"
                 value={dateOfBirth}
-                onChange={(event) => setDateOfBirth(event.target.value)}
-                className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)] text-[clamp(0.8rem,1vw,1rem)] text-[#2f1b12] outline-none transition focus:border-[#4f8124]"
+                disabled={isLoading}
+                aria-invalid={Boolean(
+                  fieldErrors.dateOfBirth,
+                )}
+                onChange={(event) => {
+                  setDateOfBirth(
+                    event.target.value,
+                  );
+                  clearFieldError(
+                    "dateOfBirth",
+                  );
+                }}
+                className={`${INPUT_CLASS} ${
+                  fieldErrors.dateOfBirth
+                    ? "border-red-400 focus:border-red-500"
+                    : "border-[#d9c99f] focus:border-[#4f8124]"
+                }`}
+              />
+
+              <FieldError
+                id="register-birth-date-error"
+                message={
+                  fieldErrors.dateOfBirth
+                }
               />
             </label>
           </div>
+
+          {dateOfBirthAssessment?.valid &&
+          dateOfBirthAssessment.value
+            .guardianConsentRequired ? (
+            <div className="flex items-start gap-3 rounded-[18px] border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold leading-6 text-amber-900">
+              <AlertCircle
+                size={18}
+                className="mt-0.5 shrink-0"
+              />
+
+              Users aged 13–17 require
+              parent or guardian approval
+              before interactive features
+              become available.
+            </div>
+          ) : null}
         </div>
       ) : null}
 
-      {currentStep === "security" ? (
+      {currentStep ===
+      "confirmation" ? (
         <div className="flex flex-col gap-[clamp(0.8rem,2vw,1.2rem)]">
-          <div>
-            <h2 className="text-[clamp(1.15rem,2vw,1.7rem)] font-black text-[#2f1b12]">
-              Secure Your Account
-            </h2>
-            <p className="mt-[clamp(0.35rem,0.8vw,0.6rem)] text-[clamp(0.72rem,0.95vw,0.9rem)] leading-[1.6] text-[#7a5635]">
-              Your email will be used for verification, recovery, and important
-              account notifications.
-            </p>
+          <StepHeader
+            title="Confirm Your Account"
+            description="Review your information and accept the current Lifetopia legal documents."
+          />
+
+          <div className="grid gap-3 rounded-[clamp(0.9rem,2vw,1.4rem)] border border-[#d9c99f] bg-[#fff8e8] p-[clamp(0.85rem,2vw,1.25rem)] sm:grid-cols-[auto_minmax(0,1fr)]">
+            <span className="grid size-12 place-items-center rounded-full border border-[#cfe2bd] bg-white text-[#4f8124]">
+              <UserRoundCheck
+                size={22}
+              />
+            </span>
+
+            <div className="min-w-0">
+              <p className="truncate text-base font-black text-[#2f1b12]">
+                {displayName}
+              </p>
+
+              <p className="truncate text-sm font-bold text-[#4f8124]">
+                @{username}
+              </p>
+
+              <p className="mt-1 break-all text-xs font-semibold text-[#76583a]">
+                {email}
+              </p>
+            </div>
           </div>
 
-          <input
-            type="email"
-            required
-            placeholder="player@email.com"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)] text-[clamp(0.8rem,1vw,1rem)] text-[#2f1b12] outline-none transition placeholder:text-[#7a5635]/50 focus:border-[#4f8124]"
-          />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-[18px] border border-[#e0d1b7] bg-white/70 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.1em] text-[#8f7458]">
+                Profile
+              </p>
 
-          <input
-            type="password"
-            required
-            minLength={8}
-            placeholder="Create a strong password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)] text-[clamp(0.8rem,1vw,1rem)] text-[#2f1b12] outline-none transition placeholder:text-[#7a5635]/50 focus:border-[#4f8124]"
-          />
+              <p className="mt-2 text-sm font-bold leading-6 text-[#2f1b12]">
+                {gender === "male"
+                  ? "Male"
+                  : "Female"}{" "}
+                · {countryName || country}
+              </p>
+            </div>
 
-          <input
-            type="password"
-            required
-            minLength={8}
-            placeholder="Confirm your password"
-            value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.target.value)}
-            className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)] text-[clamp(0.8rem,1vw,1rem)] text-[#2f1b12] outline-none transition placeholder:text-[#7a5635]/50 focus:border-[#4f8124]"
-          />
-        </div>
-      ) : null}
+            <div className="rounded-[18px] border border-[#e0d1b7] bg-white/70 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.1em] text-[#8f7458]">
+                Legal version
+              </p>
 
-      {currentStep === "terms" ? (
-        <div className="flex flex-col gap-[clamp(0.8rem,2vw,1.2rem)]">
-          <h2 className="text-[clamp(1.15rem,2vw,1.7rem)] font-black text-[#2f1b12]">
-            Finish Your Registration
-          </h2>
-
-          <div className="rounded-[clamp(0.9rem,2vw,1.4rem)] border border-[#d9c99f] bg-[#fff8e8] p-[clamp(0.8rem,2vw,1.2rem)]">
-            <p className="text-[clamp(0.75rem,1vw,0.95rem)] font-bold text-[#2f1b12]">
-              @{username}
-            </p>
-            <p className="mt-1 text-[clamp(0.68rem,0.9vw,0.85rem)] text-[#7a5635]">
-              {displayName} • {gender === "male" ? "Male" : "Female"} •{" "}
-              {countryName || country}
-            </p>
+              <p className="mt-2 text-sm font-bold leading-6 text-[#2f1b12]">
+                {
+                  LEGAL_DOCUMENTS.terms
+                    .version
+                }
+              </p>
+            </div>
           </div>
 
-          <label className="flex items-start gap-[clamp(0.5rem,1vw,0.75rem)] text-[clamp(0.72rem,0.95vw,0.9rem)] leading-[1.6] text-[#7a5635]">
+          <label className="flex items-start gap-3 rounded-[18px] border border-[#e0d1b7] bg-white/70 p-4 text-sm font-semibold leading-6 text-[#76583a]">
             <input
               type="checkbox"
               checked={agreeTerms}
-              onChange={(event) => setAgreeTerms(event.target.checked)}
-              className="mt-1"
+              disabled={isLoading}
+              onChange={(event) => {
+                setAgreeTerms(
+                  event.target.checked,
+                );
+                clearFieldError(
+                  "termsAccepted",
+                );
+              }}
+              className="mt-1 size-4 accent-[#4f8124]"
             />
+
             <span>
-              I agree to the{" "}
-              <Link href="/terms" className="font-bold text-[#4f8124]">
+              I have read and agree to
+              the{" "}
+              <Link
+                href={
+                  LEGAL_DOCUMENTS.terms
+                    .path
+                }
+                target="_blank"
+                rel="noreferrer"
+                className="font-black text-[#4f8124] underline decoration-[#a9cd81] underline-offset-4"
+              >
                 Terms of Service
-              </Link>
+              </Link>{" "}
+              version{" "}
+              {
+                LEGAL_DOCUMENTS.terms
+                  .version
+              }
               .
             </span>
           </label>
 
-          <label className="flex items-start gap-[clamp(0.5rem,1vw,0.75rem)] text-[clamp(0.72rem,0.95vw,0.9rem)] leading-[1.6] text-[#7a5635]">
+          <FieldError
+            id="register-terms-error"
+            message={
+              fieldErrors.termsAccepted
+            }
+          />
+
+          <label className="flex items-start gap-3 rounded-[18px] border border-[#e0d1b7] bg-white/70 p-4 text-sm font-semibold leading-6 text-[#76583a]">
             <input
               type="checkbox"
               checked={agreePrivacy}
-              onChange={(event) => setAgreePrivacy(event.target.checked)}
-              className="mt-1"
+              disabled={isLoading}
+              onChange={(event) => {
+                setAgreePrivacy(
+                  event.target.checked,
+                );
+                clearFieldError(
+                  "privacyAccepted",
+                );
+              }}
+              className="mt-1 size-4 accent-[#4f8124]"
             />
+
             <span>
-              I agree to the{" "}
-              <Link href="/privacy" className="font-bold text-[#4f8124]">
+              I have read and agree to
+              the{" "}
+              <Link
+                href={
+                  LEGAL_DOCUMENTS.privacy
+                    .path
+                }
+                target="_blank"
+                rel="noreferrer"
+                className="font-black text-[#4f8124] underline decoration-[#a9cd81] underline-offset-4"
+              >
                 Privacy Policy
-              </Link>
+              </Link>{" "}
+              version{" "}
+              {
+                LEGAL_DOCUMENTS.privacy
+                  .version
+              }
               .
             </span>
           </label>
+
+          <FieldError
+            id="register-privacy-error"
+            message={
+              fieldErrors.privacyAccepted
+            }
+          />
+
+          <div className="flex items-start gap-3 rounded-[18px] border border-[#cfe2bd] bg-[#f1f8e9] px-4 py-3 text-sm font-semibold leading-6 text-[#53683a]">
+            <ShieldCheck
+              size={18}
+              className="mt-0.5 shrink-0"
+            />
+
+            Your password and private
+            birth date are not displayed
+            on your public profile.
+          </div>
         </div>
       ) : null}
 
       {message ? (
-        <p className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-[#fff8e8] px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1vw,0.8rem)] text-[clamp(0.7rem,0.95vw,0.9rem)] font-medium text-[#7a5635]">
+        <div
+          role="alert"
+          aria-live="polite"
+          className="flex items-start gap-2 rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-red-300 bg-red-50 px-[clamp(0.75rem,1.5vw,1rem)] py-[clamp(0.6rem,1vw,0.8rem)] text-[clamp(0.7rem,0.95vw,0.9rem)] font-bold leading-6 text-red-700"
+        >
+          <AlertCircle
+            size={17}
+            className="mt-0.5 shrink-0"
+          />
           {message}
-        </p>
+        </div>
       ) : null}
 
       <div className="flex items-center justify-between gap-[clamp(0.7rem,1.5vw,1rem)]">
         {currentStepIndex > 0 ? (
           <button
             type="button"
-            onClick={goToPreviousStep}
-            className="lt-button-secondary"
+            onClick={
+              goToPreviousStep
+            }
+            disabled={
+              isLoading ||
+              isStepChecking
+            }
+            className="lt-button-secondary disabled:pointer-events-none disabled:opacity-60"
           >
             Back
           </button>
@@ -500,13 +1570,24 @@ export function RegisterForm({ nextUrl = "/dashboard" }: RegisterFormProps) {
           <span />
         )}
 
-        {currentStep !== "terms" ? (
+        {currentStep !==
+        "confirmation" ? (
           <button
             type="button"
-            onClick={goToNextStep}
-            className="lt-button-primary"
+            onClick={
+              goToNextStep
+            }
+            disabled={
+              isLoading ||
+              isStepChecking ||
+              usernameStatus ===
+                "checking"
+            }
+            className="lt-button-primary disabled:pointer-events-none disabled:opacity-60"
           >
-            Continue
+            {isStepChecking
+              ? "Checking..."
+              : "Continue"}
           </button>
         ) : (
           <button
@@ -514,7 +1595,9 @@ export function RegisterForm({ nextUrl = "/dashboard" }: RegisterFormProps) {
             disabled={isLoading}
             className="lt-button-primary disabled:pointer-events-none disabled:opacity-60"
           >
-            {isLoading ? "Creating..." : "Create Account"}
+            {isLoading
+              ? "Creating..."
+              : "Create Account"}
           </button>
         )}
       </div>
