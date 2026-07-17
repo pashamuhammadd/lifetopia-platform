@@ -1,32 +1,62 @@
 const visionItems = [
-  "Cozy Life Simulation",
-  "Community First",
-  "Web3 Optional",
-  "Cross Platform",
-  "Global Players",
+  {
+    title: "Cozy Gameplay",
+    description:
+      "A relaxing life-simulation experience that remains enjoyable before any blockchain feature is introduced.",
+  },
+  {
+    title: "Social Community",
+    description:
+      "A world shaped through friendship, discussion, shared activities, and long-term player participation.",
+  },
+  {
+    title: "Optional Ownership",
+    description:
+      "Digital ownership supports the experience without becoming a requirement for ordinary gameplay.",
+  },
+  {
+    title: "Evolving Society",
+    description:
+      "A connected world where identity, creativity, gameplay, and a player-driven economy can grow together.",
+  },
 ];
 
 export function JourneyVision() {
   return (
     <div>
-      <h4 className="text-[clamp(0.7rem,1.8vw,1.5rem)] font-black text-[#244b14]">
-        💡 Original Vision
+      <p className="text-[clamp(0.68rem,0.76vw,0.8rem)] font-black uppercase tracking-[0.09em] text-[#668255]">
+        Original Direction
+      </p>
+
+      <h4 className="mt-1.5 text-[clamp(1rem,1.35vw,1.3rem)] font-black text-[#244b14]">
+        The four pillars behind Lifetopia
       </h4>
 
-      <div className="mt-[clamp(8px,1.6vw,24px)] grid grid-cols-2 gap-[clamp(6px,1vw,16px)]">
-        {visionItems.map((item) => (
-          <div
-            key={item}
-            className="rounded-[clamp(10px,1.6vw,22px)] border border-[#d9c99f] bg-[#fffdf2] p-[clamp(8px,1.4vw,20px)] shadow-sm"
-          >
-            <div className="text-[clamp(0.34rem,0.75vw,0.875rem)] font-black text-[#7a5635]">
-              Focus
-            </div>
-            <div className="mt-[clamp(3px,0.6vw,8px)] text-[clamp(0.52rem,1.5vw,1.5rem)] font-black text-[#4f8124]">
-              {item}
-            </div>
-          </div>
-        ))}
+      <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
+        {visionItems.map(
+          (item, index) => (
+            <article
+              key={item.title}
+              className="rounded-xl border border-[#d9c99f] bg-[#fffdf2] p-3.5 shadow-sm"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#eaf5e2] font-mono text-[0.68rem] font-black text-[#4f8124]">
+                  {String(
+                    index + 1,
+                  ).padStart(2, "0")}
+                </span>
+
+                <h5 className="text-[clamp(0.82rem,0.92vw,0.96rem)] font-black text-[#4f8124]">
+                  {item.title}
+                </h5>
+              </div>
+
+              <p className="mt-2 text-[clamp(0.74rem,0.82vw,0.86rem)] leading-[1.55] text-[#766753]">
+                {item.description}
+              </p>
+            </article>
+          ),
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
-import type { JourneyMilestone } from "@repo/data/journey";
-import { JourneyGrant } from "@/components/home/development-journey/JourneyGrant";
+import type {
+  JourneyMilestone,
+} from "@repo/data/journey";
+
 import { JourneyMedia } from "@/components/home/development-journey/JourneyMedia";
 import { JourneyProgress } from "@/components/home/development-journey/JourneyProgress";
 import { JourneyVision } from "@/components/home/development-journey/JourneyVision";
@@ -8,68 +10,66 @@ type JourneyContentProps = {
   milestone: JourneyMilestone;
 };
 
-export function JourneyContent({ milestone }: JourneyContentProps) {
-  const shouldShowMedia = milestone.media && milestone.media.length > 0;
+export function JourneyContent({
+  milestone,
+}: JourneyContentProps) {
+  const shouldShowMedia =
+    Boolean(milestone.media?.length);
 
   return (
-    <div
+    <article
       key={milestone.id}
-      className="mt-[clamp(16px,2vw,32px)] overflow-hidden rounded-[clamp(16px,2.2vw,34px)] border border-[#d9c99f] bg-white/70 shadow-[0_22px_70px_rgba(88,60,28,0.14)] backdrop-blur-xl animate-[lifetopiaSlideIn_450ms_ease_both]"
+      aria-label={`${milestone.label} development milestone`}
+      className="mt-[clamp(1rem,1.8vw,1.45rem)] overflow-hidden rounded-[clamp(1rem,1.7vw,1.4rem)] border border-[#d9c99f] bg-white/72 shadow-[0_1.2rem_3.5rem_rgba(88,60,28,0.12)] backdrop-blur-xl animate-[lifetopiaSlideIn_450ms_ease_both]"
     >
-      <div className="grid grid-cols-[0.85fr_1.35fr]">
-        <div className="relative border-r border-[#d9c99f] bg-gradient-to-br from-[#fffdf2] to-[#eff8df] p-[clamp(8px,2vw,32px)]">
-          <div className="inline-flex rounded-full border border-[#b8dd87] bg-[#eff8df] px-[clamp(8px,1vw,16px)] py-[clamp(4px,0.55vw,8px)] text-[clamp(0.42rem,0.78vw,0.875rem)] font-black text-[#4f8124]">
+      <div className="grid md:grid-cols-[minmax(15rem,0.78fr)_minmax(0,1.22fr)]">
+        <div className="relative border-b border-[#d9c99f] bg-gradient-to-br from-[#fffdf2] to-[#eff8df] p-[clamp(1rem,2vw,1.5rem)] md:border-b-0 md:border-r">
+          <span className="inline-flex rounded-full border border-[#b8dd87] bg-[#eff8df] px-3 py-1.5 text-[clamp(0.68rem,0.76vw,0.8rem)] font-black text-[#4f8124]">
             {milestone.date}
-          </div>
+          </span>
 
-          <h3 className="mt-[clamp(10px,1.7vw,28px)] text-[clamp(1rem,3vw,3rem)] font-black leading-tight text-[#3a1f12]">
+          <h3 className="mt-3 text-[clamp(1.35rem,2.4vw,2.25rem)] font-black leading-[1.08] tracking-[-0.035em] text-[#3a1f12]">
             {milestone.title}
           </h3>
 
-          <p className="mt-[clamp(8px,1.2vw,20px)] text-[clamp(0.48rem,1vw,1.125rem)] font-semibold leading-[1.55] text-[#6b3c24]">
+          <p className="mt-3 text-[clamp(0.82rem,0.94vw,0.98rem)] font-semibold leading-[1.62] text-[#6b4c37]">
             {milestone.description}
           </p>
 
-          <div className="mt-[clamp(10px,1.8vw,28px)] grid grid-cols-3 gap-[clamp(4px,0.8vw,12px)]">
-            {milestone.stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-[clamp(10px,1.2vw,18px)] border border-[#d9c99f] bg-white/70 p-[clamp(5px,1vw,16px)] text-center shadow-sm"
-              >
-                <div className="text-[clamp(0.34rem,0.65vw,0.75rem)] font-black text-[#7a5635]">
-                  {stat.label}
-                </div>
-                <div className="mt-[clamp(2px,0.45vw,8px)] text-[clamp(0.5rem,1.25vw,1.25rem)] font-black text-[#4f8124]">
-                  {stat.value}
-                </div>
-              </div>
-            ))}
-          </div>
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {milestone.stats.map(
+              (stat) => (
+                <div
+                  key={stat.label}
+                  className="min-w-0 rounded-xl border border-[#d9c99f] bg-white/72 px-2 py-2.5 text-center shadow-sm"
+                >
+                  <p className="truncate text-[clamp(0.62rem,0.7vw,0.74rem)] font-black text-[#806c55]">
+                    {stat.label}
+                  </p>
 
-          {milestone.cta && (
-            <a
-              href={milestone.cta.href}
-              target="_blank"
-              rel="noreferrer"
-              className="lt-button-primary mt-[clamp(10px,1.8vw,28px)] w-full px-[clamp(10px,1.7vw,28px)] py-[clamp(7px,1vw,16px)] text-[clamp(0.5rem,1vw,1.125rem)]"
-            >
-              ↗ {milestone.cta.label}
-            </a>
-          )}
+                  <p className="mt-1 truncate text-[clamp(0.74rem,0.9vw,0.92rem)] font-black text-[#4f8124]">
+                    {stat.value}
+                  </p>
+                </div>
+              ),
+            )}
+          </div>
         </div>
 
-        <div className="p-[clamp(8px,2vw,32px)]">
+        <div className="min-w-0 p-[clamp(1rem,2vw,1.5rem)]">
           {shouldShowMedia ? (
-            <JourneyMedia milestone={milestone} />
-          ) : milestone.id === "grant" ? (
-            <JourneyGrant />
-          ) : milestone.id === "idea" ? (
+            <JourneyMedia
+              milestone={milestone}
+            />
+          ) : milestone.id === "concept" ? (
             <JourneyVision />
           ) : (
-            <JourneyProgress milestone={milestone} />
+            <JourneyProgress
+              milestone={milestone}
+            />
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 }

@@ -1,41 +1,64 @@
+import {
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+} from "lucide-react";
+
 type JourneyNavigationProps = {
   total: number;
   activeIndex: number;
+  isPaused: boolean;
+  isAutoPlayDisabled: boolean;
   onPrevious: () => void;
   onNext: () => void;
   onSelect: (index: number) => void;
+  onTogglePause: () => void;
 };
 
 export function JourneyNavigation({
   total,
   activeIndex,
+  isPaused,
+  isAutoPlayDisabled,
   onPrevious,
   onNext,
   onSelect,
+  onTogglePause,
 }: JourneyNavigationProps) {
   return (
-    <div className="mt-[clamp(12px,1.8vw,28px)] flex items-center justify-center gap-[clamp(7px,1vw,14px)]">
+    <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
       <button
         type="button"
         onClick={onPrevious}
-        className="h-[clamp(24px,2.4vw,36px)] w-[clamp(24px,2.4vw,36px)] rounded-full border border-white/70 bg-white/90 text-[clamp(1rem,1.6vw,1.4rem)] font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105"
+        className="flex size-10 items-center justify-center rounded-full border border-white/80 bg-white/90 text-[#4f8124] shadow-[0_0.5rem_1.4rem_rgba(88,60,28,0.12)] transition hover:-translate-y-0.5 hover:bg-white"
         aria-label="Previous journey milestone"
       >
-        ‹
+        <ChevronLeft className="size-5" />
       </button>
 
-      <div className="flex items-center gap-[clamp(5px,0.6vw,8px)] rounded-full border border-white/70 bg-white/55 px-[clamp(10px,1vw,16px)] py-[clamp(7px,0.8vw,12px)] shadow-[0_8px_22px_rgba(88,60,28,0.12)] backdrop-blur-md">
-        {Array.from({ length: total }).map((_, index) => (
+      <div className="flex min-h-10 items-center gap-2 rounded-full border border-white/80 bg-white/65 px-3 shadow-[0_0.5rem_1.4rem_rgba(88,60,28,0.1)] backdrop-blur-md">
+        {Array.from({
+          length: total,
+        }).map((_, index) => (
           <button
             key={index}
             type="button"
-            onClick={() => onSelect(index)}
-            className={`h-[clamp(5px,0.45vw,8px)] rounded-full transition-all duration-300 ${
-              activeIndex === index
-                ? "w-[clamp(18px,2vw,32px)] bg-[#6fa83a]"
-                : "w-[clamp(5px,0.45vw,8px)] bg-[#d8c59f] hover:bg-[#b8a77d]"
-            }`}
+            onClick={() =>
+              onSelect(index)
+            }
             aria-label={`Go to journey milestone ${index + 1}`}
+            aria-current={
+              activeIndex === index
+                ? "true"
+                : undefined
+            }
+            className={[
+              "h-2 rounded-full transition-all duration-300",
+              activeIndex === index
+                ? "w-7 bg-[#6fa83a]"
+                : "w-2 bg-[#d8c59f] hover:bg-[#aa976d]",
+            ].join(" ")}
           />
         ))}
       </div>
@@ -43,10 +66,41 @@ export function JourneyNavigation({
       <button
         type="button"
         onClick={onNext}
-        className="h-[clamp(24px,2.4vw,36px)] w-[clamp(24px,2.4vw,36px)] rounded-full border border-white/70 bg-white/90 text-[clamp(1rem,1.6vw,1.4rem)] font-black text-[#4f8124] shadow-[0_8px_20px_rgba(88,60,28,0.16)] transition hover:-translate-y-0.5 hover:scale-105"
+        className="flex size-10 items-center justify-center rounded-full border border-white/80 bg-white/90 text-[#4f8124] shadow-[0_0.5rem_1.4rem_rgba(88,60,28,0.12)] transition hover:-translate-y-0.5 hover:bg-white"
         aria-label="Next journey milestone"
       >
-        ›
+        <ChevronRight className="size-5" />
+      </button>
+
+      <button
+        type="button"
+        onClick={onTogglePause}
+        disabled={isAutoPlayDisabled}
+        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[#d5c7aa] bg-[#fffaf0] px-3.5 text-[0.72rem] font-black text-[#675946] shadow-[0_0.5rem_1.4rem_rgba(88,60,28,0.08)] transition hover:-translate-y-0.5 hover:bg-white disabled:pointer-events-none disabled:opacity-55"
+        aria-label={
+          isAutoPlayDisabled
+            ? "Automatic journey movement disabled by reduced-motion preference"
+            : isPaused
+              ? "Resume automatic journey movement"
+              : "Pause automatic journey movement"
+        }
+      >
+        {isAutoPlayDisabled ? (
+          <>
+            <Pause className="size-3.5" />
+            Auto-play off
+          </>
+        ) : isPaused ? (
+          <>
+            <Play className="size-3.5" />
+            Resume
+          </>
+        ) : (
+          <>
+            <Pause className="size-3.5" />
+            Pause
+          </>
+        )}
       </button>
     </div>
   );

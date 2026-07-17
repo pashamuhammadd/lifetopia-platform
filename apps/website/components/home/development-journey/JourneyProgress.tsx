@@ -1,49 +1,126 @@
-import type { JourneyMilestone } from "@repo/data/journey";
+import {
+  CheckCircle2,
+  CircleDashed,
+  LoaderCircle,
+} from "lucide-react";
+
+import type {
+  JourneyChecklistItem,
+  JourneyMilestone,
+} from "@repo/data/journey";
 
 type JourneyProgressProps = {
   milestone: JourneyMilestone;
 };
 
-export function JourneyProgress({ milestone }: JourneyProgressProps) {
-  const checklist = milestone.checklist ?? [];
+function getChecklistPresentation(
+  item: JourneyChecklistItem,
+) {
+  if (item.status === "completed") {
+    return {
+      Icon: CheckCircle2,
+      card: "border-[#c8dfba] bg-[#f2f9ed]",
+      icon: "text-[#5c963f]",
+      label: "Completed",
+      badge:
+        "border-[#c1daaf] bg-[#e9f5e1] text-[#507f3b]",
+    };
+  }
+
+  if (item.status === "active") {
+    return {
+      Icon: LoaderCircle,
+      card: "border-[#e3ca83] bg-[#fff8df]",
+      icon: "text-[#b17c18]",
+      label: "In Progress",
+      badge:
+        "border-[#e4c774] bg-[#fff1c4] text-[#936813]",
+    };
+  }
+
+  return {
+    Icon: CircleDashed,
+    card: "border-[#d9d1c3] bg-[#fbf8f2]",
+    icon: "text-[#92836d]",
+    label: "Planned",
+    badge:
+      "border-[#d8d0c3] bg-[#f1ece4] text-[#7d705e]",
+  };
+}
+
+export function JourneyProgress({
+  milestone,
+}: JourneyProgressProps) {
+  const checklist =
+    milestone.checklist ?? [];
+
+  const isCurrent =
+    milestone.state === "current";
 
   return (
     <div>
-      <h4 className="text-[clamp(0.7rem,1.8vw,1.5rem)] font-black text-[#244b14]">
-        🚧 Current Progress
-      </h4>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-[clamp(0.68rem,0.76vw,0.8rem)] font-black uppercase tracking-[0.09em] text-[#668255]">
+            {isCurrent
+              ? "Current Beta Stage"
+              : "Foundation Delivery"}
+          </p>
 
-      <div className="mt-[clamp(8px,1.6vw,24px)] rounded-[clamp(14px,1.8vw,26px)] border border-[#d9c99f] bg-[#fffdf2] p-[clamp(10px,1.8vw,24px)]">
-        <div className="flex items-end justify-between">
-          <div>
-            <div className="text-[clamp(0.4rem,0.8vw,0.875rem)] font-black text-[#7a5635]">
-              {milestone.label}
-            </div>
-            <div className="mt-[clamp(2px,0.4vw,4px)] text-[clamp(1rem,3vw,2.25rem)] font-black text-[#4f8124]">
-              In Progress
-            </div>
-          </div>
-
-          <div className="text-[clamp(1.5rem,3.5vw,3rem)]">
-            {milestone.icon}
-          </div>
+          <h4 className="mt-1.5 text-[clamp(1rem,1.35vw,1.3rem)] font-black text-[#244b14]">
+            {isCurrent
+              ? "Current development focus"
+              : "Delivered product foundation"}
+          </h4>
         </div>
 
-        <div className="mt-[clamp(10px,1.5vw,24px)] h-[clamp(7px,1vw,16px)] overflow-hidden rounded-full bg-[#eadfbd]">
-          <div className="h-full w-[72%] rounded-full bg-[#6fa83a]" />
-        </div>
-
-        <div className="mt-[clamp(10px,1.5vw,24px)] grid gap-[clamp(5px,0.8vw,12px)]">
-          {checklist.map((item, index) => (
-            <div
-              key={item}
-              className="rounded-[clamp(10px,1.2vw,18px)] border border-[#d9c99f] bg-white/70 px-[clamp(8px,1.3vw,20px)] py-[clamp(6px,1vw,16px)] text-[clamp(0.42rem,0.95vw,1rem)] font-black text-[#4f8124]"
-            >
-              {index < 3 ? "✓" : "🚧"} {item}
-            </div>
-          ))}
-        </div>
+        <span
+          className={[
+            "rounded-full border px-3 py-1.5 text-[clamp(0.66rem,0.74vw,0.78rem)] font-black",
+            isCurrent
+              ? "border-[#e0c476] bg-[#fff2c9] text-[#946813]"
+              : "border-[#c4ddaF] bg-[#edf7e7] text-[#527d40]",
+          ].join(" ")}
+        >
+          {milestone.status}
+        </span>
       </div>
+
+      <div className="mt-4 grid gap-2">
+        {checklist.map((item) => {
+          const presentation =
+            getChecklistPresentation(item);
+
+          const Icon =
+            presentation.Icon;
+
+          return (
+            <div
+              key={item.label}
+              className={`flex items-center gap-3 rounded-xl border px-3.5 py-3 ${presentation.card}`}
+            >
+              <Icon
+                className={`size-5 shrink-0 ${presentation.icon}`}
+              />
+
+              <p className="min-w-0 flex-1 text-[clamp(0.78rem,0.88vw,0.92rem)] font-black leading-[1.4] text-[#4c4033]">
+                {item.label}
+              </p>
+
+              <span
+                className={`hidden shrink-0 rounded-full border px-2.5 py-1 text-[0.64rem] font-black sm:inline-flex ${presentation.badge}`}
+              >
+                {presentation.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="mt-3 text-[clamp(0.7rem,0.78vw,0.82rem)] leading-[1.5] text-[#81725f]">
+        Detailed future deliverables are shown
+        separately in the Roadmap section.
+      </p>
     </div>
   );
 }
