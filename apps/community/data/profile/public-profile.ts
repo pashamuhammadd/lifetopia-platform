@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import { createClient } from "@repo/lib/supabase/server";
 
 export type PublicProfileData = {
@@ -19,13 +21,17 @@ export type PublicProfilePost = {
 };
 
 function formatRole(role: string) {
+  if (role === "founder") return "World Founder";
   if (role === "admin") return "World Creator";
   if (role === "developer") return "World Builder";
   if (role === "moderator") return "Guardian";
+  if (role === "artist") return "World Artist";
+  if (role === "alpha_tester") return "Alpha Pioneer";
+  if (role === "beta_tester") return "Beta Pioneer";
   return "Lifetopian";
 }
 
-export async function getPublicProfile(username: string) {
+export const getPublicProfile = cache(async (username: string) => {
   const supabase = await createClient();
 
   const { data: profile, error } = await supabase
@@ -53,8 +59,8 @@ export async function getPublicProfile(username: string) {
       year: "numeric",
     }),
     postsCount: count ?? 0,
-  };
-}
+  } satisfies PublicProfileData;
+});
 
 export async function getPublicProfilePosts(profileId: string) {
   const supabase = await createClient();
@@ -65,7 +71,7 @@ export async function getPublicProfilePosts(profileId: string) {
     .eq("author_id", profileId)
     .order("created_at", { ascending: false });
 
-  if (error) return [];
+  if (error || !data) return [];
 
   return data.map((post) => ({
     id: post.id,
@@ -75,5 +81,5 @@ export async function getPublicProfilePosts(profileId: string) {
       month: "short",
       day: "numeric",
     }),
-  }));
+  })) satisfies PublicProfilePost[];
 }

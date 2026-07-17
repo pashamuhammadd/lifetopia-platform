@@ -1,21 +1,21 @@
-import { PageHeader } from "@/components/ui/PageHeader";
-import { CompletedQuestSection } from "./CompletedQuestSection";
-import { DailyQuestSection } from "./DailyQuestSection";
-import { SeasonQuestSection } from "./SeasonQuestSection";
-import { WeeklyQuestSection } from "./WeeklyQuestSection";
+import { Sparkles } from "lucide-react";
+
+import { FeaturePreparation } from "@/components/system/FeaturePreparation";
 
 export function Quest() {
   return (
-    <div className="space-y-5 pb-24 md:pb-0">
-      <PageHeader
-        title="Quest"
-        description="Complete community quests, earn Harmony Points, and grow your Lifetopia identity."
-      />
-
-      <SeasonQuestSection />
-      <DailyQuestSection />
-      <WeeklyQuestSection />
-      <CompletedQuestSection />
-    </div>
+    <FeaturePreparation
+      title="Community Quests"
+      description="Complete meaningful activities and grow your Harmony progression."
+      eyebrow="Harmony Progression"
+      icon={Sparkles}
+      note="Quest progress and Harmony rewards must be calculated from verified activity. Demonstration progress, fake completed quests, and claim buttons have been removed until the real ledger is connected."
+      features={[
+        "Daily login and meaningful participation quests",
+        "Anti-spam rules for posts and comments",
+        "A permanent Harmony reward transaction ledger",
+        "Community and selected game-activity synchronization",
+      ]}
+    />
   );
 }

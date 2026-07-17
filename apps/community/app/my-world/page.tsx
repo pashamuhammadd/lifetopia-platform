@@ -1,33 +1,27 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
 import { AppLayout } from "@/components/layout/AppLayout";
 import { MyWorld } from "@/components/my-world/MyWorld";
-import { getCurrentProfile } from "@/data/profile/current-profile";
+import { requireCurrentProfile } from "@/data/auth/require-current-profile";
 
-const mainAppUrl =
-  process.env.NEXT_PUBLIC_MAIN_APP_URL ?? "https://lifetopiaworld.io";
-
-async function getCurrentUrl(pathname: string) {
-  const headersList = await headers();
-
-  const host = headersList.get("host") ?? "community.lifetopiaworld.io";
-  const protocol = headersList.get("x-forwarded-proto") ?? "http";
-
-  return `${protocol}://${host}${pathname}`;
-}
+export const metadata: Metadata = {
+  title: "My World",
+  description: "Your private Lifetopia account dashboard.",
+  alternates: {
+    canonical: "/my-world",
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function MyWorldPage() {
-  const profile = await getCurrentProfile();
-
-  if (!profile) {
-    const nextUrl = await getCurrentUrl("/my-world");
-    redirect(`${mainAppUrl}/login?next=${encodeURIComponent(nextUrl)}`);
-  }
+  const profile = await requireCurrentProfile("/my-world");
 
   return (
     <AppLayout showRightSidebar={false} showTopNavbar={false}>
-      <MyWorld />
+      <MyWorld profile={profile} />
     </AppLayout>
   );
 }

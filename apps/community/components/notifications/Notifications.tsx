@@ -1,29 +1,21 @@
 import { Bell } from "lucide-react";
 
-import { PageHeader } from "@/components/ui/PageHeader";
-import { SectionCard } from "@/components/ui/SectionCard";
-import { notifications } from "@/data/notifications";
-import { NotificationItem } from "./NotificationItem";
+import { FeaturePreparation } from "@/components/system/FeaturePreparation";
 
 export function Notifications() {
   return (
-    <div className="space-y-5 pb-24 md:pb-0">
-      <PageHeader
-        title="Notifications"
-        description="Track likes, comments, follows, quest rewards, and announcements."
-      />
-
-      <SectionCard
-        title="Recent Notifications"
-        description="Everything happening around your Lifetopia identity."
-        icon={Bell}
-      >
-        <div className="space-y-3">
-          {notifications.map((notification) => (
-            <NotificationItem key={notification.id} {...notification} />
-          ))}
-        </div>
-      </SectionCard>
-    </div>
+    <FeaturePreparation
+      title="Notifications"
+      description="Important updates connected to your Lifetopia identity."
+      eyebrow="Version One"
+      icon={Bell}
+      note="The first real notification release will focus only on official announcements and comment replies. Demonstration likes, follows, quest rewards, and unread counters have been removed."
+      features={[
+        "Official Lifetopia announcements",
+        "Replies to your community comments",
+        "Accurate read and unread state",
+        "Notification preferences after the core feed is stable",
+      ]}
+    />
   );
 }

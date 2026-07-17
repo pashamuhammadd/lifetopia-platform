@@ -1,25 +1,21 @@
-import { PageHeader } from "@/components/ui/PageHeader";
-import { GuildActivity } from "./GuildActivity";
-import { GuildHero } from "./GuildHero";
-import { GuildLeaderboard } from "./GuildLeaderboard";
-import { GuildMembers } from "./GuildMembers";
+import { Shield } from "lucide-react";
+
+import { FeaturePreparation } from "@/components/system/FeaturePreparation";
 
 export function Guild() {
   return (
-    <div className="space-y-5 pb-24 md:pb-0">
-      <PageHeader
-        title="Guild"
-        description="Join cozy guilds, complete quests together, and grow your Lifetopia community."
-      />
-
-      <GuildHero />
-
-      <div className="grid gap-5 lg:grid-cols-2">
-        <GuildMembers />
-        <GuildActivity />
-      </div>
-
-      <GuildLeaderboard />
-    </div>
+    <FeaturePreparation
+      title="Guilds"
+      description="Shared groups that will connect Lifetopia Community with the game world."
+      eyebrow="Community + Game"
+      icon={Shield}
+      note="Guilds will be implemented with real membership, roles, join requests, shared activity, and game synchronization. No fictional guild statistics are shown while that backend is being prepared."
+      features={[
+        "Public guild profiles and real member lists",
+        "Guild roles and join-request management",
+        "Community and game activity synchronization",
+        "Guild quests after the Harmony system is stable",
+      ]}
+    />
   );
 }
