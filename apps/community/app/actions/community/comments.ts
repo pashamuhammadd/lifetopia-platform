@@ -11,11 +11,18 @@ export type CommunityCommentActionState = {
   message: string;
 };
 
+function revalidateCommunityPost(postId: string) {
+  revalidatePath("/");
+  revalidatePath(`/post/${postId}`);
+}
+
 export async function createCommunityComment(
   _previousState: CommunityCommentActionState,
   formData: FormData,
 ): Promise<CommunityCommentActionState> {
   const postId = String(formData.get("postId") ?? "").trim();
+  const parentCommentId =
+    String(formData.get("parentCommentId") ?? "").trim() || null;
   const content = String(formData.get("content") ?? "").trim();
 
   if (!postId) {
@@ -52,9 +59,29 @@ export async function createCommunityComment(
     };
   }
 
+  if (parentCommentId) {
+    const { data: parentComment, error: parentError } = await supabase
+      .from("community_comments")
+      .select("id, post_id")
+      .eq("id", parentCommentId)
+      .maybeSingle();
+
+    if (
+      parentError ||
+      !parentComment ||
+      parentComment.post_id !== postId
+    ) {
+      return {
+        success: false,
+        message: "This reply target is no longer available.",
+      };
+    }
+  }
+
   const { error } = await supabase.from("community_comments").insert({
     post_id: postId,
     author_id: user.id,
+    parent_comment_id: parentCommentId,
     content,
   });
 
@@ -67,10 +94,10 @@ export async function createCommunityComment(
     };
   }
 
-  revalidatePath("/");
+  revalidateCommunityPost(postId);
 
   return {
     success: true,
-    message: "Comment published.",
+    message: parentCommentId ? "Reply published." : "Comment published.",
   };
 }

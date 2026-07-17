@@ -10,6 +10,7 @@ export type CommunityPost = {
   content: string;
   category: PostCategory;
   createdAt: string;
+  createdAtIso: string;
   isOwner: boolean;
   isLiked: boolean;
   isBookmarked: boolean;
@@ -31,5 +32,6 @@ export type CommunityFeedResult = {
   page: number;
   totalPages: number;
   totalPosts: number;
+  activeTag: string | null;
   error: string | null;
 };

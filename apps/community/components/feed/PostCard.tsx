@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { RichCommunityText } from "@/components/community/RichCommunityText";
 import { CommentsSection } from "@/components/post/CommentsSection";
 import { PostActions } from "@/components/post/PostActions";
 import { PostMenu } from "@/components/post/PostMenu";
@@ -38,9 +39,7 @@ export function PostCard({
             className="shrink-0"
           >
             <Avatar
-              initials={post.author.displayName.charAt(
-                0,
-              )}
+              initials={post.author.displayName.charAt(0)}
               src={post.author.avatarSrc}
               alt={post.author.displayName}
             />
@@ -64,7 +63,10 @@ export function PostCard({
                     @{post.author.username}
                   </Link>
 
-                  <time className="text-xs font-semibold text-[#9b6635]">
+                  <time
+                    dateTime={post.createdAtIso}
+                    className="text-xs font-semibold text-[#9b6635]"
+                  >
                     · {post.createdAt}
                   </time>
                 </div>
@@ -93,8 +95,8 @@ export function PostCard({
               />
             </div>
 
-            <p className="mt-4 whitespace-pre-line break-words text-[15px] font-semibold leading-7 text-[#2f2418]">
-              {post.content}
+            <p className="mt-4 whitespace-pre-wrap break-words text-[15px] font-semibold leading-7 text-[#2f2418]">
+              <RichCommunityText content={post.content} />
             </p>
 
             <PostActions
@@ -102,9 +104,7 @@ export function PostCard({
               likes={post.likes}
               comments={post.comments}
               isLiked={post.isLiked}
-              isBookmarked={
-                post.isBookmarked
-              }
+              isBookmarked={post.isBookmarked}
             />
 
             <CommentsSection

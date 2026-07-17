@@ -7,6 +7,7 @@ import Link from "next/link";
 type FeedPaginationProps = {
   page: number;
   totalPages: number;
+  tag?: string | null;
 };
 
 function getVisiblePages(
@@ -29,9 +30,29 @@ function getVisiblePages(
     .sort((a, b) => a - b);
 }
 
+function buildHref(
+  page: number,
+  tag?: string | null,
+) {
+  const params = new URLSearchParams();
+
+  if (page > 1) {
+    params.set("page", String(page));
+  }
+
+  if (tag) {
+    params.set("tag", tag);
+  }
+
+  const query = params.toString();
+
+  return query ? `/?${query}` : "/";
+}
+
 export function FeedPagination({
   page,
   totalPages,
+  tag,
 }: FeedPaginationProps) {
   if (totalPages <= 1) {
     return null;
@@ -48,10 +69,10 @@ export function FeedPagination({
       className="mt-5 flex flex-wrap items-center justify-center gap-2 pb-24 md:pb-2"
     >
       <Link
-        href={`/?page=${Math.max(
-          1,
-          page - 1,
-        )}`}
+        href={buildHref(
+          Math.max(1, page - 1),
+          tag,
+        )}
         aria-disabled={page === 1}
         className={`inline-flex min-h-10 items-center gap-1 rounded-full border border-[#e2d2b4] bg-white px-3 text-sm font-black text-[#6f5b43] transition hover:border-[#9ec879] hover:text-[#4f8124] ${
           page === 1
@@ -83,7 +104,7 @@ export function FeedPagination({
               ) : null}
 
               <Link
-                href={`/?page=${item}`}
+                href={buildHref(item, tag)}
                 aria-current={
                   item === page
                     ? "page"
@@ -103,10 +124,10 @@ export function FeedPagination({
       )}
 
       <Link
-        href={`/?page=${Math.min(
-          totalPages,
-          page + 1,
-        )}`}
+        href={buildHref(
+          Math.min(totalPages, page + 1),
+          tag,
+        )}
         aria-disabled={
           page === totalPages
         }

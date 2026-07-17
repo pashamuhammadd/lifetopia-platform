@@ -2,12 +2,14 @@
 
 import {
   Bookmark,
+  Check,
   Heart,
   MessageCircle,
   Share2,
 } from "lucide-react";
 import {
   useOptimistic,
+  useState,
   useTransition,
 } from "react";
 
@@ -40,6 +42,10 @@ export function PostActions({
     requestAuth,
   } = useGuestAuth();
 
+  const [shareStatus, setShareStatus] = useState<
+    "idle" | "copied"
+  >("idle");
+
   const [
     isLikePending,
     startLikeTransition,
@@ -69,10 +75,7 @@ export function PostActions({
       return {
         active: !state.active,
         count: state.active
-          ? Math.max(
-              0,
-              (state.count ?? 0) - 1,
-            )
+          ? Math.max(0, (state.count ?? 0) - 1)
           : (state.count ?? 0) + 1,
       };
     },
@@ -124,10 +127,9 @@ export function PostActions({
       return;
     }
 
-    const commentInput =
-      document.getElementById(
-        `comment-input-${postId}`,
-      );
+    const commentInput = document.getElementById(
+      `comment-input-${postId}`,
+    );
 
     commentInput?.scrollIntoView({
       behavior: "smooth",
@@ -146,38 +148,37 @@ export function PostActions({
 
     startBookmarkTransition(async () => {
       toggleOptimisticBookmark("toggle");
-      await toggleCommunityBookmark(
-        postId,
-      );
+      await toggleCommunityBookmark(postId);
     });
   }
 
   async function handleShare() {
-    const postUrl = `${window.location.origin}${window.location.pathname}#post-${postId}`;
+    const postUrl = `${window.location.origin}/post/${postId}`;
 
     try {
       if (navigator.share) {
         await navigator.share({
-          title:
-            "Lifetopia Community Post",
-          text:
-            "View this post on Lifetopia Community.",
+          title: "Lifetopia Community Post",
+          text: "View this post on Lifetopia Community.",
           url: postUrl,
         });
 
         return;
       }
 
-      await navigator.clipboard.writeText(
-        postUrl,
-      );
+      await navigator.clipboard.writeText(postUrl);
+      setShareStatus("copied");
+
+      window.setTimeout(() => {
+        setShareStatus("idle");
+      }, 1800);
     } catch {
-      // Sharing may be cancelled by the user.
+      // Native sharing can be cancelled by the user.
     }
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-5 border-t border-[#f2e7c8] py-4 sm:gap-6">
+    <div className="flex flex-wrap items-center gap-4 border-t border-[#f2e7c8] py-4 sm:gap-6">
       <button
         type="button"
         onClick={handleLike}
@@ -198,9 +199,7 @@ export function PostActions({
           }
         />
 
-        <span>
-          {optimisticLike.count ?? 0}
-        </span>
+        <span>{optimisticLike.count ?? 0}</span>
       </button>
 
       <button
@@ -246,8 +245,17 @@ export function PostActions({
         aria-label="Share post"
         className="flex min-h-10 items-center gap-2 text-sm font-black text-[#7a5635] transition hover:text-[#4f8124]"
       >
-        <Share2 size={18} />
-        <span>Share</span>
+        {shareStatus === "copied" ? (
+          <Check size={18} />
+        ) : (
+          <Share2 size={18} />
+        )}
+
+        <span>
+          {shareStatus === "copied"
+            ? "Copied"
+            : "Share"}
+        </span>
       </button>
     </div>
   );

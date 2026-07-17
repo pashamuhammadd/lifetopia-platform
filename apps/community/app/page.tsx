@@ -12,18 +12,23 @@ export const metadata: Metadata = {
 type CommunityHomePageProps = {
   searchParams: Promise<{
     page?: string | string[];
+    tag?: string | string[];
   }>;
 };
+
+function firstValue(
+  value: string | string[] | undefined,
+) {
+  return Array.isArray(value)
+    ? value[0]
+    : value;
+}
 
 function parsePage(
   value: string | string[] | undefined,
 ) {
-  const rawValue = Array.isArray(value)
-    ? value[0]
-    : value;
-
   const parsed = Number.parseInt(
-    rawValue ?? "1",
+    firstValue(value) ?? "1",
     10,
   );
 
@@ -37,10 +42,14 @@ export default async function CommunityHomePage({
 }: CommunityHomePageProps) {
   const params = await searchParams;
   const page = parsePage(params.page);
+  const tag = firstValue(params.tag);
 
   return (
     <AppLayout>
-      <Feed page={page} />
+      <Feed
+        page={page}
+        tag={tag}
+      />
     </AppLayout>
   );
 }
