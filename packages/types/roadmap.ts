@@ -1,7 +1,14 @@
+export type RoadmapStatus =
+  | "Completed"
+  | "Current"
+  | "Planned"
+  | "Future";
+
 export type RoadmapItem = {
+  id: string;
   phase: string;
   title: string;
-  status: "Completed" | "In Progress" | "Next" | "Future";
+  status: RoadmapStatus;
   description: string;
   items: string[];
 };
