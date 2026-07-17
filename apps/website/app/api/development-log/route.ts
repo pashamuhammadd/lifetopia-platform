@@ -1,10 +1,24 @@
+import {
+  timingSafeEqual,
+} from "node:crypto";
+
 import { NextResponse } from "next/server";
+
 import { createAdminClient } from "@repo/lib/supabase/admin";
 import {
   resolveDevelopmentLogAppArea,
   resolveDevelopmentLogCategory,
 } from "@repo/services/development-log";
-import type { CreateDevelopmentLogInput } from "@repo/types/development-log";
+import type {
+  CreateDevelopmentLogInput,
+} from "@repo/types/development-log";
+
+export const runtime = "nodejs";
+
+const MAX_COMMITS_PER_REQUEST = 50;
+const MAX_CHANGED_FILES_PER_COMMIT = 250;
+const MAX_COMMIT_MESSAGE_LENGTH = 500;
+const MAX_FILE_PATH_LENGTH = 500;
 
 type DevelopmentLogRequestBody = {
   repo?: string;
@@ -21,109 +35,378 @@ type DevelopmentLogRequestBody = {
 };
 
 function getRequestSecret(request: Request) {
-  return request.headers.get("x-lifetopia-devlog-secret");
+  return request.headers.get(
+    "x-lifetopia-devlog-secret",
+  );
 }
 
 function isValidSecret(request: Request) {
-  const expectedSecret = process.env.DEVELOPMENT_LOG_SECRET;
-  const requestSecret = getRequestSecret(request);
+  const expectedSecret =
+    process.env.DEVELOPMENT_LOG_SECRET;
 
-  return Boolean(expectedSecret && requestSecret && requestSecret === expectedSecret);
+  const requestSecret =
+    getRequestSecret(request);
+
+  if (!expectedSecret || !requestSecret) {
+    return false;
+  }
+
+  const expectedBuffer =
+    Buffer.from(expectedSecret);
+
+  const requestBuffer =
+    Buffer.from(requestSecret);
+
+  if (
+    expectedBuffer.length !==
+    requestBuffer.length
+  ) {
+    return false;
+  }
+
+  return timingSafeEqual(
+    expectedBuffer,
+    requestBuffer,
+  );
 }
 
-function normalizeChangedFiles(changedFiles: unknown): string[] {
-  if (!Array.isArray(changedFiles)) return [];
+function normalizeRequiredString(
+  value: unknown,
+  maximumLength: number,
+) {
+  if (typeof value !== "string") {
+    return null;
+  }
 
-  return changedFiles.filter(
-    (file): file is string => typeof file === "string" && file.trim().length > 0,
+  const normalized = value.trim();
+
+  if (
+    !normalized ||
+    normalized.length > maximumLength
+  ) {
+    return null;
+  }
+
+  return normalized;
+}
+
+function normalizeOptionalString(
+  value: unknown,
+  maximumLength: number,
+) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return null;
+  }
+
+  return normalizeRequiredString(
+    value,
+    maximumLength,
+  );
+}
+
+function normalizeCommitSha(value: unknown) {
+  const commitSha =
+    normalizeRequiredString(value, 64);
+
+  if (
+    !commitSha ||
+    !/^[a-f0-9]{7,64}$/i.test(commitSha)
+  ) {
+    return null;
+  }
+
+  return commitSha;
+}
+
+function normalizePushedAt(value: unknown) {
+  const pushedAt =
+    normalizeRequiredString(value, 100);
+
+  if (!pushedAt) {
+    return null;
+  }
+
+  const parsedDate = new Date(pushedAt);
+
+  if (
+    !Number.isFinite(
+      parsedDate.getTime(),
+    )
+  ) {
+    return null;
+  }
+
+  return parsedDate.toISOString();
+}
+
+function normalizeCommitUrl(value: unknown) {
+  const commitUrl =
+    normalizeOptionalString(value, 500);
+
+  if (!commitUrl) {
+    return null;
+  }
+
+  try {
+    const parsedUrl = new URL(commitUrl);
+
+    if (
+      parsedUrl.protocol !== "https:" ||
+      parsedUrl.hostname !== "github.com"
+    ) {
+      return null;
+    }
+
+    return parsedUrl.toString();
+  } catch {
+    return null;
+  }
+}
+
+function normalizeChangedFiles(
+  changedFiles: unknown,
+) {
+  if (!Array.isArray(changedFiles)) {
+    return [];
+  }
+
+  return Array.from(
+    new Set(
+      changedFiles
+        .slice(
+          0,
+          MAX_CHANGED_FILES_PER_COMMIT,
+        )
+        .map((file) =>
+          normalizeRequiredString(
+            file,
+            MAX_FILE_PATH_LENGTH,
+          ),
+        )
+        .filter(
+          (file): file is string =>
+            Boolean(file),
+        ),
+    ),
   );
 }
 
 function normalizeCommitInput(
   repo: string,
   branch: string,
-  commit: NonNullable<DevelopmentLogRequestBody["commits"]>[number],
+  commit: NonNullable<
+    DevelopmentLogRequestBody["commits"]
+  >[number],
 ): CreateDevelopmentLogInput | null {
-  if (!commit.commit_sha || !commit.commit_message || !commit.pushed_at) {
+  const commitSha =
+    normalizeCommitSha(commit.commit_sha);
+
+  const commitMessage =
+    normalizeRequiredString(
+      commit.commit_message,
+      MAX_COMMIT_MESSAGE_LENGTH,
+    );
+
+  const pushedAt =
+    normalizePushedAt(commit.pushed_at);
+
+  if (
+    !commitSha ||
+    !commitMessage ||
+    !pushedAt
+  ) {
     return null;
   }
 
-  const changedFiles = normalizeChangedFiles(commit.changed_files);
+  const changedFiles =
+    normalizeChangedFiles(
+      commit.changed_files,
+    );
 
   return {
     repo,
     branch,
-    commit_sha: commit.commit_sha,
-    commit_message: commit.commit_message,
-    commit_url: commit.commit_url ?? null,
-    author_name: commit.author_name ?? null,
-    author_username: commit.author_username ?? null,
-    app_area: resolveDevelopmentLogAppArea(changedFiles),
-    category: resolveDevelopmentLogCategory(commit.commit_message),
+    commit_sha: commitSha,
+    commit_message: commitMessage,
+    commit_url: normalizeCommitUrl(
+      commit.commit_url,
+    ),
+    author_name: normalizeOptionalString(
+      commit.author_name,
+      150,
+    ),
+    author_username:
+      normalizeOptionalString(
+        commit.author_username,
+        100,
+      ),
+    app_area:
+      resolveDevelopmentLogAppArea(
+        changedFiles,
+      ),
+    category:
+      resolveDevelopmentLogCategory(
+        commitMessage,
+      ),
     changed_files: changedFiles,
-    pushed_at: commit.pushed_at,
+    pushed_at: pushedAt,
   };
 }
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+) {
   if (!isValidSecret(request)) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    return NextResponse.json(
+      {
+        error: "Unauthorized.",
+      },
+      {
+        status: 401,
+      },
+    );
   }
 
   let body: DevelopmentLogRequestBody;
 
   try {
-    body = (await request.json()) as DevelopmentLogRequestBody;
+    body =
+      (await request.json()) as DevelopmentLogRequestBody;
   } catch {
     return NextResponse.json(
-      { error: "Invalid request body." },
-      { status: 400 },
+      {
+        error: "Invalid request body.",
+      },
+      {
+        status: 400,
+      },
     );
   }
 
-  const repo = body.repo?.trim();
-  const branch = body.branch?.trim() || "main";
+  const repo =
+    normalizeRequiredString(
+      body.repo,
+      200,
+    );
+
+  const branch =
+    normalizeOptionalString(
+      body.branch,
+      200,
+    ) ?? "main";
 
   if (!repo) {
     return NextResponse.json(
-      { error: "Repository name is required." },
-      { status: 400 },
+      {
+        error:
+          "Repository name is required.",
+      },
+      {
+        status: 400,
+      },
     );
   }
 
   if (!body.commits?.length) {
     return NextResponse.json(
-      { error: "No commits provided." },
-      { status: 400 },
+      {
+        error: "No commits provided.",
+      },
+      {
+        status: 400,
+      },
     );
   }
 
-  const logs = body.commits
-    .map((commit) => normalizeCommitInput(repo, branch, commit))
-    .filter((commit): commit is CreateDevelopmentLogInput => Boolean(commit));
+  const receivedCommitCount =
+    body.commits.length;
+
+  const commitsToProcess =
+    body.commits.slice(
+      0,
+      MAX_COMMITS_PER_REQUEST,
+    );
+
+  const logs = commitsToProcess
+    .map((commit) =>
+      normalizeCommitInput(
+        repo,
+        branch,
+        commit,
+      ),
+    )
+    .filter(
+      (
+        commit,
+      ): commit is CreateDevelopmentLogInput =>
+        Boolean(commit),
+    );
 
   if (!logs.length) {
     return NextResponse.json(
-      { error: "No valid commits provided." },
-      { status: 400 },
+      {
+        error:
+          "No valid commits provided.",
+      },
+      {
+        status: 400,
+      },
     );
   }
 
-  const supabase = createAdminClient();
+  try {
+    const supabase =
+      createAdminClient();
 
-  const { error } = await supabase.from("development_logs").upsert(logs, {
-    onConflict: "repo,commit_sha",
-  });
+    const { error } = await supabase
+      .from("development_logs")
+      .upsert(logs, {
+        onConflict: "repo,commit_sha",
+      });
 
-  if (error) {
+    if (error) {
+      console.error(
+        "[development-log] Upsert failed:",
+        error.message,
+      );
+
+      return NextResponse.json(
+        {
+          error:
+            "Failed to save development logs.",
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      received: receivedCommitCount,
+      processed: commitsToProcess.length,
+      saved: logs.length,
+      truncated:
+        receivedCommitCount >
+        MAX_COMMITS_PER_REQUEST,
+    });
+  } catch (error) {
+    console.error(
+      "[development-log] Unexpected API error:",
+      error,
+    );
+
     return NextResponse.json(
-      { error: "Failed to save development logs." },
-      { status: 500 },
+      {
+        error:
+          "Failed to save development logs.",
+      },
+      {
+        status: 500,
+      },
     );
   }
-
-  return NextResponse.json({
-    success: true,
-    inserted: logs.length,
-  });
 }

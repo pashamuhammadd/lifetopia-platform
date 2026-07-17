@@ -1,5 +1,15 @@
+import {
+  ExternalLink,
+  GitBranch,
+  TerminalSquare,
+} from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
+
 import { createClient } from "@repo/lib/supabase/server";
+
+const GITHUB_REPOSITORY_URL =
+  "https://github.com/pashamuhammadd/lifetopia-platform";
 
 type DevelopmentLogRow = {
   id: string;
@@ -15,27 +25,71 @@ type DevelopmentLogRow = {
   pushed_at: string;
 };
 
+type DevelopmentLogResult =
+  | {
+      status: "ready";
+      logs: DevelopmentLogRow[];
+    }
+  | {
+      status: "empty" | "error";
+      logs: [];
+    };
+
 function formatRelativeTime(dateString: string) {
   const pushedAt = new Date(dateString).getTime();
-  const now = Date.now();
-  const diffInSeconds = Math.max(0, Math.floor((now - pushedAt) / 1000));
 
-  if (diffInSeconds < 60) return "just now";
+  if (!Number.isFinite(pushedAt)) {
+    return "date unavailable";
+  }
 
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+  const differenceInSeconds = Math.max(
+    0,
+    Math.floor((Date.now() - pushedAt) / 1000),
+  );
 
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) return `${diffInHours}h ago`;
+  if (differenceInSeconds < 60) {
+    return "just now";
+  }
 
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 30) return `${diffInDays}d ago`;
+  const differenceInMinutes = Math.floor(
+    differenceInSeconds / 60,
+  );
+
+  if (differenceInMinutes < 60) {
+    return `${differenceInMinutes}m ago`;
+  }
+
+  const differenceInHours = Math.floor(
+    differenceInMinutes / 60,
+  );
+
+  if (differenceInHours < 24) {
+    return `${differenceInHours}h ago`;
+  }
+
+  const differenceInDays = Math.floor(
+    differenceInHours / 24,
+  );
+
+  if (differenceInDays < 30) {
+    return `${differenceInDays}d ago`;
+  }
+
+  return formatAbsoluteTime(dateString);
+}
+
+function formatAbsoluteTime(dateString: string) {
+  const date = new Date(dateString);
+
+  if (!Number.isFinite(date.getTime())) {
+    return "Date unavailable";
+  }
 
   return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(dateString));
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC",
+  }).format(date);
 }
 
 function getShortSha(commitSha: string) {
@@ -43,191 +97,417 @@ function getShortSha(commitSha: string) {
 }
 
 function getCategoryTone(category: string) {
-  const normalizedCategory = category.toLowerCase();
+  const normalizedCategory =
+    category.trim().toLowerCase();
 
-  if (normalizedCategory === "feature") return "text-[#9be564]";
-  if (normalizedCategory === "fix") return "text-[#ffd36a]";
-  if (normalizedCategory === "security") return "text-[#ff9b7a]";
-  if (normalizedCategory === "docs") return "text-[#8fd8ff]";
-  if (normalizedCategory === "infrastructure") return "text-[#c6a7ff]";
-  if (normalizedCategory === "refactor") return "text-[#f6a7ff]";
-  if (normalizedCategory === "chore") return "text-[#d7f5bd]";
+  if (normalizedCategory === "feature") {
+    return "text-[#9be564]";
+  }
+
+  if (normalizedCategory === "fix") {
+    return "text-[#ffd36a]";
+  }
+
+  if (normalizedCategory === "security") {
+    return "text-[#ff9b7a]";
+  }
+
+  if (normalizedCategory === "docs") {
+    return "text-[#8fd8ff]";
+  }
+
+  if (normalizedCategory === "infrastructure") {
+    return "text-[#c6a7ff]";
+  }
+
+  if (normalizedCategory === "refactor") {
+    return "text-[#f6a7ff]";
+  }
 
   return "text-[#d7f5bd]";
 }
 
-async function getLatestDevelopmentLogs() {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("development_logs")
-    .select(
-      `
-      id,
-      repo,
-      branch,
-      commit_sha,
-      commit_message,
-      commit_url,
-      author_name,
-      author_username,
-      app_area,
-      category,
-      pushed_at
-    `,
-    )
-    .eq("is_public", true)
-    .order("pushed_at", { ascending: false })
-    .limit(5);
-
-  if (error || !data) {
-    return [];
+function getSafeCommitUrl(commitUrl: string | null) {
+  if (!commitUrl) {
+    return null;
   }
 
-  return data as DevelopmentLogRow[];
+  try {
+    const parsedUrl = new URL(commitUrl);
+
+    if (
+      parsedUrl.protocol !== "https:" ||
+      parsedUrl.hostname !== "github.com"
+    ) {
+      return null;
+    }
+
+    return parsedUrl.toString();
+  } catch {
+    return null;
+  }
 }
 
-export async function LiveDevelopmentLogSection() {
-  const logs = await getLatestDevelopmentLogs();
-  const latestLog = logs[0];
+async function getLatestDevelopmentLogs(): Promise<DevelopmentLogResult> {
+  try {
+    const supabase = await createClient();
 
+    const { data, error } = await supabase
+      .from("development_logs")
+      .select(
+        `
+          id,
+          repo,
+          branch,
+          commit_sha,
+          commit_message,
+          commit_url,
+          author_name,
+          author_username,
+          app_area,
+          category,
+          pushed_at
+        `,
+      )
+      .eq("is_public", true)
+      .order("pushed_at", {
+        ascending: false,
+      })
+      .limit(5);
+
+    if (error) {
+      console.error(
+        "[development-log] Failed to load public logs:",
+        error.message,
+      );
+
+      return {
+        status: "error",
+        logs: [],
+      };
+    }
+
+    const logs = (data ?? []) as DevelopmentLogRow[];
+
+    if (!logs.length) {
+      return {
+        status: "empty",
+        logs: [],
+      };
+    }
+
+    return {
+      status: "ready",
+      logs,
+    };
+  } catch (error) {
+    console.error(
+      "[development-log] Unexpected loading error:",
+      error,
+    );
+
+    return {
+      status: "error",
+      logs: [],
+    };
+  }
+}
+
+function TerminalFrame({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden rounded-[clamp(1rem,1.5vw,1.35rem)] border border-[#2f1b12]/90 bg-[#11120f] shadow-[0_1.25rem_4rem_rgba(47,27,18,0.2)]">
+      <div className="flex min-h-11 items-center justify-between gap-3 border-b border-white/10 bg-[#191b15] px-4 py-2.5">
+        <div
+          aria-hidden="true"
+          className="flex items-center gap-2"
+        >
+          <span className="size-2.5 rounded-full bg-[#ff6b6b]" />
+          <span className="size-2.5 rounded-full bg-[#ffd36a]" />
+          <span className="size-2.5 rounded-full bg-[#9be564]" />
+        </div>
+
+        <p className="truncate font-mono text-[clamp(0.68rem,0.74vw,0.76rem)] font-bold text-[#d7f5bd]/75">
+          lifetopia-platform / development_log
+        </p>
+      </div>
+
+      <div className="border-b border-white/10 bg-[#0d0f0b] px-4 py-3">
+        <div className="flex flex-wrap items-center gap-2 font-mono text-[clamp(0.7rem,0.8vw,0.82rem)]">
+          <span className="text-[#7a8f68]">$</span>
+          <span className="text-[#d7f5bd]">
+            lifetopia devlog
+          </span>
+          <span className="text-[#7a8f68]">
+            --limit=5 --public
+          </span>
+        </div>
+      </div>
+
+      {children}
+
+      <div className="border-t border-white/10 bg-[#191b15] px-4 py-2.5">
+        <p className="font-mono text-[clamp(0.66rem,0.72vw,0.74rem)] leading-[1.55] text-[#9aa98a]">
+          GitHub Actions → secure website endpoint →
+          Supabase development_logs
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function DevelopmentLogLoading() {
+  return (
+    <TerminalFrame>
+      <div
+        aria-label="Loading development updates"
+        className="grid gap-2.5 px-4 py-4"
+      >
+        {Array.from({
+          length: 3,
+        }).map((_, index) => (
+          <div
+            key={index}
+            className="rounded-xl border border-white/10 bg-white/[0.035] px-4 py-3"
+          >
+            <div className="h-3 w-32 rounded bg-white/10 motion-safe:animate-pulse" />
+            <div className="mt-3 h-4 w-4/5 rounded bg-white/10 motion-safe:animate-pulse" />
+            <div className="mt-3 h-3 w-48 rounded bg-white/10 motion-safe:animate-pulse" />
+          </div>
+        ))}
+      </div>
+    </TerminalFrame>
+  );
+}
+
+function DevelopmentLogState({
+  type,
+}: {
+  type: "empty" | "error";
+}) {
+  const isError = type === "error";
+
+  return (
+    <TerminalFrame>
+      <div className="px-4 py-4">
+        <div className="rounded-xl border border-white/10 bg-white/[0.035] px-4 py-4">
+          <p className="font-mono text-[clamp(0.76rem,0.86vw,0.9rem)] font-bold text-[#f8ffe9]">
+            {isError
+              ? "Development updates are temporarily unavailable."
+              : "No public development updates are available yet."}
+          </p>
+
+          <p className="mt-2 font-mono text-[clamp(0.68rem,0.76vw,0.8rem)] leading-[1.6] text-[#9aa98a]">
+            {isError
+              ? "The website remains available. Development activity can still be reviewed directly on GitHub."
+              : "New public commits will appear here after they are synchronized."}
+          </p>
+
+          <Link
+            href={GITHUB_REPOSITORY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-[#9be564]/30 bg-[#9be564]/10 px-4 font-mono text-[0.75rem] font-black text-[#9be564] transition hover:border-[#9be564]/55 hover:bg-[#9be564]/15"
+          >
+            <GitBranch className="size-4" />
+            Open GitHub
+            <ExternalLink className="size-3.5" />
+          </Link>
+        </div>
+      </div>
+    </TerminalFrame>
+  );
+}
+
+async function DevelopmentLogFeed() {
+  const result =
+    await getLatestDevelopmentLogs();
+
+  if (result.status !== "ready") {
+    return (
+      <DevelopmentLogState
+        type={result.status}
+      />
+    );
+  }
+
+  return (
+    <TerminalFrame>
+      <div className="grid gap-2.5 px-4 py-4">
+        {result.logs.map((log, index) => {
+          const commitUrl =
+            getSafeCommitUrl(log.commit_url);
+
+          const content = (
+            <article className="group rounded-xl border border-white/10 bg-white/[0.035] px-4 py-3 transition hover:border-[#9be564]/40 hover:bg-white/[0.06]">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[clamp(0.66rem,0.72vw,0.75rem)]">
+                <span className="text-[#7a8f68]">
+                  {String(index + 1).padStart(
+                    2,
+                    "0",
+                  )}
+                </span>
+
+                <span
+                  className={getCategoryTone(
+                    log.category,
+                  )}
+                >
+                  {log.category.toLowerCase()}
+                </span>
+
+                <span className="text-[#7a8f68]">
+                  /
+                </span>
+
+                <span className="text-[#f4ead4]">
+                  {log.app_area}
+                </span>
+              </div>
+
+              <h3 className="mt-2 break-words font-mono text-[clamp(0.8rem,0.92vw,0.96rem)] font-bold leading-[1.55] text-[#f8ffe9]">
+                <span className="text-[#7a8f68]">
+                  commit:
+                </span>{" "}
+                {log.commit_message}
+              </h3>
+
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[clamp(0.66rem,0.72vw,0.75rem)] text-[#9aa98a]">
+                <span>
+                  branch:{log.branch}
+                </span>
+
+                <span title={log.commit_sha}>
+                  sha:
+                  {getShortSha(
+                    log.commit_sha,
+                  )}
+                </span>
+
+                {log.author_username ? (
+                  <span>
+                    author:@
+                    {log.author_username}
+                  </span>
+                ) : log.author_name ? (
+                  <span>
+                    author:{log.author_name}
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-2">
+                <time
+                  dateTime={log.pushed_at}
+                  title={formatAbsoluteTime(
+                    log.pushed_at,
+                  )}
+                  className="font-mono text-[clamp(0.66rem,0.72vw,0.75rem)] text-[#8fd8ff]"
+                >
+                  {formatRelativeTime(
+                    log.pushed_at,
+                  )}
+                </time>
+
+                <span className="font-mono text-[clamp(0.64rem,0.7vw,0.72rem)] text-[#7a8f68]">
+                  {formatAbsoluteTime(
+                    log.pushed_at,
+                  )}{" "}
+                  UTC
+                </span>
+              </div>
+            </article>
+          );
+
+          if (!commitUrl) {
+            return (
+              <div key={log.id}>
+                {content}
+              </div>
+            );
+          }
+
+          return (
+            <Link
+              key={log.id}
+              href={commitUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Open GitHub commit: ${log.commit_message}`}
+              className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9be564] focus-visible:ring-offset-2 focus-visible:ring-offset-[#11120f]"
+            >
+              {content}
+            </Link>
+          );
+        })}
+      </div>
+    </TerminalFrame>
+  );
+}
+
+export function LiveDevelopmentLogSection() {
   return (
     <section
       id="development-log"
-      className="relative overflow-hidden bg-[#fff8e8] px-[clamp(1rem,5vw,5rem)] py-[clamp(2.8rem,6vw,4.8rem)]"
+      aria-labelledby="development-log-title"
+      className="relative overflow-hidden bg-[#fff8e8] py-[clamp(2.25rem,3vw,3rem)]"
     >
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-10rem] top-[-9rem] h-[clamp(16rem,30vw,25rem)] w-[clamp(16rem,30vw,25rem)] rounded-full bg-[#6fa83a]/18 blur-3xl" />
-        <div className="absolute bottom-[-10rem] right-[-9rem] h-[clamp(17rem,32vw,27rem)] w-[clamp(17rem,32vw,27rem)] rounded-full bg-[#ffd58a]/28 blur-3xl" />
-      </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-32 top-[-8rem] size-[24rem] rounded-full bg-[#6fa83a]/16 blur-[7rem]"
+      />
 
-      <div className="relative mx-auto flex max-w-5xl flex-col gap-[clamp(1.1rem,2.4vw,1.8rem)]">
-        <div className="flex flex-col gap-[clamp(0.6rem,1.3vw,0.9rem)]">
-          <span className="w-fit rounded-full border border-[#4f8124]/25 bg-[#edf7df] px-[clamp(0.7rem,1.2vw,0.9rem)] py-[clamp(0.28rem,0.65vw,0.42rem)] font-mono text-[clamp(0.58rem,0.75vw,0.7rem)] font-black uppercase tracking-[0.18em] text-[#4f8124]">
-            Built in Public
-          </span>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-32 right-[-8rem] size-[25rem] rounded-full bg-[#ffd58a]/24 blur-[7rem]"
+      />
 
-          <div className="flex flex-col gap-[clamp(0.5rem,1vw,0.75rem)]">
-            <h2 className="font-mono text-[clamp(1.65rem,4vw,3.35rem)] font-black leading-[0.95] tracking-[-0.055em] text-[#2f1b12]">
-              Live Dev Log
+      <div className="lt-container relative">
+        <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-[47rem]">
+            <span className="lt-badge border-[#c7dcb9] bg-white/78 text-[#527d40]">
+              <TerminalSquare className="size-3.5" />
+              Built in Public
+            </span>
+
+            <h2
+              id="development-log-title"
+              className="lt-section-title mt-3"
+            >
+              Latest Development Updates
             </h2>
 
-            <p className="max-w-3xl text-[clamp(0.82rem,1.1vw,1rem)] leading-[1.75] text-[#7a5635]">
-              A real-time development feed synced from GitHub, showing that
-              Lifetopia World is actively shipped across the platform.
-            </p>
-          </div>
-        </div>
-
-        <div className="overflow-hidden rounded-[clamp(0.9rem,1.8vw,1.45rem)] border border-[#2f1b12]/90 bg-[#11120f] shadow-[0_20px_70px_rgba(47,27,18,0.22)]">
-          <div className="flex items-center justify-between gap-[clamp(0.65rem,1.2vw,1rem)] border-b border-white/10 bg-[#191b15] px-[clamp(0.8rem,1.6vw,1.1rem)] py-[clamp(0.6rem,1.1vw,0.82rem)]">
-            <div className="flex items-center gap-[clamp(0.42rem,0.8vw,0.6rem)]">
-              <span className="size-[clamp(0.45rem,0.8vw,0.62rem)] rounded-full bg-[#ff6b6b]" />
-              <span className="size-[clamp(0.45rem,0.8vw,0.62rem)] rounded-full bg-[#ffd36a]" />
-              <span className="size-[clamp(0.45rem,0.8vw,0.62rem)] rounded-full bg-[#9be564]" />
-            </div>
-
-            <p className="truncate font-mono text-[clamp(0.58rem,0.78vw,0.72rem)] font-bold text-[#d7f5bd]/75">
-              lifetopia-platform / ship_feed
+            <p className="lt-section-copy mt-3 max-w-[43rem]">
+              The five most recent public development
+              records synchronized from the Lifetopia
+              repository, including the affected product
+              area and direct commit evidence.
             </p>
           </div>
 
-          <div className="border-b border-white/10 bg-[#0d0f0b] px-[clamp(0.8rem,1.6vw,1.1rem)] py-[clamp(0.7rem,1.4vw,1rem)]">
-            <div className="flex flex-wrap items-center gap-[clamp(0.45rem,0.9vw,0.7rem)] font-mono text-[clamp(0.64rem,0.9vw,0.78rem)]">
-              <span className="text-[#7a8f68]">$</span>
-              <span className="text-[#d7f5bd]">lifetopia devlog</span>
-              <span className="text-[#7a8f68]">--latest=5</span>
-            </div>
+          <Link
+            href={GITHUB_REPOSITORY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="lt-button-secondary w-fit shrink-0 gap-2 px-4"
+          >
+            <GitBranch className="size-4" />
+            View Development on GitHub
+            <ExternalLink className="size-3.5" />
+          </Link>
+        </header>
 
-            <div className="mt-[clamp(0.65rem,1.2vw,0.9rem)] flex flex-wrap gap-[clamp(0.45rem,0.9vw,0.65rem)]">
-              <div className="rounded-full border border-[#9be564]/20 bg-[#9be564]/10 px-[clamp(0.55rem,1vw,0.75rem)] py-[clamp(0.28rem,0.55vw,0.38rem)] font-mono text-[clamp(0.58rem,0.75vw,0.7rem)] font-bold text-[#9be564]">
-                active=true
-              </div>
-
-              <div className="rounded-full border border-[#8fd8ff]/20 bg-[#8fd8ff]/10 px-[clamp(0.55rem,1vw,0.75rem)] py-[clamp(0.28rem,0.55vw,0.38rem)] font-mono text-[clamp(0.58rem,0.75vw,0.7rem)] font-bold text-[#8fd8ff]">
-                latest={latestLog ? formatRelativeTime(latestLog.pushed_at) : "waiting"}
-              </div>
-
-              <div className="rounded-full border border-[#c6a7ff]/20 bg-[#c6a7ff]/10 px-[clamp(0.55rem,1vw,0.75rem)] py-[clamp(0.28rem,0.55vw,0.38rem)] font-mono text-[clamp(0.58rem,0.75vw,0.7rem)] font-bold text-[#c6a7ff]">
-                updates={logs.length}
-              </div>
-            </div>
-          </div>
-
-          <div className="px-[clamp(0.8rem,1.6vw,1.1rem)] py-[clamp(0.75rem,1.4vw,1rem)]">
-            {logs.length ? (
-              <div className="flex flex-col gap-[clamp(0.5rem,1vw,0.7rem)]">
-                {logs.map((log, index) => {
-                  const row = (
-                    <article className="group rounded-[clamp(0.68rem,1.25vw,0.95rem)] border border-white/10 bg-white/[0.035] px-[clamp(0.7rem,1.35vw,0.95rem)] py-[clamp(0.62rem,1.15vw,0.82rem)] transition hover:border-[#9be564]/40 hover:bg-white/[0.06]">
-                      <div className="flex flex-col gap-[clamp(0.38rem,0.8vw,0.58rem)]">
-                        <div className="flex flex-wrap items-center gap-[clamp(0.38rem,0.75vw,0.55rem)] font-mono text-[clamp(0.55rem,0.72vw,0.67rem)]">
-                          <span className="text-[#7a8f68]">
-                            {String(index + 1).padStart(2, "0")}
-                          </span>
-
-                          <span className={getCategoryTone(log.category)}>
-                            {log.category.toLowerCase()}
-                          </span>
-
-                          <span className="text-[#7a8f68]">/</span>
-
-                          <span className="text-[#f4ead4]">{log.app_area}</span>
-
-                          <span className="text-[#7a8f68]">/</span>
-
-                          <span className="text-[#8fd8ff]">
-                            {formatRelativeTime(log.pushed_at)}
-                          </span>
-                        </div>
-
-                        <h3 className="break-words font-mono text-[clamp(0.72rem,1vw,0.9rem)] font-bold leading-[1.55] text-[#f8ffe9]">
-                          <span className="text-[#7a8f68]">commit:</span>{" "}
-                          {log.commit_message}
-                        </h3>
-
-                        <div className="flex flex-wrap items-center gap-[clamp(0.38rem,0.75vw,0.55rem)] font-mono text-[clamp(0.55rem,0.72vw,0.67rem)] text-[#9aa98a]">
-                          <span>branch:{log.branch}</span>
-                          <span>sha:{getShortSha(log.commit_sha)}</span>
-                          {log.author_username ? (
-                            <span>author:@{log.author_username}</span>
-                          ) : null}
-                        </div>
-                      </div>
-                    </article>
-                  );
-
-                  if (!log.commit_url) {
-                    return <div key={log.id}>{row}</div>;
-                  }
-
-                  return (
-                    <Link
-                      key={log.id}
-                      href={log.commit_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="block"
-                    >
-                      {row}
-                    </Link>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="rounded-[clamp(0.68rem,1.25vw,0.95rem)] border border-white/10 bg-white/[0.035] px-[clamp(0.7rem,1.35vw,0.95rem)] py-[clamp(0.62rem,1.15vw,0.82rem)]">
-                <p className="font-mono text-[clamp(0.68rem,0.9vw,0.82rem)] leading-[1.7] text-[#d7f5bd]">
-                  No logs synced yet. The next GitHub push will appear here.
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className="border-t border-white/10 bg-[#191b15] px-[clamp(0.8rem,1.6vw,1.1rem)] py-[clamp(0.55rem,1vw,0.75rem)]">
-            <p className="font-mono text-[clamp(0.55rem,0.72vw,0.67rem)] leading-[1.6] text-[#9aa98a]">
-              GitHub Actions → Lifetopia API → Supabase development_logs
-            </p>
-          </div>
+        <div className="mt-[clamp(1.25rem,2vw,1.65rem)]">
+          <Suspense
+            fallback={
+              <DevelopmentLogLoading />
+            }
+          >
+            <DevelopmentLogFeed />
+          </Suspense>
         </div>
       </div>
     </section>
