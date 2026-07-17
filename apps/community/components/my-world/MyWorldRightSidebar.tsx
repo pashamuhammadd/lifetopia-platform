@@ -1,4 +1,4 @@
-import { Gift, Heart, MessageCircle, ScrollText, Trophy } from "lucide-react";
+import { Gift, MessageCircle, Trophy } from "lucide-react";
 
 import { Avatar } from "@/components/ui/Avatar";
 import { Progress } from "@/components/ui/Progress";

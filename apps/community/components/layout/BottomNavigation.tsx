@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Compass, House, Plus, Sparkles, UserRound } from "lucide-react";
+import { usePathname } from "next/navigation";
+
+import { AuthenticatedLink } from "@/components/auth/AuthenticatedLink";
 
 const items = [
   {
@@ -16,20 +17,23 @@ const items = [
     icon: Compass,
   },
   {
-    label: "Post",
-    href: "/",
+    label: "Create",
+    href: "/#create-post",
     icon: Plus,
     primary: true,
+    requiresAuth: true,
   },
   {
     label: "Quest",
     href: "/quest",
     icon: Sparkles,
+    requiresAuth: true,
   },
   {
-    label: "Profile",
+    label: "My World",
     href: "/my-world",
     icon: UserRound,
+    requiresAuth: true,
   },
 ];
 
@@ -37,39 +41,49 @@ export function BottomNavigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-4 bottom-4 z-50 md:hidden">
-      <div className="flex items-center justify-between rounded-[26px] border border-[#ead9b8] bg-white/90 px-2 py-2 shadow-[0_18px_45px_rgba(88,60,28,0.18)] backdrop-blur">
+    <nav
+      className="fixed inset-x-3 bottom-3 z-50 md:hidden"
+      aria-label="Mobile community navigation"
+    >
+      <div className="mx-auto flex max-w-md items-center justify-between rounded-[26px] border border-[#ead9b8] bg-white/92 px-2 py-2 shadow-[0_18px_45px_rgba(88,60,28,0.18)] backdrop-blur-xl">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive =
-            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+            item.href === "/"
+              ? pathname === "/"
+              : item.href.startsWith("/#")
+                ? false
+                : pathname.startsWith(item.href);
 
           if (item.primary) {
             return (
-              <Link
+              <AuthenticatedLink
                 key={item.label}
                 href={item.href}
-                className="-mt-8 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#6fa83a] to-[#4f8124] text-white shadow-[0_12px_28px_rgba(79,129,36,0.32)] transition hover:scale-105"
+                requiresAuth={item.requiresAuth}
+                aria-label="Create a community post"
+                className="-mt-8 flex size-14 items-center justify-center rounded-full border-4 border-[#fff7e8] bg-gradient-to-br from-[#6fa83a] to-[#4f8124] text-white shadow-[0_12px_28px_rgba(79,129,36,0.32)] transition hover:scale-105"
               >
                 <Icon size={24} strokeWidth={2.7} />
-              </Link>
+              </AuthenticatedLink>
             );
           }
 
           return (
-            <Link
+            <AuthenticatedLink
               key={item.label}
               href={item.href}
-              className={`flex min-w-[56px] flex-col items-center gap-1 rounded-2xl px-3 py-2 transition ${
+              requiresAuth={item.requiresAuth}
+              aria-current={isActive ? "page" : undefined}
+              className={`flex min-w-[54px] flex-col items-center gap-1 rounded-2xl px-2 py-2 transition ${
                 isActive
                   ? "text-[#4f8124]"
                   : "text-[#8b6c49] hover:text-[#4f8124]"
               }`}
             >
               <Icon size={21} strokeWidth={isActive ? 2.7 : 2.3} />
-
               <span className="text-[10px] font-black">{item.label}</span>
-            </Link>
+            </AuthenticatedLink>
           );
         })}
       </div>

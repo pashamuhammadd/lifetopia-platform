@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import { createClient } from "@repo/lib/supabase/server";
 
 export type CurrentProfile = {
@@ -10,35 +12,37 @@ export type CurrentProfile = {
   accountType: string;
 };
 
-export async function getCurrentProfile(): Promise<CurrentProfile | null> {
-  const supabase = await createClient();
+export const getCurrentProfile = cache(
+  async (): Promise<CurrentProfile | null> => {
+    const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-  if (userError || !user) {
-    return null;
-  }
+    if (userError || !user) {
+      return null;
+    }
 
-  const { data: profile, error } = await supabase
-    .from("profiles")
-    .select("id, username, display_name, avatar_id, role, account_type")
-    .eq("id", user.id)
-    .single();
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("id, username, display_name, avatar_id, role, account_type")
+      .eq("id", user.id)
+      .single();
 
-  if (error || !profile) {
-    return null;
-  }
+    if (error || !profile) {
+      return null;
+    }
 
-  return {
-    id: profile.id,
-    username: profile.username,
-    displayName: profile.display_name,
-    avatarId: profile.avatar_id,
-    avatarSrc: `/images/avatars/${profile.avatar_id}.jpg`,
-    role: profile.role,
-    accountType: profile.account_type,
-  };
-}
+    return {
+      id: profile.id,
+      username: profile.username,
+      displayName: profile.display_name,
+      avatarId: profile.avatar_id,
+      avatarSrc: `/images/avatars/${profile.avatar_id}.jpg`,
+      role: profile.role,
+      accountType: profile.account_type,
+    };
+  },
+);
