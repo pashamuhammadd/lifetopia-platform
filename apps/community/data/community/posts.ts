@@ -15,7 +15,6 @@ import { getLikedPostIds } from "./likes";
 
 export const COMMUNITY_POSTS_PER_PAGE = 10;
 
-
 type CommunityPostQueryAuthor = {
   id: string;
   username: string | null;
@@ -41,14 +40,22 @@ type CommunityPostQueryRow = {
   }> | null;
 };
 
-function normalizeTag(value: string | null | undefined) {
-  const normalized = value?.trim().replace(/^#/, "");
+function normalizeTag(
+  value: string | null | undefined,
+) {
+  const normalized = value
+    ?.trim()
+    .replace(/^#/, "");
 
   if (!normalized) {
     return null;
   }
 
-  if (!/^[A-Za-z0-9_]{1,40}$/.test(normalized)) {
+  if (
+    !/^[A-Za-z0-9_]{1,40}$/.test(
+      normalized,
+    )
+  ) {
     return null;
   }
 
@@ -59,7 +66,9 @@ async function hydrateCommunityPosts(
   rows: CommunityPostQueryRow[],
   currentUserId: string | null,
 ): Promise<CommunityPost[]> {
-  const postIds = rows.map((post) => post.id);
+  const postIds = rows.map(
+    (post) => post.id,
+  );
 
   const [
     likedPostIds,
@@ -68,37 +77,67 @@ async function hydrateCommunityPosts(
   ] = await Promise.all([
     getLikedPostIds(postIds),
     getBookmarkedPostIds(postIds),
-    getCommentsByPostIds(postIds),
+    getCommentsByPostIds(
+      postIds,
+      currentUserId,
+    ),
   ]);
 
   return rows.map((post) => {
-    const author = Array.isArray(post.author)
+    const author = Array.isArray(
+      post.author,
+    )
       ? post.author[0]
       : post.author;
 
     return {
       id: post.id,
       content: post.content,
-      category: normalizePostCategory(post.category),
-      createdAt: new Date(post.created_at).toLocaleDateString("en", {
+      category:
+        normalizePostCategory(
+          post.category,
+        ),
+      createdAt: new Date(
+        post.created_at,
+      ).toLocaleDateString("en", {
         month: "short",
         day: "numeric",
         year: "numeric",
       }),
       createdAtIso: post.created_at,
-      isOwner: currentUserId === author?.id,
-      isLiked: likedPostIds.has(post.id),
-      isBookmarked: bookmarkedPostIds.has(post.id),
+      isOwner:
+        currentUserId === author?.id,
+      isLiked:
+        likedPostIds.has(post.id),
+      isBookmarked:
+        bookmarkedPostIds.has(
+          post.id,
+        ),
       author: {
         id: author?.id ?? "",
-        username: author?.username ?? "lifetopian",
-        displayName: author?.display_name ?? "Lifetopian",
-        avatarSrc: `/images/avatars/${author?.avatar_id ?? "avatar-01"}.jpg`,
-        role: resolveLifetopiaRole(author?.role),
+        username:
+          author?.username ??
+          "lifetopian",
+        displayName:
+          author?.display_name ??
+          "Lifetopian",
+        avatarSrc: `/images/avatars/${
+          author?.avatar_id ??
+          "avatar-01"
+        }.jpg`,
+        role: resolveLifetopiaRole(
+          author?.role,
+        ),
       },
-      likes: post.likes?.[0]?.count ?? 0,
-      comments: post.comments?.[0]?.count ?? 0,
-      commentItems: commentsByPostId.get(post.id) ?? [],
+      likes:
+        post.likes?.[0]?.count ?? 0,
+      comments:
+        post.comments?.[0]?.count ??
+        0,
+      commentItems:
+        commentsByPostId.get(
+          post.id,
+        ) ?? [],
     };
   });
 }
@@ -123,13 +162,26 @@ export async function getCommunityPosts(
   requestedPage = 1,
   requestedTag?: string | null,
 ): Promise<CommunityFeedResult> {
-  const page = Number.isFinite(requestedPage)
-    ? Math.max(1, Math.floor(requestedPage))
+  const page = Number.isFinite(
+    requestedPage,
+  )
+    ? Math.max(
+        1,
+        Math.floor(requestedPage),
+      )
     : 1;
 
-  const activeTag = normalizeTag(requestedTag);
-  const from = (page - 1) * COMMUNITY_POSTS_PER_PAGE;
-  const to = from + COMMUNITY_POSTS_PER_PAGE - 1;
+  const activeTag =
+    normalizeTag(requestedTag);
+
+  const from =
+    (page - 1) *
+    COMMUNITY_POSTS_PER_PAGE;
+
+  const to =
+    from +
+    COMMUNITY_POSTS_PER_PAGE -
+    1;
 
   const supabase = await createClient();
 
@@ -144,17 +196,27 @@ export async function getCommunityPosts(
     });
 
   if (activeTag) {
-    query = query.ilike("content", `%#${activeTag}%`);
+    query = query.ilike(
+      "content",
+      `%#${activeTag}%`,
+    );
   }
 
-  const { data, error, count } = await query
+  const {
+    data,
+    error,
+    count,
+  } = await query
     .order("created_at", {
       ascending: false,
     })
     .range(from, to);
 
   if (error || !data) {
-    console.error("Failed to fetch community posts:", error);
+    console.error(
+      "Failed to fetch community posts:",
+      error,
+    );
 
     return {
       posts: [],
@@ -162,19 +224,26 @@ export async function getCommunityPosts(
       totalPages: 1,
       totalPosts: 0,
       activeTag,
-      error: "The community feed could not be loaded right now.",
+      error:
+        "The community feed could not be loaded right now.",
     };
   }
 
-  const posts = await hydrateCommunityPosts(
-    data as unknown as CommunityPostQueryRow[],
-    user?.id ?? null,
-  );
+  const posts =
+    await hydrateCommunityPosts(
+      data as unknown as CommunityPostQueryRow[],
+      user?.id ?? null,
+    );
 
-  const totalPosts = count ?? posts.length;
+  const totalPosts =
+    count ?? posts.length;
+
   const totalPages = Math.max(
     1,
-    Math.ceil(totalPosts / COMMUNITY_POSTS_PER_PAGE),
+    Math.ceil(
+      totalPosts /
+        COMMUNITY_POSTS_PER_PAGE,
+    ),
   );
 
   return {
@@ -196,7 +265,10 @@ export async function getCommunityPostById(
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data, error } = await supabase
+  const {
+    data,
+    error,
+  } = await supabase
     .from("community_posts")
     .select(COMMUNITY_POST_SELECT)
     .eq("id", postId)
@@ -204,16 +276,22 @@ export async function getCommunityPostById(
 
   if (error || !data) {
     if (error) {
-      console.error("Failed to fetch community post:", error);
+      console.error(
+        "Failed to fetch community post:",
+        error,
+      );
     }
 
     return null;
   }
 
-  const [post] = await hydrateCommunityPosts(
-    [data as unknown as CommunityPostQueryRow],
-    user?.id ?? null,
-  );
+  const [post] =
+    await hydrateCommunityPosts(
+      [
+        data as unknown as CommunityPostQueryRow,
+      ],
+      user?.id ?? null,
+    );
 
   return post ?? null;
 }

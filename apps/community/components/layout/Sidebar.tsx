@@ -1,6 +1,12 @@
+import {
+  ShieldCheck,
+} from "lucide-react";
 import Image from "next/image";
 
 import { AuthenticatedLink } from "@/components/auth/AuthenticatedLink";
+import {
+  hasModerationAccess,
+} from "@/data/auth/require-moderator-profile";
 import type { CurrentProfile } from "@/data/profile/current-profile";
 
 import { SidebarNav } from "./SidebarNav";
@@ -10,23 +16,54 @@ type SidebarProps = {
 };
 
 function formatRole(role: string) {
-  if (role === "founder") return "World Keeper";
-  if (role === "admin") return "World Creator";
-  if (role === "developer") return "World Builder";
-  if (role === "moderator") return "Guardian";
-  if (role === "artist") return "Realm Artist";
-  if (role === "alpha_tester") return "Alpha Pioneer";
-  if (role === "beta_tester") return "Beta Explorer";
+  if (role === "founder")
+    return "World Keeper";
+  if (role === "admin")
+    return "World Creator";
+  if (role === "developer")
+    return "World Builder";
+  if (role === "moderator")
+    return "Guardian";
+  if (role === "artist")
+    return "Realm Artist";
+  if (role === "alpha_tester")
+    return "Alpha Pioneer";
+  if (role === "beta_tester")
+    return "Beta Explorer";
   return "Lifetopian";
 }
 
-export function Sidebar({ profile }: SidebarProps) {
-  const displayName = profile?.displayName ?? "Guest Lifetopian";
-  const username = profile?.username ? `@${profile.username}` : "Explore as guest";
-  const avatarSrc = profile?.avatarSrc;
-  const initials = displayName.charAt(0).toUpperCase();
-  const role = profile ? formatRole(profile.role) : "Visitor";
-  const profileHref = profile ? `/user/${profile.username}` : "/my-world";
+export function Sidebar({
+  profile,
+}: SidebarProps) {
+  const displayName =
+    profile?.displayName ??
+    "Guest Lifetopian";
+
+  const username =
+    profile?.username
+      ? `@${profile.username}`
+      : "Explore as guest";
+
+  const avatarSrc =
+    profile?.avatarSrc;
+
+  const initials = displayName
+    .charAt(0)
+    .toUpperCase();
+
+  const role = profile
+    ? formatRole(profile.role)
+    : "Visitor";
+
+  const profileHref = profile
+    ? `/user/${profile.username}`
+    : "/my-world";
+
+  const canModerate =
+    hasModerationAccess(
+      profile?.role,
+    );
 
   return (
     <aside className="hidden rounded-[28px] border border-[#ead9b8] bg-white/80 p-4 shadow-[0_18px_45px_rgba(88,60,28,0.12)] backdrop-blur md:block">
@@ -65,6 +102,7 @@ export function Sidebar({ profile }: SidebarProps) {
             <p className="truncate text-base font-black text-[#2f2418] transition hover:text-[#4f8124]">
               {displayName}
             </p>
+
             <p className="truncate text-xs font-bold text-[#7a5635]">
               {username}
             </p>
@@ -86,12 +124,28 @@ export function Sidebar({ profile }: SidebarProps) {
 
       <SidebarNav />
 
+      {canModerate ? (
+        <AuthenticatedLink
+          href="/admin/reports"
+          requiresAuth
+          className="mt-5 flex min-h-11 items-center gap-3 rounded-[18px] border border-[#d8cdef] bg-[#f3effd] px-3 text-sm font-black text-[#674aab] transition hover:bg-[#ebe4fb]"
+        >
+          <ShieldCheck size={18} />
+          Moderation Panel
+        </AuthenticatedLink>
+      ) : null}
+
       <div className="mt-5 rounded-[22px] border border-[#dfeec9] bg-gradient-to-br from-[#edf7df] to-[#fff7e8] p-4">
-        <p className="text-sm font-black text-[#2f2418]">Harmony Journey</p>
-        <p className="mt-1 text-xs font-bold leading-5 text-[#7a5635]">
-          Community quests and Harmony rewards are being prepared with real
-          progression data.
+        <p className="text-sm font-black text-[#2f2418]">
+          Harmony Journey
         </p>
+
+        <p className="mt-1 text-xs font-bold leading-5 text-[#7a5635]">
+          Community quests and Harmony
+          rewards are being prepared
+          with real progression data.
+        </p>
+
         <span className="mt-3 inline-flex rounded-full border border-[#cfe2bd] bg-white/70 px-3 py-1 text-[10px] font-black uppercase tracking-wide text-[#4f8124]">
           In Preparation
         </span>

@@ -1,11 +1,14 @@
 "use client";
 
-import { MessageCircleReply } from "lucide-react";
+import {
+  MessageCircleReply,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 import { useGuestAuth } from "@/components/auth/GuestAuthProvider";
 import { RichCommunityText } from "@/components/community/RichCommunityText";
+import { ReportTrigger } from "@/components/report/ReportTrigger";
 import { Avatar } from "@/components/ui/Avatar";
 import type { CommunityComment } from "@/data/community/comments";
 
@@ -20,7 +23,11 @@ export function CommentItem({
   comment,
   depth = 0,
 }: CommentItemProps) {
-  const [isReplying, setIsReplying] = useState(false);
+  const [
+    isReplying,
+    setIsReplying,
+  ] = useState(false);
+
   const {
     isAuthenticated,
     requestAuth,
@@ -47,12 +54,25 @@ export function CommentItem({
       }
     >
       <div className="flex gap-2.5 sm:gap-3">
-        <Link href={profileHref} className="shrink-0">
+        <Link
+          href={profileHref}
+          className="shrink-0"
+        >
           <Avatar
-            src={comment.author.avatarSrc}
-            initials={comment.author.displayName.charAt(0)}
-            alt={comment.author.displayName}
-            size={depth > 0 ? 34 : 40}
+            src={
+              comment.author
+                .avatarSrc
+            }
+            initials={comment.author.displayName.charAt(
+              0,
+            )}
+            alt={
+              comment.author
+                .displayName
+            }
+            size={
+              depth > 0 ? 34 : 40
+            }
           />
         </Link>
 
@@ -63,18 +83,27 @@ export function CommentItem({
                 href={profileHref}
                 className="font-black text-[#2f2418] hover:text-[#4f8124]"
               >
-                {comment.author.displayName}
+                {
+                  comment.author
+                    .displayName
+                }
               </Link>
 
               <Link
                 href={profileHref}
                 className="text-xs font-bold text-[#9b6635] hover:text-[#4f8124]"
               >
-                @{comment.author.username}
+                @
+                {
+                  comment.author
+                    .username
+                }
               </Link>
 
               <time
-                dateTime={comment.createdAtIso}
+                dateTime={
+                  comment.createdAtIso
+                }
                 className="ml-auto text-xs font-bold text-[#9b6635]"
               >
                 {comment.createdAt}
@@ -82,29 +111,56 @@ export function CommentItem({
             </div>
 
             <p className="mt-1 whitespace-pre-wrap break-words text-sm font-bold leading-6 text-[#7a5635]">
-              <RichCommunityText content={comment.content} />
+              <RichCommunityText
+                content={
+                  comment.content
+                }
+              />
             </p>
           </div>
 
-          {canReply ? (
-            <button
-              type="button"
-              onClick={handleReply}
-              className="mt-1.5 inline-flex min-h-8 items-center gap-1.5 px-2 text-xs font-black text-[#6d7f55] transition hover:text-[#4f8124]"
-            >
-              <MessageCircleReply size={14} />
-              Reply
-            </button>
-          ) : null}
+          <div className="mt-1.5 flex flex-wrap items-center gap-1">
+            {canReply ? (
+              <button
+                type="button"
+                onClick={handleReply}
+                className="inline-flex min-h-8 items-center gap-1.5 rounded-full px-2 text-xs font-black text-[#6d7f55] transition hover:bg-[#f2faeb] hover:text-[#4f8124]"
+              >
+                <MessageCircleReply
+                  size={14}
+                />
+                Reply
+              </button>
+            ) : null}
+
+            {!comment.isOwner ? (
+              <ReportTrigger
+                targetType="comment"
+                targetId={comment.id}
+                compact
+              />
+            ) : null}
+          </div>
 
           {isReplying ? (
             <div className="mt-2">
               <CommentComposer
-                postId={comment.postId}
-                parentCommentId={comment.id}
-                replyingTo={comment.author.username}
+                postId={
+                  comment.postId
+                }
+                parentCommentId={
+                  comment.id
+                }
+                replyingTo={
+                  comment.author
+                    .username
+                }
                 autoFocus
-                onCancel={() => setIsReplying(false)}
+                onCancel={() =>
+                  setIsReplying(
+                    false,
+                  )
+                }
               />
             </div>
           ) : null}
@@ -113,13 +169,15 @@ export function CommentItem({
 
       {comment.replies.length ? (
         <div className="ml-5 mt-3 space-y-3 sm:ml-7">
-          {comment.replies.map((reply) => (
-            <CommentItem
-              key={reply.id}
-              comment={reply}
-              depth={depth + 1}
-            />
-          ))}
+          {comment.replies.map(
+            (reply) => (
+              <CommentItem
+                key={reply.id}
+                comment={reply}
+                depth={depth + 1}
+              />
+            ),
+          )}
         </div>
       ) : null}
     </div>

@@ -7,6 +7,7 @@ export type CommunityComment = {
   content: string;
   createdAt: string;
   createdAtIso: string;
+  isOwner: boolean;
   author: {
     id: string;
     username: string;
@@ -16,14 +17,20 @@ export type CommunityComment = {
   replies: CommunityComment[];
 };
 
-type FlatCommunityComment = Omit<CommunityComment, "replies"> & {
+type FlatCommunityComment = Omit<
+  CommunityComment,
+  "replies"
+> & {
   replies: CommunityComment[];
 };
 
 function buildCommentTree(
   comments: FlatCommunityComment[],
 ): CommunityComment[] {
-  const commentMap = new Map<string, CommunityComment>();
+  const commentMap = new Map<
+    string,
+    CommunityComment
+  >();
 
   for (const comment of comments) {
     commentMap.set(comment.id, {
@@ -40,7 +47,9 @@ function buildCommentTree(
       continue;
     }
 
-    const parent = commentMap.get(comment.parentCommentId);
+    const parent = commentMap.get(
+      comment.parentCommentId,
+    );
 
     if (!parent) {
       roots.push(comment);
@@ -53,9 +62,15 @@ function buildCommentTree(
   return roots;
 }
 
-export async function getCommentsByPostIds(postIds: string[]) {
+export async function getCommentsByPostIds(
+  postIds: string[],
+  currentUserId: string | null,
+) {
   if (postIds.length === 0) {
-    return new Map<string, CommunityComment[]>();
+    return new Map<
+      string,
+      CommunityComment[]
+    >();
   }
 
   const supabase = await createClient();
@@ -83,45 +98,89 @@ export async function getCommentsByPostIds(postIds: string[]) {
     });
 
   if (error || !data) {
-    console.error("Failed to fetch comments:", error);
-    return new Map<string, CommunityComment[]>();
+    console.error(
+      "Failed to fetch comments:",
+      error,
+    );
+
+    return new Map<
+      string,
+      CommunityComment[]
+    >();
   }
 
-  const flatCommentsByPostId = new Map<string, FlatCommunityComment[]>();
+  const flatCommentsByPostId =
+    new Map<
+      string,
+      FlatCommunityComment[]
+    >();
 
   for (const comment of data) {
-    const author = Array.isArray(comment.author)
+    const author = Array.isArray(
+      comment.author,
+    )
       ? comment.author[0]
       : comment.author;
 
     const item: FlatCommunityComment = {
       id: comment.id,
       postId: comment.post_id,
-      parentCommentId: comment.parent_comment_id ?? null,
+      parentCommentId:
+        comment.parent_comment_id ??
+        null,
       content: comment.content,
-      createdAt: new Date(comment.created_at).toLocaleDateString("en", {
+      createdAt: new Date(
+        comment.created_at,
+      ).toLocaleDateString("en", {
         month: "short",
         day: "numeric",
       }),
       createdAtIso: comment.created_at,
+      isOwner:
+        currentUserId === author?.id,
       author: {
         id: author?.id ?? "",
-        username: author?.username ?? "lifetopian",
-        displayName: author?.display_name ?? "Lifetopian",
-        avatarSrc: `/images/avatars/${author?.avatar_id ?? "avatar-01"}.jpg`,
+        username:
+          author?.username ??
+          "lifetopian",
+        displayName:
+          author?.display_name ??
+          "Lifetopian",
+        avatarSrc: `/images/avatars/${
+          author?.avatar_id ??
+          "avatar-01"
+        }.jpg`,
       },
       replies: [],
     };
 
-    const current = flatCommentsByPostId.get(item.postId) ?? [];
+    const current =
+      flatCommentsByPostId.get(
+        item.postId,
+      ) ?? [];
+
     current.push(item);
-    flatCommentsByPostId.set(item.postId, current);
+
+    flatCommentsByPostId.set(
+      item.postId,
+      current,
+    );
   }
 
-  const commentsByPostId = new Map<string, CommunityComment[]>();
+  const commentsByPostId =
+    new Map<
+      string,
+      CommunityComment[]
+    >();
 
-  for (const [postId, comments] of flatCommentsByPostId) {
-    commentsByPostId.set(postId, buildCommentTree(comments));
+  for (const [
+    postId,
+    comments,
+  ] of flatCommentsByPostId) {
+    commentsByPostId.set(
+      postId,
+      buildCommentTree(comments),
+    );
   }
 
   return commentsByPostId;

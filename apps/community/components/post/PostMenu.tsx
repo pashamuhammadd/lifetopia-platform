@@ -1,14 +1,23 @@
 "use client";
 
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { useState, useTransition } from "react";
+import {
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import {
+  useState,
+  useTransition,
+} from "react";
 
 import {
   deleteCommunityPost,
   updateCommunityPost,
   type CommunityPostActionState,
 } from "@/app/actions/community/posts";
+import { ReportTrigger } from "@/components/report/ReportTrigger";
 import { Button } from "@/components/ui/Button";
+import { POST_CONTENT_MAX_LENGTH } from "@/types/post";
 
 type PostMenuProps = {
   postId: string;
@@ -47,18 +56,6 @@ export function PostMenu({
     startDeleteTransition,
   ] = useTransition();
 
-  if (!isOwner) {
-    return (
-      <button
-        type="button"
-        className="grid size-9 shrink-0 place-items-center rounded-full text-[#8a6b47] transition hover:bg-[#fff4dc]"
-        aria-label="More post options"
-      >
-        <MoreHorizontal size={18} />
-      </button>
-    );
-  }
-
   function openEditModal() {
     setEditState(initialState);
     setIsEditing(true);
@@ -73,7 +70,9 @@ export function PostMenu({
     setIsEditing(false);
   }
 
-  function handleEdit(formData: FormData) {
+  function handleEdit(
+    formData: FormData,
+  ) {
     startEditTransition(async () => {
       const result =
         await updateCommunityPost(
@@ -114,28 +113,37 @@ export function PostMenu({
           <MoreHorizontal size={18} />
         </summary>
 
-        <div className="absolute right-0 top-11 z-20 w-40 rounded-[18px] border border-[#ead9b8] bg-white p-2 shadow-[0_18px_45px_rgba(88,60,28,0.14)]">
-          <button
-            type="button"
-            onClick={openEditModal}
-            className="flex w-full items-center gap-2 rounded-[14px] px-3 py-2 text-left text-sm font-black text-[#7a5635] hover:bg-[#fffaf0]"
-          >
-            <Pencil size={15} />
-            Edit
-          </button>
+        <div className="absolute right-0 top-11 z-20 w-44 rounded-[18px] border border-[#ead9b8] bg-white p-2 shadow-[0_18px_45px_rgba(88,60,28,0.14)]">
+          {isOwner ? (
+            <>
+              <button
+                type="button"
+                onClick={openEditModal}
+                className="flex w-full items-center gap-2 rounded-[14px] px-3 py-2 text-left text-sm font-black text-[#7a5635] hover:bg-[#fffaf0]"
+              >
+                <Pencil size={15} />
+                Edit
+              </button>
 
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="flex w-full items-center gap-2 rounded-[14px] px-3 py-2 text-left text-sm font-black text-[#c24141] hover:bg-[#fff0f0] disabled:opacity-60"
-          >
-            <Trash2 size={15} />
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="flex w-full items-center gap-2 rounded-[14px] px-3 py-2 text-left text-sm font-black text-[#c24141] hover:bg-[#fff0f0] disabled:opacity-60"
+              >
+                <Trash2 size={15} />
 
-            {isDeleting
-              ? "Deleting..."
-              : "Delete"}
-          </button>
+                {isDeleting
+                  ? "Deleting..."
+                  : "Delete"}
+              </button>
+            </>
+          ) : (
+            <ReportTrigger
+              targetType="post"
+              targetId={postId}
+            />
+          )}
         </div>
       </details>
 
@@ -148,7 +156,6 @@ export function PostMenu({
       {isEditing ? (
         <div
           className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4"
-          role="presentation"
           onMouseDown={(event) => {
             if (
               event.target ===
@@ -182,6 +189,9 @@ export function PostMenu({
               name="content"
               defaultValue={content}
               required
+              maxLength={
+                POST_CONTENT_MAX_LENGTH
+              }
               className="mt-4 min-h-36 w-full resize-none rounded-[20px] border border-[#ead9b8] bg-[#fffaf0] p-4 text-sm font-bold text-[#2f2418] outline-none focus:border-[#6fa83a]"
             />
 
@@ -196,14 +206,18 @@ export function PostMenu({
               <button
                 type="button"
                 onClick={closeEditModal}
-                disabled={isEditingPending}
+                disabled={
+                  isEditingPending
+                }
                 className="rounded-full bg-[#fffaf0] px-5 py-2.5 text-sm font-black text-[#7a5635] disabled:opacity-60"
               >
                 Cancel
               </button>
 
               <Button
-                disabled={isEditingPending}
+                disabled={
+                  isEditingPending
+                }
               >
                 {isEditingPending
                   ? "Saving..."
