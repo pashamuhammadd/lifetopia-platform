@@ -9,10 +9,38 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CommunityHomePage() {
+type CommunityHomePageProps = {
+  searchParams: Promise<{
+    page?: string | string[];
+  }>;
+};
+
+function parsePage(
+  value: string | string[] | undefined,
+) {
+  const rawValue = Array.isArray(value)
+    ? value[0]
+    : value;
+
+  const parsed = Number.parseInt(
+    rawValue ?? "1",
+    10,
+  );
+
+  return Number.isFinite(parsed)
+    ? Math.max(1, parsed)
+    : 1;
+}
+
+export default async function CommunityHomePage({
+  searchParams,
+}: CommunityHomePageProps) {
+  const params = await searchParams;
+  const page = parsePage(params.page);
+
   return (
     <AppLayout>
-      <Feed />
+      <Feed page={page} />
     </AppLayout>
   );
 }

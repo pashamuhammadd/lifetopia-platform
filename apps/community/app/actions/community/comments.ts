@@ -1,7 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+
 import { createClient } from "@repo/lib/supabase/server";
+
+import { COMMENT_CONTENT_MAX_LENGTH } from "@/types/post";
 
 export type CommunityCommentActionState = {
   success: boolean;
@@ -12,13 +15,27 @@ export async function createCommunityComment(
   _previousState: CommunityCommentActionState,
   formData: FormData,
 ): Promise<CommunityCommentActionState> {
-  const postId = String(formData.get("postId") ?? "");
+  const postId = String(formData.get("postId") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
 
-  if (!postId || !content) {
+  if (!postId) {
+    return {
+      success: false,
+      message: "This post could not be identified.",
+    };
+  }
+
+  if (!content) {
     return {
       success: false,
       message: "Comment cannot be empty.",
+    };
+  }
+
+  if (content.length > COMMENT_CONTENT_MAX_LENGTH) {
+    return {
+      success: false,
+      message: `Comments can contain up to ${COMMENT_CONTENT_MAX_LENGTH} characters.`,
     };
   }
 
@@ -42,9 +59,11 @@ export async function createCommunityComment(
   });
 
   if (error) {
+    console.error("Failed to create community comment:", error);
+
     return {
       success: false,
-      message: error.message,
+      message: "Your comment could not be published. Please try again.",
     };
   }
 
@@ -52,6 +71,6 @@ export async function createCommunityComment(
 
   return {
     success: true,
-    message: "Comment posted.",
+    message: "Comment published.",
   };
 }
