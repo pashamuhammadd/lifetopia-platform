@@ -12,7 +12,6 @@ import {
   type CommunityCommentActionState,
 } from "@/app/actions/community/comments";
 import { useGuestAuth } from "@/components/auth/GuestAuthProvider";
-import { Button } from "@/components/ui/Button";
 import { COMMENT_CONTENT_MAX_LENGTH } from "@/types/post";
 
 type CommentComposerProps = {
@@ -112,7 +111,7 @@ export function CommentComposer({
               type="button"
               onClick={onCancel}
               aria-label="Cancel reply"
-              className="grid size-7 shrink-0 place-items-center rounded-full hover:bg-white"
+              className="grid size-7 shrink-0 place-items-center rounded-full transition hover:bg-white"
             >
               <X size={14} />
             </button>
@@ -120,7 +119,7 @@ export function CommentComposer({
         </div>
       ) : null}
 
-      <div className="flex gap-2 sm:gap-3">
+      <div className="relative">
         <input
           ref={inputRef}
           id={
@@ -141,21 +140,33 @@ export function CommentComposer({
                 : "Write a comment..."
               : "Login to join the conversation..."
           }
-          className="h-11 min-w-0 flex-1 rounded-full border border-[#ead9b8] bg-[#fffaf0] px-4 text-sm font-bold outline-none transition focus:border-[#6fa83a] focus:bg-white sm:px-5"
+          className="h-12 w-full rounded-full border border-[#ead9b8] bg-[#fffaf0] pl-5 pr-14 text-sm font-bold text-[#2f2418] outline-none transition placeholder:text-[#aa9580] focus:border-[#6fa83a] focus:bg-white focus:ring-4 focus:ring-[#6fa83a]/10"
         />
 
-        <Button
-          disabled={isPending || !isAuthenticated}
-          className="grid size-11 shrink-0 place-items-center rounded-full p-0"
-          aria-label={parentCommentId ? "Send reply" : "Send comment"}
+        <button
+          type="submit"
+          disabled={isPending}
+          aria-label={
+            parentCommentId
+              ? "Send reply"
+              : "Send comment"
+          }
+          className="absolute right-1.5 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-[#4f8124] text-white shadow-[0_5px_14px_rgba(79,129,36,0.24)] transition hover:scale-105 hover:bg-[#447522] active:scale-95 disabled:cursor-not-allowed disabled:opacity-55"
         >
-          <Send size={17} />
-        </Button>
+          <Send
+            size={16}
+            className="translate-x-px"
+          />
+        </button>
       </div>
 
       {state.message ? (
         <p
-          role={state.success ? "status" : "alert"}
+          role={
+            state.success
+              ? "status"
+              : "alert"
+          }
           className={`rounded-[14px] px-3 py-2 text-xs font-black ${
             state.success
               ? "bg-[#edf7df] text-[#4f8124]"
