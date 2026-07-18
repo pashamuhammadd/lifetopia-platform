@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import {
+  useCallback,
+  useEffect,
   useMemo,
   useState,
   type FormEvent,
@@ -19,6 +21,9 @@ import {
 import {
   PasswordField,
 } from "@/components/auth/PasswordField";
+import {
+  TurnstileChallenge,
+} from "@/components/auth/TurnstileChallenge";
 import {
   PENDING_EMAIL_VERIFICATION_KEY,
   type PendingEmailVerification,
@@ -52,6 +57,8 @@ type LoginResponse = {
   error?: string;
   email?: string;
   nextAction?: string | null;
+  captchaRequired?: boolean;
+  retryAfterSeconds?: number;
 };
 
 type RestrictedState = {
@@ -97,6 +104,26 @@ function formatRestrictionDate(
   ).format(date);
 }
 
+function formatRetryTime(
+  seconds: number,
+): string {
+  const minutes =
+    Math.floor(seconds / 60);
+  const remainingSeconds =
+    seconds % 60;
+
+  if (minutes <= 0) {
+    return `${remainingSeconds}s`;
+  }
+
+  return (
+    `${minutes}m ` +
+    `${remainingSeconds
+      .toString()
+      .padStart(2, "0")}s`
+  );
+}
+
 export function LoginForm({
   nextUrl = "/",
 }: LoginFormProps) {
@@ -126,6 +153,11 @@ export function LoginForm({
           redirectTo,
         )}`;
 
+  const turnstileSiteKey =
+    process.env
+      .NEXT_PUBLIC_TURNSTILE_SITE_KEY ??
+    "";
+
   const [
     identifier,
     setIdentifier,
@@ -145,6 +177,65 @@ export function LoginForm({
     useState<RestrictedState | null>(
       null,
     );
+
+  const [
+    captchaRequired,
+    setCaptchaRequired,
+  ] = useState(false);
+  const [
+    turnstileToken,
+    setTurnstileToken,
+  ] = useState<string | null>(
+    null,
+  );
+  const [
+    turnstileResetSignal,
+    setTurnstileResetSignal,
+  ] = useState(0);
+  const [
+    retryAfterSeconds,
+    setRetryAfterSeconds,
+  ] = useState(0);
+
+  useEffect(() => {
+    if (
+      retryAfterSeconds <= 0
+    ) {
+      return;
+    }
+
+    const interval =
+      window.setInterval(() => {
+        setRetryAfterSeconds(
+          (current) =>
+            Math.max(
+              0,
+              current - 1,
+            ),
+        );
+      }, 1_000);
+
+    return () =>
+      window.clearInterval(interval);
+  }, [retryAfterSeconds]);
+
+  const handleTurnstileToken =
+    useCallback(
+      (token: string | null) => {
+        setTurnstileToken(token);
+        if (token) {
+          setMessage("");
+        }
+      },
+      [],
+    );
+
+  function resetTurnstile() {
+    setTurnstileToken(null);
+    setTurnstileResetSignal(
+      (current) => current + 1,
+    );
+  }
 
   function continueToDestination(
     destination: string,
@@ -185,6 +276,22 @@ export function LoginForm({
       return;
     }
 
+    if (
+      retryAfterSeconds > 0
+    ) {
+      return;
+    }
+
+    if (
+      captchaRequired &&
+      !turnstileToken
+    ) {
+      setMessage(
+        "Complete the security check to continue.",
+      );
+      return;
+    }
+
     setIdentifier(
       normalizedIdentifier,
     );
@@ -208,6 +315,9 @@ export function LoginForm({
             password,
             rememberMe,
             next: redirectTo,
+            turnstileToken:
+              turnstileToken ??
+              undefined,
           }),
         },
       );
@@ -217,6 +327,44 @@ export function LoginForm({
           .json()
           .catch(() => ({}))) as
           LoginResponse;
+
+      if (
+        result.code ===
+          "captcha_required" ||
+        result.code ===
+          "captcha_invalid"
+      ) {
+        setCaptchaRequired(true);
+        setMessage(
+          result.error ??
+            "Complete the security check to continue.",
+        );
+        resetTurnstile();
+        return;
+      }
+
+      if (
+        result.code ===
+          "too_many_attempts"
+      ) {
+        setCaptchaRequired(
+          result.captchaRequired ??
+          true,
+        );
+        setRetryAfterSeconds(
+          Math.max(
+            1,
+            result.retryAfterSeconds ??
+              900,
+          ),
+        );
+        setMessage(
+          result.error ??
+            "Too many login attempts. Wait before trying again.",
+        );
+        resetTurnstile();
+        return;
+      }
 
       if (
         result.code ===
@@ -260,8 +408,17 @@ export function LoginForm({
           result.error ??
             "Login failed.",
         );
+
+        if (captchaRequired) {
+          resetTurnstile();
+        }
+
         return;
       }
+
+      setCaptchaRequired(false);
+      setRetryAfterSeconds(0);
+      setTurnstileToken(null);
 
       const destination =
         sanitizeAuthRedirectValue(
@@ -312,6 +469,10 @@ export function LoginForm({
       setMessage(
         "Unable to reach the login service.",
       );
+
+      if (captchaRequired) {
+        resetTurnstile();
+      }
     } finally {
       setIsLoading(false);
     }
@@ -410,6 +571,11 @@ export function LoginForm({
     );
   }
 
+  const retryLabel =
+    formatRetryTime(
+      retryAfterSeconds,
+    );
+
   return (
     <form
       onSubmit={handleLogin}
@@ -444,6 +610,9 @@ export function LoginForm({
               event.target.value,
             );
             setMessage("");
+            setCaptchaRequired(false);
+            setRetryAfterSeconds(0);
+            setTurnstileToken(null);
           }}
           className="rounded-[clamp(0.8rem,1.5vw,1.2rem)] border border-[#d9c99f] bg-white px-[clamp(0.8rem,1.6vw,1.2rem)] py-[clamp(0.65rem,1.2vw,0.95rem)] text-[clamp(0.8rem,1vw,1rem)] text-[#2f1b12] outline-none transition placeholder:text-[#7a5635]/50 focus:border-[#4f8124] disabled:cursor-not-allowed disabled:opacity-60"
         />
@@ -493,6 +662,28 @@ export function LoginForm({
         </Link>
       </div>
 
+      {captchaRequired &&
+      retryAfterSeconds <= 0 ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-xs font-black uppercase tracking-[0.1em] text-[#76583a]">
+            Security Check
+          </p>
+
+          <TurnstileChallenge
+            siteKey={
+              turnstileSiteKey
+            }
+            resetSignal={
+              turnstileResetSignal
+            }
+            disabled={isLoading}
+            onTokenChange={
+              handleTurnstileToken
+            }
+          />
+        </div>
+      ) : null}
+
       {message ? (
         <div
           role="alert"
@@ -502,18 +693,32 @@ export function LoginForm({
             size={17}
             className="mt-0.5 shrink-0"
           />
-          {message}
+          <span>
+            {message}
+            {retryAfterSeconds > 0
+              ? ` Try again in ${retryLabel}.`
+              : ""}
+          </span>
         </div>
       ) : null}
 
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={
+          isLoading ||
+          retryAfterSeconds > 0 ||
+          (
+            captchaRequired &&
+            !turnstileToken
+          )
+        }
         className="lt-button-primary mt-[clamp(0.3rem,1vw,0.8rem)] w-full justify-center disabled:pointer-events-none disabled:opacity-60"
       >
         {isLoading
           ? "Logging in..."
-          : "Login"}
+          : retryAfterSeconds > 0
+            ? `Try again in ${retryLabel}`
+            : "Login"}
       </button>
 
       <div className="flex items-start gap-2 rounded-[16px] border border-[#cfe2bd] bg-[#f1f8e9] px-4 py-3 text-xs font-semibold leading-5 text-[#53683a]">
@@ -521,9 +726,11 @@ export function LoginForm({
           size={16}
           className="mt-0.5 shrink-0"
         />
-        Username login is normalized to
-        lowercase. Credential failures
-        use one secure generic message.
+        Repeated failed attempts trigger
+        a security check and temporary
+        cooldown. Lifetopia stores only
+        privacy-preserving hashes for
+        abuse detection.
       </div>
 
       <p className="text-center text-[clamp(0.72rem,0.95vw,0.9rem)] text-[#7a5635]">

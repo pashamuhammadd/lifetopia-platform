@@ -4,6 +4,12 @@ import {
 } from "node:crypto";
 
 import {
+  completeLoginAttempt,
+  createLoginRiskContext,
+  reserveLoginAttempt,
+  validateTurnstileToken,
+} from "@/lib/auth/login-abuse";
+import {
   createAdminClient,
 } from "@repo/lib/supabase/admin";
 import {
@@ -150,6 +156,27 @@ function genericCredentialResponse(
     },
     {
       status: 401,
+      headers: {
+        "Cache-Control": "no-store",
+      },
+    },
+  );
+}
+
+function securityUnavailableResponse(
+  requestId: string,
+) {
+  return NextResponse.json(
+    {
+      success: false,
+      code:
+        "security_check_unavailable",
+      error:
+        "Login security is temporarily unavailable.",
+      requestId,
+    },
+    {
+      status: 503,
       headers: {
         "Cache-Control": "no-store",
       },
@@ -306,6 +333,148 @@ export async function POST(
   const normalized =
     normalizeIdentifier(identifier);
 
+  let riskContext;
+
+  try {
+    riskContext =
+      createLoginRiskContext(
+        request,
+        normalized.value,
+      );
+  } catch {
+    return securityUnavailableResponse(
+      requestId,
+    );
+  }
+
+  const turnstileToken =
+    typeof unknownBody
+      .turnstileToken === "string"
+      ? unknownBody.turnstileToken
+      : "";
+
+  let captchaPassed = false;
+
+  if (turnstileToken) {
+    const turnstileValidation =
+      await validateTurnstileToken({
+        token: turnstileToken,
+        clientIp:
+          riskContext.clientIp,
+        requestId,
+      });
+
+    if (
+      turnstileValidation.status ===
+      "unavailable"
+    ) {
+      return securityUnavailableResponse(
+        requestId,
+      );
+    }
+
+    captchaPassed =
+      turnstileValidation.status ===
+      "passed";
+  }
+
+  const reservation =
+    await reserveLoginAttempt({
+      riskContext,
+      captchaSupplied:
+        Boolean(turnstileToken),
+      captchaPassed,
+    });
+
+  if (!reservation) {
+    return securityUnavailableResponse(
+      requestId,
+    );
+  }
+
+  if (!reservation.allowed) {
+    if (
+      reservation
+        .retryAfterSeconds > 0
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          code:
+            "too_many_attempts",
+          error:
+            "Too many login attempts. Wait before trying again.",
+          retryAfterSeconds:
+            reservation
+              .retryAfterSeconds,
+          captchaRequired:
+            reservation
+              .captchaRequired,
+          requestId,
+        },
+        {
+          status: 429,
+          headers: {
+            "Cache-Control":
+              "no-store, max-age=0",
+            "Retry-After":
+              String(
+                reservation
+                  .retryAfterSeconds,
+              ),
+          },
+        },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        code: turnstileToken
+          ? "captcha_invalid"
+          : "captcha_required",
+        error: turnstileToken
+          ? "The security check was not accepted. Complete it again."
+          : "Complete the security check to continue.",
+        captchaRequired: true,
+        requestId,
+      },
+      {
+        status: 403,
+        headers: {
+          "Cache-Control":
+            "no-store, max-age=0",
+        },
+      },
+    );
+  }
+
+  if (!reservation.attemptId) {
+    return securityUnavailableResponse(
+      requestId,
+    );
+  }
+
+  const attemptId =
+    reservation.attemptId;
+
+  async function completeAttempt(
+    outcome:
+      | "success"
+      | "invalid_credentials"
+      | "email_verification_required"
+      | "restricted"
+      | "account_unavailable"
+      | "system_error",
+    userId?: string | null,
+  ) {
+    return completeLoginAttempt({
+      attemptId,
+      outcome,
+      userId,
+    });
+  }
+
   const rememberMe =
     unknownBody.rememberMe ===
     true;
@@ -330,11 +499,13 @@ export async function POST(
 
   let email =
     normalized.value;
+  let resolvedUserId:
+    string | null = null;
+
+  const admin =
+    createAdminClient();
 
   if (!normalized.isEmail) {
-    const admin =
-      createAdminClient();
-
     const {
       data: profile,
       error: profileError,
@@ -348,6 +519,10 @@ export async function POST(
       .maybeSingle();
 
     if (profileError) {
+      await completeAttempt(
+        "system_error",
+      );
+
       console.error(
         "[auth-login] username lookup failed",
         {
@@ -377,6 +552,9 @@ export async function POST(
     }
 
     if (profile?.id) {
+      resolvedUserId =
+        profile.id;
+
       const {
         data: userData,
         error: userError,
@@ -387,6 +565,11 @@ export async function POST(
           );
 
       if (userError) {
+        await completeAttempt(
+          "system_error",
+          profile.id,
+        );
+
         console.error(
           "[auth-login] user resolution failed",
           {
@@ -434,6 +617,7 @@ export async function POST(
     );
 
   const {
+    data: signInData,
     error: signInError,
   } =
     await supabase.auth
@@ -456,6 +640,20 @@ export async function POST(
       /email not confirmed/i.test(
         signInError.message,
       );
+
+    const completed =
+      await completeAttempt(
+        emailVerificationRequired
+          ? "email_verification_required"
+          : "invalid_credentials",
+        resolvedUserId,
+      );
+
+    if (!completed) {
+      return securityUnavailableResponse(
+        requestId,
+      );
+    }
 
     if (
       emailVerificationRequired
@@ -486,6 +684,10 @@ export async function POST(
     );
   }
 
+  resolvedUserId =
+    signInData.user?.id ??
+    resolvedUserId;
+
   const [
     accountStateResult,
     requiredActionsResult,
@@ -502,6 +704,11 @@ export async function POST(
     accountStateResult.error ||
     requiredActionsResult.error
   ) {
+    await completeAttempt(
+      "system_error",
+      resolvedUserId,
+    );
+
     console.error(
       "[auth-login] account state resolution failed",
       {
@@ -550,6 +757,11 @@ export async function POST(
     !accountState ||
     !requiredActions
   ) {
+    await completeAttempt(
+      "system_error",
+      resolvedUserId,
+    );
+
     await supabase.auth.signOut();
 
     return NextResponse.json(
@@ -576,7 +788,19 @@ export async function POST(
       "deleted" ||
     !requiredActions.can_read
   ) {
+    const completed =
+      await completeAttempt(
+        "account_unavailable",
+        resolvedUserId,
+      );
+
     await supabase.auth.signOut();
+
+    if (!completed) {
+      return securityUnavailableResponse(
+        requestId,
+      );
+    }
 
     return NextResponse.json(
       {
@@ -613,6 +837,22 @@ export async function POST(
       "suspended" ||
     accountState.account_status ===
       "banned";
+
+  const completed =
+    await completeAttempt(
+      restricted
+        ? "restricted"
+        : "success",
+      resolvedUserId,
+    );
+
+  if (!completed) {
+    await supabase.auth.signOut();
+
+    return securityUnavailableResponse(
+      requestId,
+    );
+  }
 
   return NextResponse.json(
     {
