@@ -7,17 +7,21 @@ import {
 import {
   Progress,
 } from "@/components/ui/Progress";
-import {
-  getCurrentProfile,
+import type {
+  CurrentProfile,
 } from "@/data/profile/current-profile";
+
 import {
   SidebarNav,
 } from "./SidebarNav";
 
-export async function Sidebar() {
-  const profile =
-    await getCurrentProfile();
+type SidebarProps = {
+  profile: CurrentProfile | null;
+};
 
+export function Sidebar({
+  profile,
+}: SidebarProps) {
   const displayName =
     profile?.displayName ??
     "Guest";
