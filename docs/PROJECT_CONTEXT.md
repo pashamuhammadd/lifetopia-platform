@@ -10,10 +10,10 @@ Lifetopia World is a cozy fantasy life simulation, social sandbox, and Web3 game
 https://lifetopiaworld.io
 
 ## Current Phase
-Auth Community Platform
+Authentication
 
 ## Current Priority
-Auth community platform
+Auth 17 — Wallet Linking
 
 ## Tech Stack
 - Next.js
@@ -33,13 +33,13 @@ Auth community platform
 - News ✅
 - Profile ✅
 - Community Platform ✅
+- Auth Community Platform ✅
 
 ## Next
 - Authentication
 - Dashboard
 - Wallet
 - Inventory
-- Auth Community Platform
 
 ## Important Rule
 Do not redesign existing sections unless explicitly requested.

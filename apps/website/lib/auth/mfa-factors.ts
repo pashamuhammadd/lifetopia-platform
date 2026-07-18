@@ -26,10 +26,39 @@ function isRecord(
 
 function normalizeStatus(
   value: unknown,
-): LifetopiaMfaFactorStatus {
-  return value === "verified"
-    ? "verified"
-    : "unverified";
+): LifetopiaMfaFactorStatus | null {
+  if (
+    value === "verified" ||
+    value === "unverified"
+  ) {
+    return value;
+  }
+
+  return null;
+}
+
+function getTotpFactorRecords(
+  data: UnknownRecord,
+): unknown[] {
+  const allFactors =
+    Array.isArray(data.all)
+      ? data.all.filter(
+          (factor) =>
+            isRecord(factor) &&
+            factor.factor_type ===
+              "totp",
+        )
+      : [];
+
+  const verifiedTotpFactors =
+    Array.isArray(data.totp)
+      ? data.totp
+      : [];
+
+  return [
+    ...allFactors,
+    ...verifiedTotpFactors,
+  ];
 }
 
 export function mapTotpFactors(
@@ -40,9 +69,7 @@ export function mapTotpFactors(
   }
 
   const factors =
-    Array.isArray(data.totp)
-      ? data.totp
-      : [];
+    getTotpFactorRecords(data);
 
   const seen =
     new Set<string>();
@@ -61,7 +88,16 @@ export function mapTotpFactors(
         ? factor.id
         : "";
 
-    if (!id || seen.has(id)) {
+    const status =
+      normalizeStatus(
+        factor.status,
+      );
+
+    if (
+      !id ||
+      !status ||
+      seen.has(id)
+    ) {
       continue;
     }
 
@@ -77,10 +113,7 @@ export function mapTotpFactors(
     mapped.push({
       id,
       friendlyName,
-      status:
-        normalizeStatus(
-          factor.status,
-        ),
+      status,
       createdAt:
         typeof factor.created_at ===
           "string"

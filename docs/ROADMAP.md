@@ -1,10 +1,10 @@
 # Lifetopia World — Roadmap
 
 ## Current Phase
-Auth Community Platform
+Authentication
 
 ## Current Priority
-Auth community platform
+Auth 17 — Wallet Linking
 
 ## Completed
 - Hero
@@ -17,17 +17,17 @@ Auth community platform
 - News
 - Profile
 - Community Platform
+- Auth Community Platform
 
 ## Next
 - Authentication
 - Dashboard
 - Wallet
 - Inventory
-- Auth Community Platform
 
 ## Progress
 - landing Page: ████████████████████ 100%
-- authentication: ██████████░░░░░░░░░░ 50%
+- authentication: ██████████████░░░░░░ 70%
 - dashboard: ████████░░░░░░░░░░░░ 40%
 - backend: ░░░░░░░░░░░░░░░░░░░░ 0%
 - game Integration: ░░░░░░░░░░░░░░░░░░░░ 0%

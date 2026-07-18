@@ -10,11 +10,25 @@
 
 | File | Exports |
 |---|---|
+| `apps/website/components/auth/AccountAccessPanel.tsx` | `AccountAccessPanel` |
 | `apps/website/components/auth/AuthCard.tsx` | `AuthCard` |
 | `apps/website/components/auth/AvatarPicker.tsx` | `AvatarPicker` |
+| `apps/website/components/auth/CheckEmailPanel.tsx` | `CheckEmailPanel` |
 | `apps/website/components/auth/CountryPicker.tsx` | `CountryPicker` |
+| `apps/website/components/auth/EmailVerifiedCleanup.tsx` | `EmailVerifiedCleanup` |
+| `apps/website/components/auth/ForgotPasswordForm.tsx` | `ForgotPasswordForm` |
+| `apps/website/components/auth/GuardianConsentPanel.tsx` | `GuardianConsentPanel` |
+| `apps/website/components/auth/GuardianConsentReview.tsx` | `GuardianConsentReview` |
+| `apps/website/components/auth/JoinCommunityModal.tsx` | `JoinCommunityModal` |
 | `apps/website/components/auth/LoginForm.tsx` | `LoginForm` |
+| `apps/website/components/auth/MfaChallengeForm.tsx` | `MfaChallengeForm` |
+| `apps/website/components/auth/MfaSettingsPanel.tsx` | `MfaSettingsPanel` |
+| `apps/website/components/auth/PasswordField.tsx` | `PasswordField` |
 | `apps/website/components/auth/RegisterForm.tsx` | `RegisterForm` |
+| `apps/website/components/auth/RegisterProgress.tsx` | `RegisterProgress` |
+| `apps/website/components/auth/ResetPasswordForm.tsx` | `ResetPasswordForm` |
+| `apps/website/components/auth/SessionManagementPanel.tsx` | `SessionManagementPanel` |
+| `apps/website/components/auth/TurnstileChallenge.tsx` | `TurnstileChallenge` |
 | `apps/website/components/dashboard/ComingSoonFeatures.tsx` | `ComingSoonFeatures` |
 | `apps/website/components/dashboard/CommunityActivity.tsx` | `CommunityActivity` |
 | `apps/website/components/dashboard/DailyQuestCard.tsx` | `DailyQuestCard` |
@@ -35,15 +49,13 @@
 | `apps/website/components/home/community/CommunitySection.tsx` | `CommunitySection` |
 | `apps/website/components/home/development-journey/DevelopmentJourneySection.tsx` | `DevelopmentJourneySection` |
 | `apps/website/components/home/development-journey/JourneyContent.tsx` | `JourneyContent` |
-| `apps/website/components/home/development-journey/JourneyGrant.tsx` | `JourneyGrant` |
 | `apps/website/components/home/development-journey/JourneyHeader.tsx` | `JourneyHeader` |
-| `apps/website/components/home/development-journey/JourneyLightbox.tsx` | `JourneyLightbox` |
 | `apps/website/components/home/development-journey/JourneyMedia.tsx` | `JourneyMedia` |
 | `apps/website/components/home/development-journey/JourneyNavigation.tsx` | `JourneyNavigation` |
 | `apps/website/components/home/development-journey/JourneyProgress.tsx` | `JourneyProgress` |
 | `apps/website/components/home/development-journey/JourneyTimeline.tsx` | `JourneyTimeline` |
 | `apps/website/components/home/development-journey/JourneyVision.tsx` | `JourneyVision` |
-| `apps/website/components/home/development-log/LiveDevelopmentLogSection.tsx` | - |
+| `apps/website/components/home/development-log/LiveDevelopmentLogSection.tsx` | `LiveDevelopmentLogSection` |
 | `apps/website/components/home/footer/Footer.tsx` | `Footer` |
 | `apps/website/components/home/gameplay/GameplayCards.tsx` | `GameplayCards` |
 | `apps/website/components/home/gameplay/GameplaySection.tsx` | `GameplaySection` |
@@ -53,9 +65,9 @@
 | `apps/website/components/home/hero/HeroPartner.tsx` | `HeroPartner` |
 | `apps/website/components/home/hero/HeroSection.tsx` | `HeroSection` |
 | `apps/website/components/home/hero/PlayWarningModal.tsx` | `PlayWarningModal` |
-| `apps/website/components/home/news/NewsSection.tsx` | `NewsSection` |
 | `apps/website/components/home/RoadmapSection.tsx` | `RoadmapSection` |
 | `apps/website/components/layout/Navbar.tsx` | `Navbar` |
+| `apps/website/components/legal/LegalDocumentLayout.tsx` | `LegalDocumentLayout`, `LegalSection` |
 | `apps/website/components/seo/JsonLd.tsx` | `JsonLd` |
 
 

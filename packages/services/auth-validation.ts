@@ -167,6 +167,7 @@ const PROTECTED_USERNAME_TOKENS =
     "contact",
     "lifetopia",
     "lifetopiaworld",
+    "pashamuhammad",
     "developer",
     "artist",
     "alphatester",

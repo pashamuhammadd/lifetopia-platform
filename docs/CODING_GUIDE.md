@@ -34,6 +34,20 @@ components/home/account/AccountSection.tsx
 - Do not make mobile layout completely different from desktop unless requested.
 - Do not generate images unless explicitly requested.
 
+## Responsive Rule
+Use fluid responsive sizes with `clamp()`.
+
+Examples:
+
+```tsx
+text-[clamp(...)]
+px-[clamp(...)]
+py-[clamp(...)]
+gap-[clamp(...)]
+rounded-[clamp(...)]
+```
+
+Desktop and mobile should feel like the same layout, only scaled down.
 
 ## Commit Convention
 Use clear commit messages:

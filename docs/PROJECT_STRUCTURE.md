@@ -9,6 +9,9 @@ lifetopia-platform
 │       ├── build-start.yml
 │       ├── development-log.yml
 │       └── development-update.yml
+├── .vscode
+│   └── schemas
+│       └── turbo.schema.json
 ├── apps
 │   ├── community
 │   │   ├── app
@@ -17,8 +20,13 @@ lifetopia-platform
 │   │   │   │   │   ├── bookmarks.ts
 │   │   │   │   │   ├── comments.ts
 │   │   │   │   │   ├── likes.ts
-│   │   │   │   │   └── posts.ts
+│   │   │   │   │   ├── moderation.ts
+│   │   │   │   │   ├── posts.ts
+│   │   │   │   │   └── reports.ts
 │   │   │   │   └── auth.ts
+│   │   │   ├── admin
+│   │   │   │   └── reports
+│   │   │   │       └── page.tsx
 │   │   │   ├── explore
 │   │   │   │   └── page.tsx
 │   │   │   ├── fonts
@@ -32,6 +40,9 @@ lifetopia-platform
 │   │   │   │   └── page.tsx
 │   │   │   ├── notifications
 │   │   │   │   └── page.tsx
+│   │   │   ├── post
+│   │   │   │   └── [postId]
+│   │   │   │       └── page.tsx
 │   │   │   ├── quest
 │   │   │   │   └── page.tsx
 │   │   │   ├── settings
@@ -39,13 +50,27 @@ lifetopia-platform
 │   │   │   ├── user
 │   │   │   │   └── [username]
 │   │   │   │       └── page.tsx
+│   │   │   ├── error.tsx
 │   │   │   ├── favicon.ico
+│   │   │   ├── global-error.tsx
 │   │   │   ├── globals.css
 │   │   │   ├── layout.tsx
-│   │   │   └── page.tsx
+│   │   │   ├── loading.tsx
+│   │   │   ├── manifest.ts
+│   │   │   ├── not-found.tsx
+│   │   │   ├── page.tsx
+│   │   │   ├── robots.ts
+│   │   │   └── sitemap.ts
 │   │   ├── components
+│   │   │   ├── admin
+│   │   │   │   ├── ReportModerationActions.tsx
+│   │   │   │   └── ReportsDashboard.tsx
 │   │   │   ├── auth
-│   │   │   │   └── GuestAuthModal.tsx
+│   │   │   │   ├── AuthenticatedLink.tsx
+│   │   │   │   ├── GuestAuthModal.tsx
+│   │   │   │   └── GuestAuthProvider.tsx
+│   │   │   ├── community
+│   │   │   │   └── RichCommunityText.tsx
 │   │   │   ├── explore
 │   │   │   │   ├── Explore.tsx
 │   │   │   │   ├── SuggestedLifetopians.tsx
@@ -55,6 +80,7 @@ lifetopia-platform
 │   │   │   │   ├── CreatePost.tsx
 │   │   │   │   ├── CreatePostForm.tsx
 │   │   │   │   ├── Feed.tsx
+│   │   │   │   ├── FeedPagination.tsx
 │   │   │   │   └── PostCard.tsx
 │   │   │   ├── guild
 │   │   │   │   ├── Guild.tsx
@@ -62,6 +88,8 @@ lifetopia-platform
 │   │   │   │   ├── GuildHero.tsx
 │   │   │   │   ├── GuildLeaderboard.tsx
 │   │   │   │   └── GuildMembers.tsx
+│   │   │   ├── identity
+│   │   │   │   └── ProfileIdentityBadges.tsx
 │   │   │   ├── layout
 │   │   │   │   ├── AppLayout.tsx
 │   │   │   │   ├── BottomNavigation.tsx
@@ -103,12 +131,17 @@ lifetopia-platform
 │   │   │   │   ├── Quest.tsx
 │   │   │   │   ├── SeasonQuestSection.tsx
 │   │   │   │   └── WeeklyQuestSection.tsx
+│   │   │   ├── report
+│   │   │   │   ├── ReportModal.tsx
+│   │   │   │   └── ReportTrigger.tsx
 │   │   │   ├── settings
 │   │   │   │   ├── LogoutSection.tsx
 │   │   │   │   ├── NotificationSettings.tsx
 │   │   │   │   ├── ProfileSettings.tsx
 │   │   │   │   ├── SecuritySettings.tsx
 │   │   │   │   └── Settings.tsx
+│   │   │   ├── system
+│   │   │   │   └── FeaturePreparation.tsx
 │   │   │   └── ui
 │   │   │       ├── Avatar.tsx
 │   │   │       ├── Badge.tsx
@@ -121,6 +154,11 @@ lifetopia-platform
 │   │   │       ├── SectionCard.tsx
 │   │   │       └── StatCard.tsx
 │   │   ├── data
+│   │   │   ├── admin
+│   │   │   │   └── reports.ts
+│   │   │   ├── auth
+│   │   │   │   ├── require-current-profile.ts
+│   │   │   │   └── require-moderator-profile.ts
 │   │   │   ├── community
 │   │   │   │   ├── bookmarks.ts
 │   │   │   │   ├── comments.ts
@@ -138,7 +176,6 @@ lifetopia-platform
 │   │   │   ├── my-world.ts
 │   │   │   ├── navigation.ts
 │   │   │   ├── notifications.ts
-│   │   │   ├── posts.ts
 │   │   │   ├── quest.ts
 │   │   │   └── sidebar.ts
 │   │   ├── public
@@ -204,6 +241,7 @@ lifetopia-platform
 │   │   │   ├── my-world.ts
 │   │   │   ├── navigation.ts
 │   │   │   ├── post.ts
+│   │   │   ├── report.ts
 │   │   │   └── sidebar.ts
 │   │   ├── .env.local
 │   │   ├── .gitignore
@@ -213,17 +251,43 @@ lifetopia-platform
 │   │   ├── package.json
 │   │   ├── postcss.config.mjs
 │   │   ├── README.md
-│   │   └── tsconfig.json
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.tsbuildinfo
 │   ├── docs
 │   │   ├── app
+│   │   │   ├── [slug]
+│   │   │   │   └── page.tsx
 │   │   │   ├── fonts
 │   │   │   │   ├── GeistMonoVF.woff
 │   │   │   │   └── GeistVF.woff
 │   │   │   ├── favicon.ico
 │   │   │   ├── globals.css
 │   │   │   ├── layout.tsx
-│   │   │   ├── page.module.css
-│   │   │   └── page.tsx
+│   │   │   ├── not-found.tsx
+│   │   │   ├── opengraph-image.tsx
+│   │   │   ├── page.tsx
+│   │   │   ├── robots.ts
+│   │   │   ├── sitemap.ts
+│   │   │   └── twitter-image.tsx
+│   │   ├── components
+│   │   │   └── docs
+│   │   │       ├── BackToTop.tsx
+│   │   │       ├── BetaRoadmapVisual.tsx
+│   │   │       ├── DocsHomeContent.tsx
+│   │   │       ├── DocsLanguageProvider.tsx
+│   │   │       ├── DocsNavbar.tsx
+│   │   │       ├── DocsSearch.tsx
+│   │   │       ├── DocsSidebar.tsx
+│   │   │       ├── DocumentContent.tsx
+│   │   │       ├── DocumentStatusBadge.tsx
+│   │   │       ├── DocumentTableOfContents.tsx
+│   │   │       ├── index.ts
+│   │   │       ├── PitchDeckPreview.tsx
+│   │   │       ├── ProjectOverviewVisual.tsx
+│   │   │       ├── TechnicalArchitectureVisual.tsx
+│   │   │       └── WhitepaperEconomyVisual.tsx
+│   │   ├── lib
+│   │   │   └── createDocsSocialImage.tsx
 │   │   ├── public
 │   │   │   ├── file-text.svg
 │   │   │   ├── globe.svg
@@ -232,11 +296,16 @@ lifetopia-platform
 │   │   │   ├── turborepo-light.svg
 │   │   │   ├── vercel.svg
 │   │   │   └── window.svg
+│   │   ├── scripts
+│   │   │   ├── predeploy-audit.mjs
+│   │   │   └── validate-routes.mjs
+│   │   ├── .env.example
 │   │   ├── .gitignore
 │   │   ├── eslint.config.js
 │   │   ├── next-env.d.ts
 │   │   ├── next.config.js
 │   │   ├── package.json
+│   │   ├── postcss.config.mjs
 │   │   ├── README.md
 │   │   └── tsconfig.json
 │   ├── grants
@@ -248,8 +317,6 @@ lifetopia-platform
 │   │   │   └── sitemap.ts
 │   │   ├── components
 │   │   │   ├── budget
-│   │   │   │   ├── BudgetAllocation.tsx
-│   │   │   │   ├── BudgetBreakdown.tsx
 │   │   │   │   ├── BudgetSection.tsx
 │   │   │   │   └── index.ts
 │   │   │   ├── current-development
@@ -259,34 +326,23 @@ lifetopia-platform
 │   │   │   │   ├── FounderNoteSection.tsx
 │   │   │   │   └── index.ts
 │   │   │   ├── impact
-│   │   │   │   ├── ImpactCard.tsx
-│   │   │   │   ├── ImpactMetrics.tsx
 │   │   │   │   ├── ImpactSection.tsx
 │   │   │   │   └── index.ts
 │   │   │   ├── problem-solution
-│   │   │   │   ├── AdoptionDiagram.tsx
 │   │   │   │   ├── index.ts
-│   │   │   │   ├── ProblemCard.tsx
-│   │   │   │   ├── ProblemSolutionSection.tsx
-│   │   │   │   └── SolutionCard.tsx
+│   │   │   │   └── ProblemSolutionSection.tsx
 │   │   │   ├── public-development
-│   │   │   │   ├── DevelopmentActivity.tsx
 │   │   │   │   ├── index.ts
-│   │   │   │   ├── LatestCommit.tsx
 │   │   │   │   └── PublicDevelopmentSection.tsx
 │   │   │   ├── roadmap
 │   │   │   │   ├── index.ts
-│   │   │   │   ├── RoadmapMilestone.tsx
-│   │   │   │   ├── RoadmapSection.tsx
-│   │   │   │   └── RoadmapTimeline.tsx
+│   │   │   │   └── RoadmapSection.tsx
 │   │   │   ├── team
 │   │   │   │   ├── index.ts
 │   │   │   │   ├── TeamMemberCard.tsx
 │   │   │   │   └── TeamSection.tsx
 │   │   │   ├── why-support
 │   │   │   │   ├── index.ts
-│   │   │   │   ├── SupportReasonCard.tsx
-│   │   │   │   ├── SupportTimeline.tsx
 │   │   │   │   └── WhySupportSection.tsx
 │   │   │   ├── DocumentsHub.tsx
 │   │   │   ├── GrantHero.tsx
@@ -295,14 +351,19 @@ lifetopia-platform
 │   │   │   ├── PlayWarningModal.tsx
 │   │   │   ├── ProjectSnapshot.tsx
 │   │   │   └── TechnologyIcon.tsx
-│   │   ├── data
-│   │   │   └── grants.ts
 │   │   ├── public
 │   │   │   ├── backgrounds
 │   │   │   ├── brand
 │   │   │   │   ├── lifetopia-character.png
 │   │   │   │   ├── lifetopia-icon.png
-│   │   │   │   └── lifetopia-logo.png
+│   │   │   │   ├── lifetopia-logo.png
+│   │   │   │   └── solana-logo.svg
+│   │   │   ├── images
+│   │   │   │   └── team
+│   │   │   │       ├── hariono-suwika.jpg
+│   │   │   │       ├── pasha-muhammad.png
+│   │   │   │       ├── rahmi-vina-shafira.jpg
+│   │   │   │       └── sonny-michael-wijaya.jpg
 │   │   │   └── previews
 │   │   │       ├── community-platform.png
 │   │   │       ├── main-website.jpg
@@ -316,36 +377,119 @@ lifetopia-platform
 │   │   └── tsconfig.json
 │   └── website
 │       ├── app
+│       │   ├── account
+│       │   │   ├── security
+│       │   │   │   └── mfa
+│       │   │   │       └── page.tsx
+│       │   │   └── sessions
+│       │   │       └── page.tsx
+│       │   ├── account-access
+│       │   │   └── page.tsx
 │       │   ├── api
 │       │   │   ├── auth
-│       │   │   │   └── login
-│       │   │   │       └── route.ts
+│       │   │   │   ├── account-access
+│       │   │   │   │   ├── legal
+│       │   │   │   │   │   └── route.ts
+│       │   │   │   │   └── username
+│       │   │   │   │       └── route.ts
+│       │   │   │   ├── guardian
+│       │   │   │   │   ├── request
+│       │   │   │   │   │   └── route.ts
+│       │   │   │   │   └── respond
+│       │   │   │   │       └── route.ts
+│       │   │   │   ├── login
+│       │   │   │   │   └── route.ts
+│       │   │   │   ├── mfa
+│       │   │   │   │   ├── challenge
+│       │   │   │   │   │   └── route.ts
+│       │   │   │   │   ├── enroll
+│       │   │   │   │   │   ├── cancel
+│       │   │   │   │   │   │   └── route.ts
+│       │   │   │   │   │   ├── verify
+│       │   │   │   │   │   │   └── route.ts
+│       │   │   │   │   │   └── route.ts
+│       │   │   │   │   └── unenroll
+│       │   │   │   │       └── route.ts
+│       │   │   │   ├── password-reset
+│       │   │   │   │   ├── complete
+│       │   │   │   │   │   └── route.ts
+│       │   │   │   │   └── request
+│       │   │   │   │       └── route.ts
+│       │   │   │   ├── register
+│       │   │   │   │   └── route.ts
+│       │   │   │   ├── resend-verification
+│       │   │   │   │   └── route.ts
+│       │   │   │   └── sessions
+│       │   │   │       ├── logout-all
+│       │   │   │       │   └── route.ts
+│       │   │   │       ├── logout-current
+│       │   │   │       │   └── route.ts
+│       │   │   │       ├── logout-others
+│       │   │   │       │   └── route.ts
+│       │   │   │       └── revoke
+│       │   │   │           └── route.ts
 │       │   │   └── development-log
 │       │   │       └── route.ts
+│       │   ├── auth
+│       │   │   └── confirm
+│       │   │       └── route.ts
+│       │   ├── check-email
+│       │   │   └── page.tsx
 │       │   ├── dashboard
+│       │   │   └── page.tsx
+│       │   ├── email-verified
 │       │   │   └── page.tsx
 │       │   ├── fonts
 │       │   │   ├── GeistMonoVF.woff
 │       │   │   └── GeistVF.woff
+│       │   ├── forgot-password
+│       │   │   └── page.tsx
+│       │   ├── guardian-consent
+│       │   │   ├── confirm
+│       │   │   │   └── page.tsx
+│       │   │   └── page.tsx
 │       │   ├── login
 │       │   │   └── page.tsx
+│       │   ├── mfa-challenge
+│       │   │   └── page.tsx
+│       │   ├── mfa-recovery
+│       │   │   └── page.tsx
+│       │   ├── privacy
+│       │   │   └── page.tsx
 │       │   ├── register
+│       │   │   └── page.tsx
+│       │   ├── reset-password
+│       │   │   └── page.tsx
+│       │   ├── terms
 │       │   │   └── page.tsx
 │       │   ├── favicon.ico
 │       │   ├── globals.css
 │       │   ├── layout.tsx
 │       │   ├── manifest.ts
-│       │   ├── page.module.css
 │       │   ├── page.tsx
 │       │   ├── robots.ts
 │       │   └── sitemap.ts
 │       ├── components
 │       │   ├── auth
+│       │   │   ├── AccountAccessPanel.tsx
 │       │   │   ├── AuthCard.tsx
 │       │   │   ├── AvatarPicker.tsx
+│       │   │   ├── CheckEmailPanel.tsx
 │       │   │   ├── CountryPicker.tsx
+│       │   │   ├── EmailVerifiedCleanup.tsx
+│       │   │   ├── ForgotPasswordForm.tsx
+│       │   │   ├── GuardianConsentPanel.tsx
+│       │   │   ├── GuardianConsentReview.tsx
+│       │   │   ├── JoinCommunityModal.tsx
 │       │   │   ├── LoginForm.tsx
-│       │   │   └── RegisterForm.tsx
+│       │   │   ├── MfaChallengeForm.tsx
+│       │   │   ├── MfaSettingsPanel.tsx
+│       │   │   ├── PasswordField.tsx
+│       │   │   ├── RegisterForm.tsx
+│       │   │   ├── RegisterProgress.tsx
+│       │   │   ├── ResetPasswordForm.tsx
+│       │   │   ├── SessionManagementPanel.tsx
+│       │   │   └── TurnstileChallenge.tsx
 │       │   ├── dashboard
 │       │   │   ├── ComingSoonFeatures.tsx
 │       │   │   ├── CommunityActivity.tsx
@@ -371,9 +515,7 @@ lifetopia-platform
 │       │   │   ├── development-journey
 │       │   │   │   ├── DevelopmentJourneySection.tsx
 │       │   │   │   ├── JourneyContent.tsx
-│       │   │   │   ├── JourneyGrant.tsx
 │       │   │   │   ├── JourneyHeader.tsx
-│       │   │   │   ├── JourneyLightbox.tsx
 │       │   │   │   ├── JourneyMedia.tsx
 │       │   │   │   ├── JourneyNavigation.tsx
 │       │   │   │   ├── JourneyProgress.tsx
@@ -393,11 +535,11 @@ lifetopia-platform
 │       │   │   │   ├── HeroPartner.tsx
 │       │   │   │   ├── HeroSection.tsx
 │       │   │   │   └── PlayWarningModal.tsx
-│       │   │   ├── news
-│       │   │   │   └── NewsSection.tsx
 │       │   │   └── RoadmapSection.tsx
 │       │   ├── layout
 │       │   │   └── Navbar.tsx
+│       │   ├── legal
+│       │   │   └── LegalDocumentLayout.tsx
 │       │   ├── seo
 │       │   │   └── JsonLd.tsx
 │       │   ├── shared
@@ -406,7 +548,21 @@ lifetopia-platform
 │       │       └── .gitkeep
 │       ├── config
 │       ├── constants
+│       ├── data
+│       │   └── legal-documents.ts
 │       ├── hooks
+│       ├── lib
+│       │   └── auth
+│       │       ├── guardian-consent-email.ts
+│       │       ├── login-abuse.ts
+│       │       ├── mfa-audit.ts
+│       │       ├── mfa-factors.ts
+│       │       ├── mfa-session.ts
+│       │       ├── password-reauth.ts
+│       │       ├── password-reset-email.ts
+│       │       ├── pending-verification.ts
+│       │       ├── session-device.ts
+│       │       └── verification-email.ts
 │       ├── providers
 │       ├── styles
 │       │   └── .gitkeep
@@ -427,6 +583,19 @@ lifetopia-platform
 ├── docs
 │   ├── api
 │   ├── architecture
+│   │   ├── AUTH_ACCOUNT_ACCESS.md
+│   │   ├── AUTH_ANTI_ABUSE.md
+│   │   ├── AUTH_EMAIL_VERIFICATION.md
+│   │   ├── AUTH_FOUNDER.md
+│   │   ├── AUTH_GUARDIAN_CONSENT.md
+│   │   ├── AUTH_LOGIN.md
+│   │   ├── AUTH_MFA.md
+│   │   ├── AUTH_PASSWORD_RECOVERY.md
+│   │   ├── AUTH_REGISTER_UI.md
+│   │   ├── AUTH_REGISTRATION_API.md
+│   │   ├── AUTH_ROLES_BADGES.md
+│   │   ├── AUTH_SESSION_MANAGEMENT.md
+│   │   └── AUTH_VALIDATION.md
 │   ├── design-system
 │   ├── roadmap
 │   ├── AI_CONTEXT.md
@@ -450,7 +619,6 @@ lifetopia-platform
 │   │   ├── auth.ts
 │   │   ├── community.ts
 │   │   ├── dashboard.ts
-│   │   ├── footer.ts
 │   │   ├── homepage.ts
 │   │   ├── index.ts
 │   │   ├── journey.ts
@@ -459,6 +627,13 @@ lifetopia-platform
 │   │   ├── package.json
 │   │   ├── roadmap.ts
 │   │   └── tsconfig.json
+│   ├── docs-data
+│   │   ├── categories.ts
+│   │   ├── documents.ts
+│   │   ├── index.ts
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── types.ts
 │   ├── eslint-config
 │   │   ├── base.js
 │   │   ├── next.js
@@ -474,10 +649,13 @@ lifetopia-platform
 │   │   │   └── server.ts
 │   │   ├── auth-redirect.ts
 │   │   ├── format.ts
+│   │   ├── identity.ts
 │   │   ├── index.ts
 │   │   ├── package.json
 │   │   └── tsconfig.json
 │   ├── services
+│   │   ├── AUTH_4_CHECKLIST.md
+│   │   ├── auth-validation.ts
 │   │   ├── auth.ts
 │   │   ├── development-log.ts
 │   │   ├── index.ts
@@ -588,6 +766,66 @@ lifetopia-platform
 │   ├── project-status.mjs
 │   ├── project-update.mjs
 │   └── sync-public.mjs
+├── supabase
+│   └── auth
+│       ├── AUTH_0_5C.md
+│       ├── AUTH_0_5D.md
+│       ├── AUTH_1.md
+│       ├── AUTH_2.md
+│       ├── AUTH_3.md
+│       ├── auth-0.5a-create-snapshot.sql
+│       ├── auth-0.5a-inspect-snapshot.sql
+│       ├── auth-0.5a-verify-snapshot.sql
+│       ├── auth-0.5b-preflight.sql
+│       ├── auth-0.5b-repair-signup.sql
+│       ├── auth-0.5b-verify.sql
+│       ├── auth-0.5c-harden-profile-privacy.sql
+│       ├── auth-0.5c-preflight.sql
+│       ├── auth-0.5c-verify.sql
+│       ├── auth-0.5d-normalize-identities.sql
+│       ├── auth-0.5d-preflight.sql
+│       ├── auth-0.5d-verify.sql
+│       ├── auth-1-legal-consent-foundation.sql
+│       ├── auth-1-verify.sql
+│       ├── auth-10-account-access.sql
+│       ├── auth-10-preflight.sql
+│       ├── auth-10-verify.sql
+│       ├── auth-11-login-anti-abuse.sql
+│       ├── auth-11-preflight.sql
+│       ├── auth-11-verify.sql
+│       ├── auth-12-password-recovery.sql
+│       ├── auth-12-preflight.sql
+│       ├── auth-12-verify.sql
+│       ├── auth-13-preflight.sql
+│       ├── auth-13-session-management.sql
+│       ├── auth-13-verify.sql
+│       ├── auth-14-mfa.sql
+│       ├── auth-14-preflight.sql
+│       ├── auth-14-verify.sql
+│       ├── auth-15-preflight.sql
+│       ├── auth-15-roles-badges.sql
+│       ├── auth-15-verify.sql
+│       ├── auth-16-founder-readiness.sql
+│       ├── auth-16-founder.sql
+│       ├── auth-16-identity-assignment-template.sql
+│       ├── auth-16-preflight.sql
+│       ├── auth-16-verify.sql
+│       ├── auth-2-data-model.sql
+│       ├── auth-2-preflight.sql
+│       ├── auth-2-verify.sql
+│       ├── auth-3-legacy-account-migration.sql
+│       ├── auth-3-preflight.sql
+│       ├── auth-3-verify.sql
+│       ├── auth-5-preflight.sql
+│       ├── auth-5-registration-finalization.sql
+│       ├── auth-5-verify.sql
+│       ├── auth-7-email-verification.sql
+│       ├── auth-7-preflight.sql
+│       ├── auth-7-verify.sql
+│       ├── auth-8-guardian-consent.sql
+│       ├── auth-8-preflight.sql
+│       ├── auth-8-verify.sql
+│       └── README.md
 ├── .gitignore
 ├── .npmrc
 ├── package.json
