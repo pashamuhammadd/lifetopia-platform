@@ -6,6 +6,7 @@ import {
 import Link from "next/link";
 
 import { AuthCard } from "@/components/auth/AuthCard";
+import { createClient } from "@repo/lib/supabase/server";
 import { EmailVerifiedCleanup } from "@/components/auth/EmailVerifiedCleanup";
 import {
   sanitizeAuthRedirectValue,
@@ -55,6 +56,34 @@ export default async function EmailVerifiedPage({
   const success =
     rawStatus === "success";
 
+  let continueHref = next;
+  let requiresGuardianConsent = false;
+
+  if (success) {
+    const supabase =
+      await createClient();
+
+    const { data } = await supabase.rpc(
+      "get_my_required_account_actions",
+    );
+
+    const accountAction =
+      Array.isArray(data)
+        ? data[0]
+        : data;
+
+    requiresGuardianConsent =
+      accountAction?.next_action ===
+        "guardian_consent";
+
+    if (requiresGuardianConsent) {
+      continueHref =
+        `/guardian-consent?next=${encodeURIComponent(
+          next,
+        )}`;
+    }
+  }
+
   return (
     <AuthCard
       badge="Email Verification"
@@ -94,10 +123,12 @@ export default async function EmailVerifiedPage({
 
         {success ? (
           <a
-            href={next}
+            href={continueHref}
             className="lt-button-primary w-full justify-center"
           >
-            Continue to Lifetopia
+            {requiresGuardianConsent
+              ? "Continue to Guardian Approval"
+              : "Continue to Lifetopia"}
           </a>
         ) : (
           <Link

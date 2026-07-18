@@ -4,7 +4,12 @@
   "globalEnv": [
   "DOCS_VALIDATION_URL",
   "NEXT_PUBLIC_PITCH_DECK_PDF_URL",
-  "DEVELOPMENT_LOG_SECRET"
+  "DEVELOPMENT_LOG_SECRET",
+  "SMTP_HOST",
+    "SMTP_PORT",
+    "SMTP_SECURE",
+    "SMTP_USER",
+    "SMTP_PASS"
 ],
   "tasks": {
     "build": {
