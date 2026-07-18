@@ -1,6 +1,16 @@
-import { AuthCard } from "@/components/auth/AuthCard";
-import { RegisterForm } from "@/components/auth/RegisterForm";
-import { sanitizeAuthRedirect } from "@repo/lib/auth-redirect";
+import type {
+  Metadata,
+} from "next";
+
+import {
+  AuthCard,
+} from "@/components/auth/AuthCard";
+import {
+  RegisterForm,
+} from "@/components/auth/RegisterForm";
+import {
+  sanitizeAuthRedirectValue,
+} from "@repo/services/auth-validation";
 
 type RegisterPageProps = {
   searchParams?: Promise<{
@@ -8,18 +18,40 @@ type RegisterPageProps = {
   }>;
 };
 
-export default async function RegisterPage({ searchParams }: RegisterPageProps) {
-  const params = searchParams ? await searchParams : {};
-  const rawNext = Array.isArray(params.next) ? params.next[0] : params.next;
-  const nextUrl = sanitizeAuthRedirect(rawNext);
+export const metadata: Metadata = {
+  title: "Create Account",
+  description:
+    "Create your shared Lifetopia World account.",
+};
+
+export default async function RegisterPage({
+  searchParams,
+}: RegisterPageProps) {
+  const params =
+    searchParams
+      ? await searchParams
+      : {};
+
+  const rawNext =
+    Array.isArray(params.next)
+      ? params.next[0]
+      : params.next;
+
+  const nextUrl =
+    sanitizeAuthRedirectValue(
+      rawNext,
+      "/",
+    );
 
   return (
     <AuthCard
       badge="Player Account"
       title="Start your Lifetopia journey."
-      description="Create your player account for the Lifetopia platform, community, dashboard, and future connected game experience."
+      description="Create one account for the Lifetopia website, community, dashboard, and connected game experience."
     >
-      <RegisterForm nextUrl={nextUrl} />
+      <RegisterForm
+        nextUrl={nextUrl}
+      />
     </AuthCard>
   );
 }

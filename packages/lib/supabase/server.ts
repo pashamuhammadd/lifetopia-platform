@@ -1,27 +1,68 @@
+import {
+  createServerClient,
+} from "@supabase/ssr";
+import {
+  cookies,
+} from "next/headers";
 
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import { getSupabaseCookieOptions } from "./cookie-options";
+import {
+  applySupabaseCookiePersistence,
+  AUTH_SESSION_PERSISTENCE_COOKIE,
+  getSupabaseCookieOptions,
+  normalizeAuthSessionPersistence,
+  type AuthSessionPersistence,
+} from "./cookie-options";
 
-export async function createClient() {
-  const cookieStore = await cookies();
+export async function createClient(
+  persistenceOverride?:
+    AuthSessionPersistence,
+) {
+  const cookieStore =
+    await cookies();
+
+  const persistence =
+    persistenceOverride ??
+    normalizeAuthSessionPersistence(
+      cookieStore.get(
+        AUTH_SESSION_PERSISTENCE_COOKIE,
+      )?.value,
+    );
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env
+      .NEXT_PUBLIC_SUPABASE_URL!,
+    process.env
+      .NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      cookieOptions: getSupabaseCookieOptions(),
+      cookieOptions:
+        getSupabaseCookieOptions(
+          persistence,
+        ),
       cookies: {
         getAll() {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
           try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options);
-            });
+            cookiesToSet.forEach(
+              ({
+                name,
+                value,
+                options,
+              }) => {
+                cookieStore.set(
+                  name,
+                  value,
+                  applySupabaseCookiePersistence(
+                    options,
+                    persistence,
+                  ),
+                );
+              },
+            );
           } catch {
-            // Server Components cannot always set cookies directly.
+            // Server Components cannot
+            // always set cookies directly.
           }
         },
       },
