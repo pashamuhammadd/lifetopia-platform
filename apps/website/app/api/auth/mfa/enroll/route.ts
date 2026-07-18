@@ -3,8 +3,12 @@ import {
 } from "node:crypto";
 
 import {
-  getCurrentMfaSessionState,
-} from "@/lib/auth/mfa-session";
+  getMfaErrorCode,
+  recordMfaEvent,
+} from "@/lib/auth/mfa-audit";
+import {
+  mapTotpFactors,
+} from "@/lib/auth/mfa-factors";
 import {
   createClient,
 } from "@repo/lib/supabase/server";
@@ -28,7 +32,6 @@ function isRecord(
   );
 }
 
-
 function isRequestOriginAllowed(
   request: Request,
 ): boolean {
@@ -49,6 +52,32 @@ function isRequestOriginAllowed(
   }
 }
 
+function validateFriendlyName(
+  value: string,
+): string | null {
+  const normalized =
+    value.trim().replace(
+      /\s+/g,
+      " ",
+    );
+
+  if (
+    normalized.length < 2 ||
+    normalized.length > 32
+  ) {
+    return null;
+  }
+
+  if (
+    !/^[A-Za-z0-9 _-]+$/.test(
+      normalized,
+    )
+  ) {
+    return null;
+  }
+
+  return normalized;
+}
 
 export async function POST(
   request: Request,
@@ -106,55 +135,11 @@ export async function POST(
     );
   }
 
-  const mfaState =
-    await getCurrentMfaSessionState();
-
-  if (!mfaState) {
-    return NextResponse.json(
-      {
-        success: false,
-        code:
-          "mfa_state_unavailable",
-        error:
-          "Account security status could not be verified.",
-        requestId,
-      },
-      {
-        status: 503,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      },
-    );
-  }
-
-  if (
-    mfaState.requiresChallenge
-  ) {
-    return NextResponse.json(
-      {
-        success: false,
-        code:
-          "mfa_required",
-        error:
-          "Complete two-factor authentication before managing sessions.",
-        requestId,
-      },
-      {
-        status: 403,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      },
-    );
-  }
-
   let body: unknown;
 
   try {
-    body = await request.json();
+    body =
+      await request.json();
   } catch {
     return NextResponse.json(
       {
@@ -193,24 +178,22 @@ export async function POST(
     );
   }
 
-  const sessionId =
-    typeof body.sessionId ===
-      "string"
-      ? body.sessionId
-      : "";
+  const friendlyName =
+    validateFriendlyName(
+      typeof body.friendlyName ===
+        "string"
+        ? body.friendlyName
+        : "",
+    );
 
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      sessionId,
-    )
-  ) {
+  if (!friendlyName) {
     return NextResponse.json(
       {
         success: false,
         code:
-          "invalid_session_id",
+          "validation_failed",
         error:
-          "The session identifier is invalid.",
+          "Authenticator name must contain 2–32 letters, numbers, spaces, underscores, or hyphens.",
         requestId,
       },
       {
@@ -223,35 +206,82 @@ export async function POST(
     );
   }
 
-  const { data, error } =
-    await supabase.rpc(
-      "revoke_my_lifetopia_session",
-      {
-        p_session_id:
-          sessionId,
-      },
-    );
+  const [
+    factorsResult,
+    assuranceResult,
+  ] = await Promise.all([
+    supabase.auth.mfa.listFactors(),
+    supabase.auth.mfa
+      .getAuthenticatorAssuranceLevel(),
+  ]);
 
-  if (error) {
-    console.error(
-      "[auth-sessions] revoke failed",
-      {
-        requestId,
-        code: error.code,
-      },
-    );
-
+  if (
+    factorsResult.error ||
+    assuranceResult.error
+  ) {
     return NextResponse.json(
       {
         success: false,
         code:
-          "session_revoke_failed",
+          "mfa_state_unavailable",
         error:
-          error.message.includes(
-            "current session",
-          )
-            ? "Use Sign Out This Device for the current session."
-            : "The session could not be signed out.",
+          "Authenticator status could not be loaded.",
+        requestId,
+      },
+      {
+        status: 503,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
+
+  const factors =
+    mapTotpFactors(
+      factorsResult.data,
+    );
+
+  const verifiedCount =
+    factors.filter(
+      (factor) =>
+        factor.status ===
+        "verified",
+    ).length;
+
+  if (
+    verifiedCount > 0 &&
+    assuranceResult.data
+      ?.currentLevel !== "aal2"
+  ) {
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "mfa_reauthentication_required",
+        error:
+          "Verify an existing authenticator before adding another.",
+        requestId,
+      },
+      {
+        status: 403,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
+
+  if (factors.length >= 10) {
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "mfa_factor_limit_reached",
+        error:
+          "The maximum number of authenticator factors has been reached.",
         requestId,
       },
       {
@@ -264,18 +294,35 @@ export async function POST(
     );
   }
 
-  if (data !== true) {
+  const { data, error } =
+    await supabase.auth.mfa.enroll({
+      factorType: "totp",
+      friendlyName,
+    });
+
+  if (error || !data.totp) {
+    await recordMfaEvent({
+      userId: user.id,
+      factorId:
+        data?.id ?? null,
+      eventType:
+        "enrollment_started",
+      success: false,
+      errorCode:
+        getMfaErrorCode(error),
+    });
+
     return NextResponse.json(
       {
         success: false,
         code:
-          "session_not_found",
+          "mfa_enrollment_failed",
         error:
-          "The session is no longer active.",
+          "Authenticator enrollment could not be started.",
         requestId,
       },
       {
-        status: 404,
+        status: 400,
         headers: {
           "Cache-Control":
             "no-store",
@@ -284,18 +331,36 @@ export async function POST(
     );
   }
 
+  await recordMfaEvent({
+    userId: user.id,
+    factorId: data.id,
+    eventType:
+      "enrollment_started",
+    success: true,
+  });
+
   return NextResponse.json(
     {
       success: true,
-      status:
-        "session_revoked",
+      factor: {
+        id: data.id,
+        friendlyName,
+        qrCode:
+          data.totp.qr_code,
+        secret:
+          data.totp.secret,
+        uri:
+          data.totp.uri,
+      },
       requestId,
     },
     {
-      status: 200,
+      status: 201,
       headers: {
         "Cache-Control":
           "no-store, max-age=0",
+        "X-Content-Type-Options":
+          "nosniff",
       },
     },
   );

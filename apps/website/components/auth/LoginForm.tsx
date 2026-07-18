@@ -57,6 +57,7 @@ type LoginResponse = {
   error?: string;
   email?: string;
   nextAction?: string | null;
+  mfaRequired?: boolean;
   captchaRequired?: boolean;
   retryAfterSeconds?: number;
 };
@@ -425,6 +426,16 @@ export function LoginForm({
           result.next,
           redirectTo,
         );
+
+      if (result.mfaRequired) {
+        router.replace(
+          `/mfa-challenge?next=${encodeURIComponent(
+            destination,
+          )}`,
+        );
+        router.refresh();
+        return;
+      }
 
       if (
         result.restricted &&

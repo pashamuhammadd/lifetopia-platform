@@ -3,8 +3,15 @@ import {
 } from "node:crypto";
 
 import {
-  getCurrentMfaSessionState,
-} from "@/lib/auth/mfa-session";
+  getMfaErrorCode,
+  recordMfaEvent,
+} from "@/lib/auth/mfa-audit";
+import {
+  getFactorById,
+} from "@/lib/auth/mfa-factors";
+import {
+  verifyCurrentPassword,
+} from "@/lib/auth/password-reauth";
 import {
   createClient,
 } from "@repo/lib/supabase/server";
@@ -28,7 +35,6 @@ function isRecord(
   );
 }
 
-
 function isRequestOriginAllowed(
   request: Request,
 ): boolean {
@@ -48,7 +54,6 @@ function isRequestOriginAllowed(
     return false;
   }
 }
-
 
 export async function POST(
   request: Request,
@@ -86,7 +91,10 @@ export async function POST(
   } =
     await supabase.auth.getUser();
 
-  if (!user) {
+  if (
+    !user ||
+    !user.email
+  ) {
     return NextResponse.json(
       {
         success: false,
@@ -106,55 +114,11 @@ export async function POST(
     );
   }
 
-  const mfaState =
-    await getCurrentMfaSessionState();
-
-  if (!mfaState) {
-    return NextResponse.json(
-      {
-        success: false,
-        code:
-          "mfa_state_unavailable",
-        error:
-          "Account security status could not be verified.",
-        requestId,
-      },
-      {
-        status: 503,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      },
-    );
-  }
-
-  if (
-    mfaState.requiresChallenge
-  ) {
-    return NextResponse.json(
-      {
-        success: false,
-        code:
-          "mfa_required",
-        error:
-          "Complete two-factor authentication before managing sessions.",
-        requestId,
-      },
-      {
-        status: 403,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      },
-    );
-  }
-
   let body: unknown;
 
   try {
-    body = await request.json();
+    body =
+      await request.json();
   } catch {
     return NextResponse.json(
       {
@@ -193,24 +157,44 @@ export async function POST(
     );
   }
 
-  const sessionId =
-    typeof body.sessionId ===
+  const factorId =
+    typeof body.factorId ===
       "string"
-      ? body.sessionId
+      ? body.factorId
+      : "";
+
+  const verificationFactorId =
+    typeof body
+      .verificationFactorId ===
+      "string"
+      ? body.verificationFactorId
+      : "";
+
+  const password =
+    typeof body.password ===
+      "string"
+      ? body.password
+      : "";
+
+  const code =
+    typeof body.code ===
+      "string"
+      ? body.code.trim()
       : "";
 
   if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      sessionId,
-    )
+    !factorId ||
+    !verificationFactorId ||
+    !password ||
+    !/^\d{6}$/.test(code)
   ) {
     return NextResponse.json(
       {
         success: false,
         code:
-          "invalid_session_id",
+          "validation_failed",
         error:
-          "The session identifier is invalid.",
+          "Current password and a six-digit authenticator code are required.",
         requestId,
       },
       {
@@ -223,35 +207,38 @@ export async function POST(
     );
   }
 
-  const { data, error } =
-    await supabase.rpc(
-      "revoke_my_lifetopia_session",
-      {
-        p_session_id:
-          sessionId,
-      },
+  const factorsResult =
+    await supabase.auth.mfa
+      .listFactors();
+
+  const factorToRemove =
+    getFactorById(
+      factorsResult.data,
+      factorId,
     );
 
-  if (error) {
-    console.error(
-      "[auth-sessions] revoke failed",
-      {
-        requestId,
-        code: error.code,
-      },
+  const verificationFactor =
+    getFactorById(
+      factorsResult.data,
+      verificationFactorId,
     );
 
+  if (
+    factorsResult.error ||
+    !factorToRemove ||
+    factorToRemove.status !==
+      "verified" ||
+    !verificationFactor ||
+    verificationFactor.status !==
+      "verified"
+  ) {
     return NextResponse.json(
       {
         success: false,
         code:
-          "session_revoke_failed",
+          "mfa_factor_unavailable",
         error:
-          error.message.includes(
-            "current session",
-          )
-            ? "Use Sign Out This Device for the current session."
-            : "The session could not be signed out.",
+          "The selected authenticator is unavailable.",
         requestId,
       },
       {
@@ -264,18 +251,24 @@ export async function POST(
     );
   }
 
-  if (data !== true) {
+  const passwordValid =
+    await verifyCurrentPassword({
+      email: user.email,
+      password,
+    });
+
+  if (!passwordValid) {
     return NextResponse.json(
       {
         success: false,
         code:
-          "session_not_found",
+          "reauthentication_failed",
         error:
-          "The session is no longer active.",
+          "Current password or authenticator code is incorrect.",
         requestId,
       },
       {
-        status: 404,
+        status: 401,
         headers: {
           "Cache-Control":
             "no-store",
@@ -284,11 +277,97 @@ export async function POST(
     );
   }
 
+  const {
+    error: challengeError,
+  } =
+    await supabase.auth.mfa
+      .challengeAndVerify({
+        factorId:
+          verificationFactorId,
+        code,
+      });
+
+  if (challengeError) {
+    await recordMfaEvent({
+      userId: user.id,
+      factorId:
+        verificationFactorId,
+      eventType:
+        "challenge_failed",
+      success: false,
+      errorCode:
+        getMfaErrorCode(
+          challengeError,
+        ),
+    });
+
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "reauthentication_failed",
+        error:
+          "Current password or authenticator code is incorrect.",
+        requestId,
+      },
+      {
+        status: 401,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
+
+  const { error: removeError } =
+    await supabase.auth.mfa
+      .unenroll({
+        factorId,
+      });
+
+  await recordMfaEvent({
+    userId: user.id,
+    factorId,
+    eventType:
+      "factor_removed",
+    success: !removeError,
+    errorCode:
+      removeError
+        ? getMfaErrorCode(
+            removeError,
+          )
+        : null,
+  });
+
+  if (removeError) {
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "mfa_unenroll_failed",
+        error:
+          "The authenticator could not be removed.",
+        requestId,
+      },
+      {
+        status: 400,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
+
+  await supabase.auth
+    .refreshSession();
+
   return NextResponse.json(
     {
       success: true,
       status:
-        "session_revoked",
+        "factor_removed",
       requestId,
     },
     {

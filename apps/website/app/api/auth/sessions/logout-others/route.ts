@@ -3,6 +3,9 @@ import {
 } from "node:crypto";
 
 import {
+  getCurrentMfaSessionState,
+} from "@/lib/auth/mfa-session";
+import {
   createClient,
 } from "@repo/lib/supabase/server";
 import {
@@ -82,6 +85,51 @@ export async function POST(
       },
       {
         status: 401,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
+
+  const mfaState =
+    await getCurrentMfaSessionState();
+
+  if (!mfaState) {
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "mfa_state_unavailable",
+        error:
+          "Account security status could not be verified.",
+        requestId,
+      },
+      {
+        status: 503,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
+
+  if (
+    mfaState.requiresChallenge
+  ) {
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "mfa_required",
+        error:
+          "Complete two-factor authentication before managing sessions.",
+        requestId,
+      },
+      {
+        status: 403,
         headers: {
           "Cache-Control":
             "no-store",

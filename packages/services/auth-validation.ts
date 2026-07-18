@@ -133,6 +133,11 @@ const AUTH_LOOP_PATHS = new Set([
   "/reset-password",
   "/check-email",
   "/verify-email",
+  "/account-access",
+  "/guardian-consent",
+  "/guardian-consent/confirm",
+  "/mfa-challenge",
+  "/mfa-recovery",
 ]);
 
 const ALLOWED_AUTH_REDIRECT_ORIGINS =

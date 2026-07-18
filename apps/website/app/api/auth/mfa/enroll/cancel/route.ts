@@ -3,18 +3,15 @@ import {
 } from "node:crypto";
 
 import {
-  AUTH_SESSION_PERSISTENCE_COOKIE,
-  getAuthSessionPersistenceCookieOptions,
-} from "@repo/lib/supabase/cookie-options";
+  getMfaErrorCode,
+  recordMfaEvent,
+} from "@/lib/auth/mfa-audit";
 import {
-  getCurrentMfaSessionState,
-} from "@/lib/auth/mfa-session";
+  getFactorById,
+} from "@/lib/auth/mfa-factors";
 import {
   createClient,
 } from "@repo/lib/supabase/server";
-import {
-  cookies,
-} from "next/headers";
 import {
   NextResponse,
 } from "next/server";
@@ -22,55 +19,24 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+type UnknownRecord =
+  Record<string, unknown>;
 
-function isRequestOriginAllowed(
-  request: Request,
-): boolean {
-  const origin =
-    request.headers.get("origin");
-
-  if (!origin) {
-    return true;
-  }
-
-  try {
-    return (
-      new URL(origin).origin ===
-      new URL(request.url).origin
-    );
-  } catch {
-    return false;
-  }
+function isRecord(
+  value: unknown,
+): value is UnknownRecord {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value)
+  );
 }
-
 
 export async function POST(
   request: Request,
 ) {
   const requestId =
     randomUUID();
-
-  if (
-    !isRequestOriginAllowed(request)
-  ) {
-    return NextResponse.json(
-      {
-        success: false,
-        code:
-          "origin_not_allowed",
-        error:
-          "Request origin is not allowed.",
-        requestId,
-      },
-      {
-        status: 403,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      },
-    );
-  }
 
   const supabase =
     await createClient();
@@ -100,64 +66,18 @@ export async function POST(
     );
   }
 
-  const mfaState =
-    await getCurrentMfaSessionState();
+  let body: unknown;
 
-  if (!mfaState) {
+  try {
+    body =
+      await request.json();
+  } catch {
     return NextResponse.json(
       {
         success: false,
-        code:
-          "mfa_state_unavailable",
+        code: "invalid_json",
         error:
-          "Account security status could not be verified.",
-        requestId,
-      },
-      {
-        status: 503,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      },
-    );
-  }
-
-  if (
-    mfaState.requiresChallenge
-  ) {
-    return NextResponse.json(
-      {
-        success: false,
-        code:
-          "mfa_required",
-        error:
-          "Complete two-factor authentication before managing sessions.",
-        requestId,
-      },
-      {
-        status: 403,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      },
-    );
-  }
-
-  const { error } =
-    await supabase.auth.signOut({
-      scope: "global",
-    });
-
-  if (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        code:
-          "logout_all_failed",
-        error:
-          "All devices could not be signed out.",
+          "Invalid request body.",
         requestId,
       },
       {
@@ -170,25 +90,109 @@ export async function POST(
     );
   }
 
-  const cookieStore =
-    await cookies();
+  if (!isRecord(body)) {
+    return NextResponse.json(
+      {
+        success: false,
+        code: "invalid_body",
+        error:
+          "Invalid request body.",
+        requestId,
+      },
+      {
+        status: 400,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
 
-  cookieStore.set(
-    AUTH_SESSION_PERSISTENCE_COOKIE,
-    "",
-    {
-      ...getAuthSessionPersistenceCookieOptions(
-        "session",
-      ),
-      maxAge: 0,
-    },
-  );
+  const factorId =
+    typeof body.factorId ===
+      "string"
+      ? body.factorId
+      : "";
+
+  const factorsResult =
+    await supabase.auth.mfa
+      .listFactors();
+
+  const factor =
+    getFactorById(
+      factorsResult.data,
+      factorId,
+    );
+
+  if (
+    factorsResult.error ||
+    !factor ||
+    factor.status !==
+      "unverified"
+  ) {
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "mfa_enrollment_unavailable",
+        error:
+          "The incomplete authenticator setup is unavailable.",
+        requestId,
+      },
+      {
+        status: 409,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
+
+  const { error } =
+    await supabase.auth.mfa
+      .unenroll({
+        factorId,
+      });
+
+  await recordMfaEvent({
+    userId: user.id,
+    factorId,
+    eventType:
+      "enrollment_cancelled",
+    success: !error,
+    errorCode:
+      error
+        ? getMfaErrorCode(error)
+        : null,
+  });
+
+  if (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "mfa_cancel_failed",
+        error:
+          "The incomplete authenticator setup could not be removed.",
+        requestId,
+      },
+      {
+        status: 400,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
 
   return NextResponse.json(
     {
       success: true,
       status:
-        "all_sessions_revoked",
+        "enrollment_cancelled",
       requestId,
     },
     {

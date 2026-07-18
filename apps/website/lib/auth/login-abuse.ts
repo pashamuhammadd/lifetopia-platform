@@ -17,6 +17,7 @@ type LoginAttemptOutcome =
   | "success"
   | "invalid_credentials"
   | "email_verification_required"
+  | "mfa_required"
   | "restricted"
   | "account_unavailable"
   | "system_error";

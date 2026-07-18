@@ -3,18 +3,15 @@ import {
 } from "node:crypto";
 
 import {
-  AUTH_SESSION_PERSISTENCE_COOKIE,
-  getAuthSessionPersistenceCookieOptions,
-} from "@repo/lib/supabase/cookie-options";
+  getMfaErrorCode,
+  recordMfaEvent,
+} from "@/lib/auth/mfa-audit";
 import {
-  getCurrentMfaSessionState,
-} from "@/lib/auth/mfa-session";
+  getFactorById,
+} from "@/lib/auth/mfa-factors";
 import {
   createClient,
 } from "@repo/lib/supabase/server";
-import {
-  cookies,
-} from "next/headers";
 import {
   NextResponse,
 } from "next/server";
@@ -22,6 +19,18 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+type UnknownRecord =
+  Record<string, unknown>;
+
+function isRecord(
+  value: unknown,
+): value is UnknownRecord {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value)
+  );
+}
 
 function isRequestOriginAllowed(
   request: Request,
@@ -42,7 +51,6 @@ function isRequestOriginAllowed(
     return false;
   }
 }
-
 
 export async function POST(
   request: Request,
@@ -100,64 +108,18 @@ export async function POST(
     );
   }
 
-  const mfaState =
-    await getCurrentMfaSessionState();
+  let body: unknown;
 
-  if (!mfaState) {
+  try {
+    body =
+      await request.json();
+  } catch {
     return NextResponse.json(
       {
         success: false,
-        code:
-          "mfa_state_unavailable",
+        code: "invalid_json",
         error:
-          "Account security status could not be verified.",
-        requestId,
-      },
-      {
-        status: 503,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      },
-    );
-  }
-
-  if (
-    mfaState.requiresChallenge
-  ) {
-    return NextResponse.json(
-      {
-        success: false,
-        code:
-          "mfa_required",
-        error:
-          "Complete two-factor authentication before managing sessions.",
-        requestId,
-      },
-      {
-        status: 403,
-        headers: {
-          "Cache-Control":
-            "no-store",
-        },
-      },
-    );
-  }
-
-  const { error } =
-    await supabase.auth.signOut({
-      scope: "global",
-    });
-
-  if (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        code:
-          "logout_all_failed",
-        error:
-          "All devices could not be signed out.",
+          "Invalid request body.",
         requestId,
       },
       {
@@ -170,25 +132,145 @@ export async function POST(
     );
   }
 
-  const cookieStore =
-    await cookies();
+  if (!isRecord(body)) {
+    return NextResponse.json(
+      {
+        success: false,
+        code: "invalid_body",
+        error:
+          "Invalid request body.",
+        requestId,
+      },
+      {
+        status: 400,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
 
-  cookieStore.set(
-    AUTH_SESSION_PERSISTENCE_COOKIE,
-    "",
-    {
-      ...getAuthSessionPersistenceCookieOptions(
-        "session",
-      ),
-      maxAge: 0,
-    },
-  );
+  const factorId =
+    typeof body.factorId ===
+      "string"
+      ? body.factorId
+      : "";
+
+  const code =
+    typeof body.code ===
+      "string"
+      ? body.code.trim()
+      : "";
+
+  if (
+    !factorId ||
+    !/^\d{6}$/.test(code)
+  ) {
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "validation_failed",
+        error:
+          "Enter the six-digit code from your authenticator app.",
+        requestId,
+      },
+      {
+        status: 422,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
+
+  const factorsResult =
+    await supabase.auth.mfa
+      .listFactors();
+
+  const factor =
+    getFactorById(
+      factorsResult.data,
+      factorId,
+    );
+
+  if (
+    factorsResult.error ||
+    !factor ||
+    factor.status ===
+      "verified"
+  ) {
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "mfa_enrollment_unavailable",
+        error:
+          "The pending authenticator setup is unavailable.",
+        requestId,
+      },
+      {
+        status: 409,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
+
+  const { error } =
+    await supabase.auth.mfa
+      .challengeAndVerify({
+        factorId,
+        code,
+      });
+
+  if (error) {
+    await recordMfaEvent({
+      userId: user.id,
+      factorId,
+      eventType:
+        "enrollment_verified",
+      success: false,
+      errorCode:
+        getMfaErrorCode(error),
+    });
+
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "invalid_mfa_code",
+        error:
+          "The authenticator code is incorrect or expired.",
+        requestId,
+      },
+      {
+        status: 401,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
+
+  await recordMfaEvent({
+    userId: user.id,
+    factorId,
+    eventType:
+      "enrollment_verified",
+    success: true,
+  });
 
   return NextResponse.json(
     {
       success: true,
       status:
-        "all_sessions_revoked",
+        "mfa_enabled",
       requestId,
     },
     {

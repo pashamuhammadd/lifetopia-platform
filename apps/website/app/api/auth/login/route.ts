@@ -463,6 +463,7 @@ export async function POST(
       | "success"
       | "invalid_credentials"
       | "email_verification_required"
+      | "mfa_required"
       | "restricted"
       | "account_unavailable"
       | "system_error",
@@ -687,6 +688,99 @@ export async function POST(
   resolvedUserId =
     signInData.user?.id ??
     resolvedUserId;
+
+  const {
+    data: assuranceLevel,
+    error: assuranceLevelError,
+  } =
+    await supabase.auth.mfa
+      .getAuthenticatorAssuranceLevel();
+
+  if (
+    assuranceLevelError ||
+    !assuranceLevel
+  ) {
+    await completeAttempt(
+      "system_error",
+      resolvedUserId,
+    );
+
+    await supabase.auth.signOut({
+      scope: "local",
+    });
+
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "mfa_state_unavailable",
+        error:
+          "Login succeeded, but multi-factor status could not be verified.",
+        requestId,
+      },
+      {
+        status: 503,
+        headers: {
+          "Cache-Control":
+            "no-store",
+        },
+      },
+    );
+  }
+
+  const mfaRequired =
+    assuranceLevel.currentLevel !==
+      "aal2" &&
+    assuranceLevel.nextLevel ===
+      "aal2";
+
+  if (mfaRequired) {
+    const completed =
+      await completeAttempt(
+        "mfa_required",
+        resolvedUserId,
+      );
+
+    if (!completed) {
+      await supabase.auth.signOut({
+        scope: "local",
+      });
+
+      return securityUnavailableResponse(
+        requestId,
+      );
+    }
+
+    const cookieStore =
+      await cookies();
+
+    cookieStore.set(
+      AUTH_SESSION_PERSISTENCE_COOKIE,
+      persistence,
+      getAuthSessionPersistenceCookieOptions(
+        persistence,
+      ),
+    );
+
+    return NextResponse.json(
+      {
+        success: true,
+        status: "mfa_required",
+        mfaRequired: true,
+        next,
+        requestId,
+      },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control":
+            "no-store, max-age=0",
+          "X-Content-Type-Options":
+            "nosniff",
+        },
+      },
+    );
+  }
 
   const [
     accountStateResult,
