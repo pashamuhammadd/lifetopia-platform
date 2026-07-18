@@ -21,7 +21,7 @@ create table public.lifetopia_founder_registry (
   user_id uuid not null unique
     references public.profiles(id)
     on delete restrict,
-  username_at_provisioning citext
+  username_at_provisioning public.citext
     not null unique,
   provisioned_at timestamptz
     not null default now()
@@ -154,7 +154,7 @@ execute function
 
 create or replace function
   public.provision_lifetopia_founder(
-    p_username citext
+    p_username public.citext
   )
 returns table (
   user_id uuid,
@@ -166,7 +166,7 @@ security definer
 set search_path = pg_catalog
 as $function$
 declare
-  v_username citext :=
+  v_username public.citext :=
     lower(
       btrim(
         coalesce(
@@ -174,7 +174,7 @@ declare
           ''
         )
       )
-    )::citext;
+    )::public.citext;
   v_user_id uuid;
   v_current_role text;
   v_account_status text;
@@ -345,7 +345,7 @@ end;
 $function$;
 
 comment on function
-  public.provision_lifetopia_founder(citext)
+  public.provision_lifetopia_founder(public.citext)
 is
   'One-time service-role-only provisioning of the protected pashamuhammad Founder identity.';
 
@@ -358,16 +358,16 @@ on function public.protect_lifetopia_founder_badge()
 from public, anon, authenticated;
 
 revoke all
-on function public.provision_lifetopia_founder(citext)
+on function public.provision_lifetopia_founder(public.citext)
 from public, anon, authenticated;
 
 grant execute
-on function public.provision_lifetopia_founder(citext)
+on function public.provision_lifetopia_founder(public.citext)
 to service_role;
 
 select *
 from public.provision_lifetopia_founder(
-  'pashamuhammad'::citext
+  'pashamuhammad'::public.citext
 );
 
 commit;
