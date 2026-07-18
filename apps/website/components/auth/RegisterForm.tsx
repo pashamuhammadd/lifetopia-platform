@@ -126,28 +126,6 @@ const FIELD_TO_STEP: Record<
   privacyAccepted: "confirmation",
 };
 
-function getFirstFieldError(
-  errors: Partial<
-    Record<RegistrationField, string>
-  >,
-): string | undefined {
-  for (const step of steps) {
-    const field = (
-      Object.keys(errors) as RegistrationField[]
-    ).find(
-      (candidate) =>
-        FIELD_TO_STEP[candidate] ===
-          step.id &&
-        errors[candidate],
-    );
-
-    if (field) {
-      return errors[field];
-    }
-  }
-
-  return undefined;
-}
 
 function getFirstErrorStep(
   errors: Partial<
@@ -415,15 +393,16 @@ export function RegisterForm({
   }
 
   function setStepError(
-    field: RegistrationField,
-    error: string,
-  ) {
-    setFieldErrors((current) => ({
-      ...current,
-      [field]: error,
-    }));
-    setMessage(error);
-  }
+  field: RegistrationField,
+  error: string,
+) {
+  setFieldErrors((current) => ({
+    ...current,
+    [field]: error,
+  }));
+
+  setMessage("");
+}
 
   function buildRegistrationInput():
     RegistrationInput {
@@ -683,30 +662,24 @@ export function RegisterForm({
       );
 
     if (!validation.valid) {
-      const firstStep =
-        getFirstErrorStep(
-          validation.errors,
-        );
-      const firstMessage =
-        getFirstFieldError(
-          validation.errors,
-        );
+  const firstStep =
+    getFirstErrorStep(
+      validation.errors,
+    );
 
-      setFieldErrors(
-        validation.errors,
-      );
-      setMessage(
-        firstMessage ??
-          "Some registration fields are invalid.",
-      );
+  setFieldErrors(
+    validation.errors,
+  );
 
-      if (firstStep) {
-        setCurrentStep(firstStep);
-      }
+  setMessage("");
 
-      setIsLoading(false);
-      return;
-    }
+  if (firstStep) {
+    setCurrentStep(firstStep);
+  }
+
+  setIsLoading(false);
+  return;
+}
 
     try {
       const response = await fetch(
@@ -737,31 +710,36 @@ export function RegisterForm({
           RegisterApiResponse;
 
       if (
-        !response.ok ||
-        !payload.success
-      ) {
-        if (payload.fieldErrors) {
-          setFieldErrors(
-            payload.fieldErrors,
-          );
+  !response.ok ||
+  !payload.success
+) {
+  if (payload.fieldErrors) {
+    setFieldErrors(
+      payload.fieldErrors,
+    );
 
-          const firstStep =
-            getFirstErrorStep(
-              payload.fieldErrors,
-            );
+    const firstStep =
+      getFirstErrorStep(
+        payload.fieldErrors,
+      );
 
-          if (firstStep) {
-            setCurrentStep(firstStep);
-          }
-        }
+    if (firstStep) {
+      setCurrentStep(firstStep);
+    }
 
-        setMessage(
-          payload.error ??
-            "Unable to create the account right now.",
-        );
-        setIsLoading(false);
-        return;
-      }
+    setMessage("");
+    setIsLoading(false);
+    return;
+  }
+
+  setMessage(
+    payload.error ??
+      "Unable to create the account right now.",
+  );
+
+  setIsLoading(false);
+  return;
+}
 
       setPassword("");
       setConfirmPassword("");
@@ -1407,13 +1385,16 @@ export function RegisterForm({
               checked={agreeTerms}
               disabled={isLoading}
               onChange={(event) => {
-                setAgreeTerms(
-                  event.target.checked,
-                );
-                clearFieldError(
-                  "termsAccepted",
-                );
-              }}
+  setAgreeTerms(
+    event.target.checked,
+  );
+
+  clearFieldError(
+    "termsAccepted",
+  );
+
+  setMessage("");
+}}
               className="mt-1 size-4 accent-[#4f8124]"
             />
 
@@ -1453,13 +1434,16 @@ export function RegisterForm({
               checked={agreePrivacy}
               disabled={isLoading}
               onChange={(event) => {
-                setAgreePrivacy(
-                  event.target.checked,
-                );
-                clearFieldError(
-                  "privacyAccepted",
-                );
-              }}
+  setAgreePrivacy(
+    event.target.checked,
+  );
+
+  clearFieldError(
+    "privacyAccepted",
+  );
+
+  setMessage("");
+}}
               className="mt-1 size-4 accent-[#4f8124]"
             />
 
@@ -1561,7 +1545,11 @@ export function RegisterForm({
         ) : (
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={
+  isLoading ||
+  !agreeTerms ||
+  !agreePrivacy
+}
             className="lt-button-primary disabled:pointer-events-none disabled:opacity-60"
           >
             {isLoading
