@@ -4,12 +4,12 @@ import {
   AlertCircle,
   Check,
   CheckCircle2,
-  MailCheck,
   ShieldCheck,
   UserRoundCheck,
   X,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   useEffect,
   useMemo,
@@ -24,6 +24,10 @@ import { RegisterProgress } from "@/components/auth/RegisterProgress";
 import {
   LEGAL_DOCUMENTS,
 } from "@/data/legal-documents";
+import {
+  PENDING_EMAIL_VERIFICATION_KEY,
+  type PendingEmailVerification,
+} from "@/lib/auth/pending-verification";
 import { playerAvatars } from "@repo/data/auth";
 import {
   assessPassword,
@@ -74,15 +78,13 @@ type RegisterApiResponse = {
   requestId?: string;
   next?: string;
   guardianConsentRequired?: boolean;
+  verificationEmailSent?: boolean;
+  retryAfterSeconds?: number;
   fieldErrors?: Partial<
     Record<RegistrationField, string>
   >;
 };
 
-type CreatedAccount = {
-  email: string;
-  guardianConsentRequired: boolean;
-};
 
 const steps = [
   {
@@ -248,6 +250,7 @@ function PasswordRequirement({
 export function RegisterForm({
   nextUrl = "/",
 }: RegisterFormProps) {
+  const router = useRouter();
   const loginHref =
     nextUrl === "/"
       ? "/login"
@@ -321,12 +324,6 @@ export function RegisterForm({
     isStepChecking,
     setIsStepChecking,
   ] = useState(false);
-  const [
-    createdAccount,
-    setCreatedAccount,
-  ] = useState<CreatedAccount | null>(
-    null,
-  );
 
   const currentStepIndex =
     steps.findIndex(
@@ -769,14 +766,36 @@ export function RegisterForm({
       setPassword("");
       setConfirmPassword("");
 
-      setCreatedAccount({
-        email:
-          validation.value.email,
-        guardianConsentRequired:
-          payload.guardianConsentRequired ??
-          validation.value
-            .guardianConsentRequired,
-      });
+      const retryAfterSeconds =
+        payload.retryAfterSeconds ?? 180;
+
+      const pendingVerification:
+        PendingEmailVerification = {
+          email: validation.value.email,
+          next:
+            payload.next ?? nextUrl,
+          guardianConsentRequired:
+            payload.guardianConsentRequired ??
+            validation.value
+              .guardianConsentRequired,
+          verificationEmailSent:
+            payload.verificationEmailSent ??
+            false,
+          createdAt: Date.now(),
+          resendAvailableAt:
+            Date.now() +
+            retryAfterSeconds * 1000,
+        };
+
+      window.sessionStorage.setItem(
+        PENDING_EMAIL_VERIFICATION_KEY,
+        JSON.stringify(
+          pendingVerification,
+        ),
+      );
+
+      router.push("/check-email");
+      router.refresh();
     } catch {
       setMessage(
         "Unable to reach the registration service. Check your connection and try again.",
@@ -784,56 +803,6 @@ export function RegisterForm({
     } finally {
       setIsLoading(false);
     }
-  }
-
-  if (createdAccount) {
-    return (
-      <div className="flex flex-col items-center gap-5 py-2 text-center">
-        <span className="grid size-16 place-items-center rounded-full border border-[#bcd89c] bg-[#edf7e4] text-[#4f8124] shadow-[0_14px_32px_rgba(79,129,36,0.15)]">
-          <MailCheck size={30} />
-        </span>
-
-        <div>
-          <h2 className="text-[clamp(1.35rem,3vw,2rem)] font-black text-[#2f1b12]">
-            Account created.
-          </h2>
-
-          <p className="mx-auto mt-2 max-w-md text-[clamp(0.78rem,1vw,0.94rem)] font-semibold leading-7 text-[#76583a]">
-            Your Lifetopia account for{" "}
-            <strong className="text-[#2f1b12]">
-              {createdAccount.email}
-            </strong>{" "}
-            has been created. Email
-            verification is required
-            before social, reward, and
-            wallet features become
-            available.
-          </p>
-        </div>
-
-        {createdAccount.guardianConsentRequired ? (
-          <div className="w-full rounded-[20px] border border-amber-300 bg-amber-50 px-4 py-3 text-left text-sm font-semibold leading-6 text-amber-900">
-            Because this account belongs
-            to a user aged 13–17, parent
-            or guardian approval will
-            also be required.
-          </div>
-        ) : null}
-
-        <div className="w-full rounded-[20px] border border-[#d9c99f] bg-[#fff8e8] px-4 py-3 text-sm font-semibold leading-6 text-[#76583a]">
-          The verification and resend
-          experience is completed in the
-          next authentication phase.
-        </div>
-
-        <Link
-          href={loginHref}
-          className="lt-button-primary w-full justify-center"
-        >
-          Continue to Login
-        </Link>
-      </div>
-    );
   }
 
   return (

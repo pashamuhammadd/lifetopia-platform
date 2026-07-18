@@ -2,6 +2,9 @@ import { randomUUID } from "node:crypto";
 
 import { createAdminClient } from "@repo/lib/supabase/admin";
 import {
+  sendLifetopiaVerificationEmail,
+} from "@/lib/auth/verification-email";
+import {
   sanitizeAuthRedirectValue,
   type RegistrationInput,
   validateRegistrationInput,
@@ -550,6 +553,15 @@ export async function POST(
     );
   }
 
+  const verificationDelivery =
+    await sendLifetopiaVerificationEmail({
+      email: normalized.email,
+      next,
+      reason: "registration",
+      requestId,
+      requestUrl: request.url,
+    });
+
   return createJsonResponse(
     requestId,
     {
@@ -559,6 +571,12 @@ export async function POST(
       next,
       requiresEmailVerification:
         true,
+      verificationEmailSent:
+        verificationDelivery.status ===
+        "sent",
+      retryAfterSeconds:
+        verificationDelivery
+          .retryAfterSeconds,
       guardianConsentRequired:
         normalized
           .guardianConsentRequired,
