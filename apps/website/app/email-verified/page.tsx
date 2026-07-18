@@ -57,7 +57,7 @@ export default async function EmailVerifiedPage({
     rawStatus === "success";
 
   let continueHref = next;
-  let requiresGuardianConsent = false;
+  let requiresAccountSetup = false;
 
   if (success) {
     const supabase =
@@ -72,13 +72,16 @@ export default async function EmailVerifiedPage({
         ? data[0]
         : data;
 
-    requiresGuardianConsent =
-      accountAction?.next_action ===
-        "guardian_consent";
+    requiresAccountSetup =
+      Boolean(
+        accountAction?.next_action &&
+        accountAction.next_action !==
+          "ready",
+      );
 
-    if (requiresGuardianConsent) {
+    if (requiresAccountSetup) {
       continueHref =
-        `/guardian-consent?next=${encodeURIComponent(
+        `/account-access?next=${encodeURIComponent(
           next,
         )}`;
     }
@@ -126,8 +129,8 @@ export default async function EmailVerifiedPage({
             href={continueHref}
             className="lt-button-primary w-full justify-center"
           >
-            {requiresGuardianConsent
-              ? "Continue to Guardian Approval"
+            {requiresAccountSetup
+              ? "Continue Account Setup"
               : "Continue to Lifetopia"}
           </a>
         ) : (

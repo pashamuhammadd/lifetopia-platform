@@ -443,6 +443,44 @@ export async function POST(
       });
 
   if (signInError) {
+    const errorCode =
+      "code" in signInError &&
+      typeof signInError.code ===
+        "string"
+        ? signInError.code
+        : "";
+
+    const emailVerificationRequired =
+      errorCode ===
+        "email_not_confirmed" ||
+      /email not confirmed/i.test(
+        signInError.message,
+      );
+
+    if (
+      emailVerificationRequired
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          code:
+            "email_verification_required",
+          error:
+            "Verify your email before continuing.",
+          email,
+          next,
+          requestId,
+        },
+        {
+          status: 403,
+          headers: {
+            "Cache-Control":
+              "no-store, max-age=0",
+          },
+        },
+      );
+    }
+
     return genericCredentialResponse(
       requestId,
     );

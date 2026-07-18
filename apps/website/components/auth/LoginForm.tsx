@@ -20,6 +20,10 @@ import {
   PasswordField,
 } from "@/components/auth/PasswordField";
 import {
+  PENDING_EMAIL_VERIFICATION_KEY,
+  type PendingEmailVerification,
+} from "@/lib/auth/pending-verification";
+import {
   isAbsoluteAuthRedirect,
 } from "@repo/lib/auth-redirect";
 import {
@@ -46,6 +50,8 @@ type LoginResponse = {
   next?: string;
   code?: string;
   error?: string;
+  email?: string;
+  nextAction?: string | null;
 };
 
 type RestrictedState = {
@@ -213,6 +219,40 @@ export function LoginForm({
           LoginResponse;
 
       if (
+        result.code ===
+          "email_verification_required" &&
+        result.email
+      ) {
+        const pendingVerification:
+          PendingEmailVerification = {
+            email: result.email,
+            next:
+              sanitizeAuthRedirectValue(
+                result.next,
+                redirectTo,
+              ),
+            guardianConsentRequired:
+              false,
+            verificationEmailSent:
+              false,
+            createdAt: Date.now(),
+            resendAvailableAt:
+              Date.now(),
+          };
+
+        window.sessionStorage.setItem(
+          PENDING_EMAIL_VERIFICATION_KEY,
+          JSON.stringify(
+            pendingVerification,
+          ),
+        );
+
+        router.push("/check-email");
+        router.refresh();
+        return;
+      }
+
+      if (
         !response.ok ||
         !result.success
       ) {
@@ -248,6 +288,20 @@ export function LoginForm({
             null,
           next: destination,
         });
+        return;
+      }
+
+      if (
+        result.nextAction &&
+        result.nextAction !==
+          "ready"
+      ) {
+        router.replace(
+          `/account-access?next=${encodeURIComponent(
+            destination,
+          )}`,
+        );
+        router.refresh();
         return;
       }
 
