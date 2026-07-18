@@ -1,0 +1,52 @@
+-- Lifetopia Authentication
+-- Auth 16 — Role and badge assignment templates
+--
+-- These examples are intentionally commented.
+-- Replace usernames and uncomment only the exact action required.
+--
+-- Founder can assign:
+--   admin, moderator, developer, artist,
+--   alpha_tester, beta_tester, lifetopian
+--
+-- Admin can assign:
+--   developer, artist, alpha_tester,
+--   beta_tester, lifetopian
+--
+-- Founder identity itself cannot be assigned through these functions.
+
+-- Find user IDs:
+--
+-- select id, username, role
+-- from public.profiles
+-- where username in (
+--   'pashamuhammad',
+--   'target_username'
+-- );
+
+-- Assign primary role:
+--
+-- select *
+-- from public.assign_lifetopia_primary_role(
+--   (select id from public.profiles where username = 'pashamuhammad'),
+--   (select id from public.profiles where username = 'target_username'),
+--   'admin',
+--   'Founder-approved Admin assignment.'
+-- );
+
+-- Grant public badge:
+--
+-- select public.grant_lifetopia_badge(
+--   (select id from public.profiles where username = 'pashamuhammad'),
+--   (select id from public.profiles where username = 'target_username'),
+--   'alpha_tester',
+--   'Verified Alpha testing contribution.'
+-- );
+
+-- Revoke public badge:
+--
+-- select public.revoke_lifetopia_badge(
+--   (select id from public.profiles where username = 'pashamuhammad'),
+--   (select id from public.profiles where username = 'target_username'),
+--   'alpha_tester',
+--   'Badge removed after identity review.'
+-- );
