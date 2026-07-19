@@ -7,66 +7,33 @@ import {
   Link2,
   LoaderCircle,
   ShieldCheck,
+  Smartphone,
   Unlink,
   WalletCards,
 } from "lucide-react";
 import Link from "next/link";
 import {
+  useEffect,
   useState,
 } from "react";
 
+import {
+  bytesToBase64,
+  connectWallet,
+  isAndroidMobileWalletSupported,
+  walletSourceLabel,
+} from "@/lib/auth/wallet-client";
+import type {
+  WalletSource,
+} from "@/lib/auth/wallet-client";
 import type {
   LinkedSolanaWallet,
 } from "@/lib/auth/wallet-linking";
-
-type SolanaPublicKey = {
-  toString(): string;
-};
-
-type SignedMessage =
-  | Uint8Array
-  | {
-      signature: Uint8Array;
-    };
-
-type SolanaProvider = {
-  isPhantom?: boolean;
-  isSolflare?: boolean;
-  isConnected?: boolean;
-  publicKey?:
-    | SolanaPublicKey
-    | null;
-  connect(options?: {
-    onlyIfTrusted?: boolean;
-  }): Promise<
-    | void
-    | {
-        publicKey?:
-          SolanaPublicKey | null;
-      }
-  >;
-  signMessage(
-    message: Uint8Array,
-    display?: "utf8",
-  ): Promise<SignedMessage>;
-};
-
-type WalletWindow = Window & {
-  solana?: SolanaProvider;
-  solflare?: SolanaProvider;
-  phantom?: {
-    solana?: SolanaProvider;
-  };
-};
 
 type WalletLinkingPanelProps = {
   initialWallet:
     LinkedSolanaWallet | null;
 };
-
-type WalletProviderChoice =
-  | "phantom"
-  | "solflare";
 
 type ApiPayload = {
   success?: boolean;
@@ -83,54 +50,6 @@ type ApiPayload = {
     linkedAt: string;
   };
 };
-
-function getProvider(
-  choice: WalletProviderChoice,
-):
-  SolanaProvider | null {
-  const walletWindow =
-    window as WalletWindow;
-
-  if (choice === "phantom") {
-    return (
-      walletWindow.phantom
-        ?.solana ??
-      (walletWindow.solana
-        ?.isPhantom
-        ? walletWindow.solana
-        : null)
-    );
-  }
-
-  return (
-    walletWindow.solflare ??
-    (walletWindow.solana
-      ?.isSolflare
-      ? walletWindow.solana
-      : null)
-  );
-}
-
-function getWalletLabel(
-  choice: WalletProviderChoice,
-): string {
-  return choice === "phantom"
-    ? "Phantom"
-    : "Solflare";
-}
-
-function bytesToBase64(
-  bytes: Uint8Array,
-): string {
-  let binary = "";
-
-  for (const byte of bytes) {
-    binary +=
-      String.fromCharCode(byte);
-  }
-
-  return window.btoa(binary);
-}
 
 function shortAddress(
   address: string,
@@ -183,15 +102,24 @@ export function WalletLinkingPanel({
     activeProvider,
     setActiveProvider,
   ] =
-    useState<WalletProviderChoice | null>(
+    useState<WalletSource | null>(
       null,
     );
+
+  const [isAndroid, setIsAndroid] =
+    useState(false);
 
   const [message, setMessage] =
     useState("");
 
   const [error, setError] =
     useState("");
+
+  useEffect(() => {
+    setIsAndroid(
+      isAndroidMobileWalletSupported(),
+    );
+  }, []);
 
   function handleSecurityRedirect(
     code: string | undefined,
@@ -208,52 +136,19 @@ export function WalletLinkingPanel({
   }
 
   async function linkWallet(
-    choice: WalletProviderChoice,
+    choice: WalletSource,
   ) {
     setMessage("");
     setError("");
-
-    const provider =
-      getProvider(choice);
-
-    if (!provider) {
-      setError(
-        `${getWalletLabel(
-          choice,
-        )} was not detected. Install or unlock the ${getWalletLabel(
-          choice,
-        )} browser extension, reload this page, and try again.`,
-      );
-      return;
-    }
 
     setActiveProvider(choice);
     setIsLoading(true);
 
     try {
-      let publicKey =
-        provider.publicKey ?? null;
+      const signer =
+        await connectWallet(choice);
 
-      if (!publicKey) {
-        const connection =
-          await provider.connect();
-
-        publicKey =
-          connection?.publicKey ??
-          provider.publicKey ??
-          null;
-      }
-
-      if (!publicKey) {
-        throw new Error(
-          `${getWalletLabel(
-            choice,
-          )} did not provide a Solana public key after connecting.`,
-        );
-      }
-
-      const address =
-        publicKey.toString();
+      const address = signer.address;
 
       const challengeResponse =
         await fetch(
@@ -302,16 +197,10 @@ export function WalletLinkingPanel({
             .challenge.message,
         );
 
-      const signed =
-        await provider.signMessage(
-          encodedMessage,
-          "utf8",
-        );
-
       const signature =
-        signed instanceof Uint8Array
-          ? signed
-          : signed.signature;
+        await signer.signMessage(
+          encodedMessage,
+        );
 
       const verifyResponse =
         await fetch(
@@ -378,11 +267,6 @@ export function WalletLinkingPanel({
         "Your Solana wallet is securely linked.",
       );
     } catch (caughtError) {
-      console.error(
-        "Wallet linking failed:",
-        caughtError,
-      );
-
       const errorMessage =
         caughtError instanceof Error
           ? caughtError.message
@@ -394,10 +278,25 @@ export function WalletLinkingPanel({
           errorMessage,
         );
 
+      const actionable =
+        Boolean(errorMessage) &&
+        /was not detected|did not provide a Solana|mobile wallet adapter|available on supported Android|selected mobile wallet|changed the authentication message/i.test(
+          errorMessage,
+        );
+
+      if (!rejected && !actionable) {
+        console.error(
+          "Wallet linking failed:",
+          caughtError,
+        );
+      }
+
       setError(
         rejected
           ? "The wallet request was cancelled."
-          : process.env.NODE_ENV ===
+          : actionable
+            ? errorMessage
+            : process.env.NODE_ENV ===
                 "development" &&
               errorMessage
             ? `The Solana wallet could not complete the linking request: ${errorMessage}`
@@ -555,45 +454,85 @@ export function WalletLinkingPanel({
                 No wallet linked
               </p>
               <p className="mt-1 text-sm font-semibold text-[#76583a]">
-                Choose Phantom or Solflare, then approve one signature request in the selected extension.
+                {isAndroid
+                  ? "Open the Android wallet chooser, select Phantom or Solflare, then approve one signature request."
+                  : "Choose Phantom or Solflare, then approve one signature request in the selected wallet."}
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              {(
-                [
-                  "phantom",
-                  "solflare",
-                ] as const
-              ).map((choice) => (
+              {!isAndroid
+                ? (
+                    [
+                      "phantom",
+                      "solflare",
+                    ] as const
+                  ).map((choice) => (
+                    <button
+                      key={choice}
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() =>
+                        linkWallet(
+                          choice,
+                        )
+                      }
+                      className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#4f8124] px-6 text-sm font-black text-white shadow-[0_10px_24px_rgba(79,129,36,0.22)] transition hover:bg-[#416d1d] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {isLoading &&
+                      activeProvider ===
+                        choice ? (
+                        <LoaderCircle
+                          aria-hidden="true"
+                          className="size-4 animate-spin"
+                        />
+                      ) : (
+                        <Link2
+                          aria-hidden="true"
+                          className="size-4"
+                        />
+                      )}
+                      Connect {walletSourceLabel(
+                        choice,
+                      )}
+                    </button>
+                  ))
+                : null}
+
+              {isAndroid ? (
                 <button
-                  key={choice}
                   type="button"
                   disabled={isLoading}
                   onClick={() =>
-                    linkWallet(choice)
+                    linkWallet(
+                      "mobile",
+                    )
                   }
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#4f8124] px-6 text-sm font-black text-white shadow-[0_10px_24px_rgba(79,129,36,0.22)] transition hover:bg-[#416d1d] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-[#4f8124] bg-[#edf7df] px-6 text-sm font-black text-[#416d1d] transition hover:bg-[#e0f0d1] disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2"
                 >
                   {isLoading &&
                   activeProvider ===
-                    choice ? (
+                    "mobile" ? (
                     <LoaderCircle
                       aria-hidden="true"
                       className="size-4 animate-spin"
                     />
                   ) : (
-                    <Link2
+                    <Smartphone
                       aria-hidden="true"
                       className="size-4"
                     />
                   )}
-                  Connect {getWalletLabel(
-                    choice,
-                  )}
+                  Connect a mobile wallet
                 </button>
-              ))}
+              ) : null}
             </div>
+
+            {isAndroid ? (
+              <p className="text-xs font-bold leading-5 text-[#76583a]">
+                Android will open its wallet chooser. Select Phantom or Solflare and approve only the message signature.
+              </p>
+            ) : null}
           </div>
         )}
       </div>

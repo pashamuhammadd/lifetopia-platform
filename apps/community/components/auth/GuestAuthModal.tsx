@@ -1,6 +1,9 @@
 "use client";
 
-import { X } from "lucide-react";
+import {
+  WalletCards,
+  X,
+} from "lucide-react";
 import { useEffect, useRef } from "react";
 
 const mainAppUrl =
@@ -133,6 +136,17 @@ export function GuestAuthModal({
             className="min-h-11 rounded-full border border-[#cfe2bd] bg-[#edf7df] px-5 py-3 text-center font-black text-[#4f8124] transition hover:bg-[#e3f2d7]"
           >
             Create Account
+          </a>
+
+          <a
+            href={`${mainAppUrl}/wallet-login?next=${encodedReturnUrl}`}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#d8c79d] bg-[#fff8e9] px-5 py-3 text-center font-black text-[#76583a] transition hover:bg-[#f8edda] hover:text-[#4f8124]"
+          >
+            <WalletCards
+              aria-hidden="true"
+              className="size-4"
+            />
+            Continue with wallet
           </a>
 
           <button
