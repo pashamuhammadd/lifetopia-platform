@@ -82,8 +82,22 @@ export type WalletMessageSigner = {
   ): Promise<Uint8Array>;
 };
 
+export type MobileWalletBrowseLinks = {
+  phantom: string;
+  solflare: string;
+};
+
 let mobileWalletAdapterRegistered =
   false;
+
+export function isAndroidDevice(): boolean {
+  return (
+    typeof navigator !== "undefined" &&
+    /Android/i.test(
+      navigator.userAgent,
+    )
+  );
+}
 
 export function isAndroidMobileWalletSupported(): boolean {
   if (
@@ -96,7 +110,7 @@ export function isAndroidMobileWalletSupported(): boolean {
     navigator.userAgent;
 
   const isAndroidChrome =
-    /Android/i.test(userAgent) &&
+    isAndroidDevice() &&
     /Chrome\//i.test(userAgent);
 
   const isUnsupportedShell =
@@ -108,6 +122,40 @@ export function isAndroidMobileWalletSupported(): boolean {
     isAndroidChrome &&
     !isUnsupportedShell
   );
+}
+
+export function hasSupportedInjectedWallet(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const walletWindow =
+    window as WalletWindow;
+
+  return Boolean(
+    walletWindow.phantom?.solana ||
+      walletWindow.solflare ||
+      walletWindow.solana
+        ?.isPhantom ||
+      walletWindow.solana
+        ?.isSolflare,
+  );
+}
+
+export function getMobileWalletBrowseLinks(): MobileWalletBrowseLinks {
+  const pageUrl = encodeURIComponent(
+    window.location.href,
+  );
+
+  const referrer =
+    encodeURIComponent(
+      window.location.origin,
+    );
+
+  return {
+    phantom: `https://phantom.app/ul/browse/${pageUrl}?ref=${referrer}`,
+    solflare: `https://solflare.com/ul/v1/browse/${pageUrl}?ref=${referrer}`,
+  };
 }
 
 export function walletSourceLabel(
@@ -212,6 +260,52 @@ function equalBytes(
   );
 }
 
+function isExpectedSignedMessage(
+  message: Uint8Array,
+  signedMessage: Uint8Array,
+  signature: Uint8Array,
+): boolean {
+  if (
+    equalBytes(
+      signedMessage,
+      message,
+    )
+  ) {
+    return true;
+  }
+
+  if (
+    signature.length !== 64 ||
+    signedMessage.length !==
+      message.length +
+        signature.length
+  ) {
+    return false;
+  }
+
+  const messagePart =
+    signedMessage.slice(
+      0,
+      message.length,
+    );
+
+  const signaturePart =
+    signedMessage.slice(
+      message.length,
+    );
+
+  return (
+    equalBytes(
+      messagePart,
+      message,
+    ) &&
+    equalBytes(
+      signaturePart,
+      signature,
+    )
+  );
+}
+
 async function connectMobileWallet(): Promise<WalletMessageSigner> {
   if (
     !isAndroidMobileWalletSupported()
@@ -243,8 +337,11 @@ async function connectMobileWallet(): Promise<WalletMessageSigner> {
       chains: ["solana:mainnet"],
       chainSelector:
         mobileWalletModule.createDefaultChainSelector(),
-      onWalletNotFound:
-        mobileWalletModule.createDefaultWalletNotFoundHandler(),
+      async onWalletNotFound() {
+        throw new Error(
+          "Android could not open a compatible MWA wallet. Use Open in Phantom or Open in Solflare below.",
+        );
+      },
     });
 
     mobileWalletAdapterRegistered =
@@ -318,9 +415,10 @@ async function connectMobileWallet(): Promise<WalletMessageSigner> {
       }
 
       if (
-        !equalBytes(
-          signed.signedMessage,
+        !isExpectedSignedMessage(
           message,
+          signed.signedMessage,
+          signed.signature,
         )
       ) {
         throw new Error(

@@ -34,9 +34,33 @@ test.describe(
 
         await expect(
           page.getByText(
-            "Android will open its wallet chooser",
+            "Try the Android wallet chooser first",
           ),
         ).toBeVisible();
+
+        const phantomLink =
+          page.getByRole("link", {
+            name: "Open in Phantom",
+          });
+
+        const solflareLink =
+          page.getByRole("link", {
+            name: "Open in Solflare",
+          });
+
+        await expect(
+          phantomLink,
+        ).toHaveAttribute(
+          "href",
+          /https:\/\/phantom\.app\/ul\/browse\//,
+        );
+
+        await expect(
+          solflareLink,
+        ).toHaveAttribute(
+          "href",
+          /https:\/\/solflare\.com\/ul\/v1\/browse\//,
+        );
 
         await expect(
           page.getByRole("button", {

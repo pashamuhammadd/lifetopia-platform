@@ -4,6 +4,7 @@ import {
   AlertCircle,
   ArrowLeft,
   CheckCircle2,
+  ExternalLink,
   Link2,
   LoaderCircle,
   ShieldCheck,
@@ -19,10 +20,14 @@ import {
 import {
   bytesToBase64,
   connectWallet,
+  getMobileWalletBrowseLinks,
+  hasSupportedInjectedWallet,
+  isAndroidDevice,
   isAndroidMobileWalletSupported,
   walletSourceLabel,
 } from "@/lib/auth/wallet-client";
 import type {
+  MobileWalletBrowseLinks,
   WalletSource,
 } from "@/lib/auth/wallet-client";
 
@@ -68,6 +73,14 @@ export function WalletLoginPanel({
   const [isAndroid, setIsAndroid] =
     useState(false);
 
+  const [isMwaSupported, setIsMwaSupported] =
+    useState(false);
+
+  const [mobileBrowseLinks, setMobileBrowseLinks] =
+    useState<MobileWalletBrowseLinks | null>(
+      null,
+    );
+
   const [message, setMessage] =
     useState("");
 
@@ -75,9 +88,26 @@ export function WalletLoginPanel({
     useState("");
 
   useEffect(() => {
-    setIsAndroid(
-      isAndroidMobileWalletSupported(),
+    const android =
+      isAndroidDevice();
+
+    const injectedWallet =
+      hasSupportedInjectedWallet();
+
+    const showMobileOptions =
+      android && !injectedWallet;
+
+    setIsAndroid(showMobileOptions);
+    setIsMwaSupported(
+      showMobileOptions &&
+        isAndroidMobileWalletSupported(),
     );
+
+    if (showMobileOptions) {
+      setMobileBrowseLinks(
+        getMobileWalletBrowseLinks(),
+      );
+    }
   }, []);
 
   async function loginWithWallet(
@@ -200,7 +230,7 @@ export function WalletLoginPanel({
 
       const actionable =
         Boolean(errorMessage) &&
-        /was not detected|did not provide a Solana|mobile wallet adapter|available on supported Android|selected mobile wallet|changed the authentication message/i.test(
+        /was not detected|did not provide a Solana|mobile wallet adapter|available on supported Android|selected mobile wallet|changed the authentication message|could not open a compatible MWA wallet/i.test(
           errorMessage,
         );
 
@@ -292,7 +322,8 @@ export function WalletLoginPanel({
               ))
             : null}
 
-          {isAndroid ? (
+          {isAndroid &&
+          isMwaSupported ? (
             <button
               type="button"
               disabled={isLoading}
@@ -319,11 +350,40 @@ export function WalletLoginPanel({
               Continue with a mobile wallet
             </button>
           ) : null}
+
+          {isAndroid &&
+          mobileBrowseLinks ? (
+            <>
+              <a
+                href={mobileBrowseLinks.phantom}
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#4f8124] px-6 text-sm font-black text-white transition hover:bg-[#416d1d]"
+              >
+                <ExternalLink
+                  aria-hidden="true"
+                  className="size-4"
+                />
+                Open in Phantom
+              </a>
+
+              <a
+                href={mobileBrowseLinks.solflare}
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#4f8124] px-6 text-sm font-black text-white transition hover:bg-[#416d1d]"
+              >
+                <ExternalLink
+                  aria-hidden="true"
+                  className="size-4"
+                />
+                Open in Solflare
+              </a>
+            </>
+          ) : null}
         </div>
 
         {isAndroid ? (
           <p className="mt-3 text-xs font-bold leading-5 text-[#76583a]">
-            Android will open its wallet chooser. Select Phantom or Solflare and approve only the message signature.
+            {isMwaSupported
+              ? "Try the Android wallet chooser first. If it cannot find an installed wallet, open this page directly in Phantom or Solflare."
+              : "This browser cannot use the Android wallet chooser. Open this page directly in Phantom or Solflare instead."}
           </p>
         ) : null}
       </div>
