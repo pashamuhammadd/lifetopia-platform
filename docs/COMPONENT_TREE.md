@@ -23,12 +23,16 @@
 | `apps/website/components/auth/LoginForm.tsx` | `LoginForm` |
 | `apps/website/components/auth/MfaChallengeForm.tsx` | `MfaChallengeForm` |
 | `apps/website/components/auth/MfaSettingsPanel.tsx` | `MfaSettingsPanel` |
+| `apps/website/components/auth/MobileWalletCallback.tsx` | `MobileWalletCallback` |
 | `apps/website/components/auth/PasswordField.tsx` | `PasswordField` |
 | `apps/website/components/auth/RegisterForm.tsx` | `RegisterForm` |
 | `apps/website/components/auth/RegisterProgress.tsx` | `RegisterProgress` |
 | `apps/website/components/auth/ResetPasswordForm.tsx` | `ResetPasswordForm` |
 | `apps/website/components/auth/SessionManagementPanel.tsx` | `SessionManagementPanel` |
 | `apps/website/components/auth/TurnstileChallenge.tsx` | `TurnstileChallenge` |
+| `apps/website/components/auth/WalletLinkingPanel.tsx` | `WalletLinkingPanel` |
+| `apps/website/components/auth/WalletLoginEntryLink.tsx` | `WalletLoginEntryLink` |
+| `apps/website/components/auth/WalletLoginPanel.tsx` | `WalletLoginPanel` |
 | `apps/website/components/dashboard/ComingSoonFeatures.tsx` | `ComingSoonFeatures` |
 | `apps/website/components/dashboard/CommunityActivity.tsx` | `CommunityActivity` |
 | `apps/website/components/dashboard/DailyQuestCard.tsx` | `DailyQuestCard` |

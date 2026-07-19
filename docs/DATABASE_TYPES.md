@@ -134,6 +134,17 @@ export type AccountUsernameChange = {
   created_at: string;
 };
 
+export type AccountWallet = {
+  id: string;
+  user_id: string;
+  chain: string;
+  address: string;
+  linked_at: string;
+  last_verified_at: string;
+  last_login_at: string | null;
+  wallet_login_count: number;
+};
+
 export type BadgeCatalog = {
   badge_code: string;
   label: string;
@@ -156,6 +167,12 @@ export type CommunityComment = {
   created_at: string;
   updated_at: string;
   parent_comment_id: string | null;
+};
+
+export type CommunityFollow = {
+  follower_id: string;
+  followed_id: string;
+  created_at: string;
 };
 
 export type CommunityLike = {
@@ -237,6 +254,13 @@ export type LegalDocumentVersion = {
   created_at: string;
 };
 
+export type LifetopiaFounderRegistry = {
+  singleton: boolean;
+  user_id: string;
+  username_at_provisioning: string;
+  provisioned_at: string;
+};
+
 export type LifetopiaRoleCatalog = {
   role_code: string;
   label: string;
@@ -286,6 +310,55 @@ export type Profile = {
   role: string;
   created_at: string;
   updated_at: string;
+};
+
+export type WalletLinkChallenge = {
+  id: string;
+  user_id: string;
+  chain: string;
+  address: string;
+  nonce: string;
+  message: string;
+  expires_at: string;
+  consumed_at: string | null;
+  created_at: string;
+};
+
+export type WalletLoginChallenge = {
+  id: string;
+  chain: string;
+  address: string;
+  nonce: string;
+  message: string;
+  request_fingerprint: string;
+  expires_at: string;
+  consumed_at: string | null;
+  created_at: string;
+};
+
+export type WalletLoginEvent = {
+  id: string;
+  user_id: string;
+  wallet_id: string;
+  challenge_id: string;
+  chain: string;
+  address: string;
+  event_type: string;
+  success: boolean;
+  error_code: string | null;
+  request_id: string;
+  created_at: string;
+};
+
+export type WalletSecurityEvent = {
+  id: string;
+  user_id: string;
+  wallet_id: string | null;
+  chain: string;
+  address: string;
+  event_type: string;
+  request_id: string;
+  created_at: string;
 };
 
 ---

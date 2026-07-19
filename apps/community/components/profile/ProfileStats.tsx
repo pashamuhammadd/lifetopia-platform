@@ -1,50 +1,21 @@
-import { CalendarDays, MessageCircle, ShieldCheck, UserRound } from "lucide-react";
+import { CalendarDays, MessageCircle, UserCheck, Users } from "lucide-react";
+import Link from "next/link";
 
 import type { PublicProfileData } from "@/data/profile/public-profile";
-
 import { StatCard } from "@/components/ui/StatCard";
 
-type ProfileStatsProps = {
-  profile: PublicProfileData;
-};
-
-export function ProfileStats({ profile }: ProfileStatsProps) {
-  const stats = [
-    {
-      label: "Posts",
-      value: String(profile.postsCount),
-      helper: "Community posts",
-      icon: MessageCircle,
-      tone: "blue" as const,
-    },
-    {
-      label: "Role",
-      value: profile.role,
-      helper: "Lifetopia identity",
-      icon: ShieldCheck,
-      tone: "gold" as const,
-    },
-    {
-      label: "Account",
-      value: profile.accountType,
-      helper: "Account type",
-      icon: UserRound,
-      tone: "green" as const,
-    },
-    {
-      label: "Joined",
-      value: profile.joinedAt,
-      helper: "Member since",
-      icon: CalendarDays,
-      tone: "purple" as const,
-    },
-  ];
-
+export function ProfileStats({ profile }: { profile: PublicProfileData }) {
+  const base = `/user/${encodeURIComponent(profile.username)}`;
   return (
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-      {stats.map((stat) => (
-        <StatCard key={stat.label} {...stat} />
-      ))}
+      <StatCard label="Posts" value={String(profile.postsCount)} helper="Community posts" icon={MessageCircle} tone="blue" />
+      <Link href={`${base}/followers`} aria-label={`View ${profile.followersCount} followers`}>
+        <StatCard label="Followers" value={String(profile.followersCount)} helper="Lifetopians following" icon={Users} tone="green" />
+      </Link>
+      <Link href={`${base}/following`} aria-label={`View ${profile.followingCount} following`}>
+        <StatCard label="Following" value={String(profile.followingCount)} helper="Lifetopians followed" icon={UserCheck} tone="gold" />
+      </Link>
+      <StatCard label="Joined" value={profile.joinedAt} helper="Member since" icon={CalendarDays} tone="purple" />
     </div>
   );
 }

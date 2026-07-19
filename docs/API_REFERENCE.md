@@ -10,6 +10,7 @@
 
 | Route | Methods | File |
 |---|---|---|
+| `/.well-known/assetlinks.json` | - | `apps/website/app/.well-known/assetlinks.json/route.ts` |
 | `/api/auth/account-access/legal` | `POST` | `apps/website/app/api/auth/account-access/legal/route.ts` |
 | `/api/auth/account-access/username` | `POST` | `apps/website/app/api/auth/account-access/username/route.ts` |
 | `/api/auth/guardian/request` | `POST` | `apps/website/app/api/auth/guardian/request/route.ts` |
@@ -28,6 +29,11 @@
 | `/api/auth/sessions/logout-current` | `POST` | `apps/website/app/api/auth/sessions/logout-current/route.ts` |
 | `/api/auth/sessions/logout-others` | `POST` | `apps/website/app/api/auth/sessions/logout-others/route.ts` |
 | `/api/auth/sessions/revoke` | `POST` | `apps/website/app/api/auth/sessions/revoke/route.ts` |
+| `/api/auth/wallet-login/challenge` | `POST` | `apps/website/app/api/auth/wallet-login/challenge/route.ts` |
+| `/api/auth/wallet-login/verify` | `POST` | `apps/website/app/api/auth/wallet-login/verify/route.ts` |
+| `/api/auth/wallet/challenge` | `POST` | `apps/website/app/api/auth/wallet/challenge/route.ts` |
+| `/api/auth/wallet/unlink` | `POST` | `apps/website/app/api/auth/wallet/unlink/route.ts` |
+| `/api/auth/wallet/verify` | `POST` | `apps/website/app/api/auth/wallet/verify/route.ts` |
 | `/api/development-log` | `POST` | `apps/website/app/api/development-log/route.ts` |
 | `/auth/confirm` | `GET` | `apps/website/app/auth/confirm/route.ts` |
 

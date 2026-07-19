@@ -174,6 +174,19 @@ Incorrect:
 | `changed_at` | `timestamp with time zone` | NO |  | `now()` |
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 
+## Table: `public.account_wallets`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `gen_random_uuid()` |
+| `user_id` | `uuid` | NO | FK → profiles.id | `` |
+| `chain` | `text` | NO |  | `'solana'::text` |
+| `address` | `text` | NO |  | `` |
+| `linked_at` | `timestamp with time zone` | NO |  | `now()` |
+| `last_verified_at` | `timestamp with time zone` | NO |  | `now()` |
+| `last_login_at` | `timestamp with time zone` | YES |  | `` |
+| `wallet_login_count` | `bigint` | NO |  | `0` |
+
 ## Table: `public.badge_catalog`
 
 | Column | Type | Nullable | Key | Default |
@@ -203,6 +216,14 @@ Incorrect:
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 | `updated_at` | `timestamp with time zone` | NO |  | `now()` |
 | `parent_comment_id` | `uuid` | YES | FK → community_comments.id | `` |
+
+## Table: `public.community_follows`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `follower_id` | `uuid` | NO | PK, FK → profiles.id | `` |
+| `followed_id` | `uuid` | NO | PK, FK → profiles.id | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
 
 ## Table: `public.community_likes`
 
@@ -295,6 +316,15 @@ Incorrect:
 | `is_active` | `boolean` | NO |  | `false` |
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 
+## Table: `public.lifetopia_founder_registry`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `singleton` | `boolean` | NO | PK | `true` |
+| `user_id` | `uuid` | NO | FK → profiles.id | `` |
+| `username_at_provisioning` | `citext` | NO |  | `` |
+| `provisioned_at` | `timestamp with time zone` | NO |  | `now()` |
+
 ## Table: `public.lifetopia_role_catalog`
 
 | Column | Type | Nullable | Key | Default |
@@ -353,4 +383,61 @@ Incorrect:
 | `role` | `text` | NO |  | `'lifetopian'::text` |
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 | `updated_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.wallet_link_challenges`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `` |
+| `user_id` | `uuid` | NO | FK → profiles.id | `` |
+| `chain` | `text` | NO |  | `'solana'::text` |
+| `address` | `text` | NO |  | `` |
+| `nonce` | `text` | NO |  | `` |
+| `message` | `text` | NO |  | `` |
+| `expires_at` | `timestamp with time zone` | NO |  | `` |
+| `consumed_at` | `timestamp with time zone` | YES |  | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.wallet_login_challenges`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `` |
+| `chain` | `text` | NO |  | `'solana'::text` |
+| `address` | `text` | NO |  | `` |
+| `nonce` | `text` | NO |  | `` |
+| `message` | `text` | NO |  | `` |
+| `request_fingerprint` | `text` | NO |  | `` |
+| `expires_at` | `timestamp with time zone` | NO |  | `` |
+| `consumed_at` | `timestamp with time zone` | YES |  | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.wallet_login_events`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `gen_random_uuid()` |
+| `user_id` | `uuid` | NO |  | `` |
+| `wallet_id` | `uuid` | NO |  | `` |
+| `challenge_id` | `uuid` | NO |  | `` |
+| `chain` | `text` | NO |  | `` |
+| `address` | `text` | NO |  | `` |
+| `event_type` | `text` | NO |  | `` |
+| `success` | `boolean` | NO |  | `` |
+| `error_code` | `text` | YES |  | `` |
+| `request_id` | `uuid` | NO |  | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.wallet_security_events`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `gen_random_uuid()` |
+| `user_id` | `uuid` | NO |  | `` |
+| `wallet_id` | `uuid` | YES |  | `` |
+| `chain` | `text` | NO |  | `` |
+| `address` | `text` | NO |  | `` |
+| `event_type` | `text` | NO |  | `` |
+| `request_id` | `uuid` | NO |  | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
 

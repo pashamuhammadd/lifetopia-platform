@@ -14,6 +14,8 @@
 | `/account-access` | `apps/website/app/account-access/page.tsx` |
 | `/account/security/mfa` | `apps/website/app/account/security/mfa/page.tsx` |
 | `/account/sessions` | `apps/website/app/account/sessions/page.tsx` |
+| `/account/wallet` | `apps/website/app/account/wallet/page.tsx` |
+| `/auth/wallet-mobile/callback` | `apps/website/app/auth/wallet-mobile/callback/page.tsx` |
 | `/check-email` | `apps/website/app/check-email/page.tsx` |
 | `/dashboard` | `apps/website/app/dashboard/page.tsx` |
 | `/email-verified` | `apps/website/app/email-verified/page.tsx` |
@@ -27,6 +29,7 @@
 | `/register` | `apps/website/app/register/page.tsx` |
 | `/reset-password` | `apps/website/app/reset-password/page.tsx` |
 | `/terms` | `apps/website/app/terms/page.tsx` |
+| `/wallet-login` | `apps/website/app/wallet-login/page.tsx` |
 
 
 ---

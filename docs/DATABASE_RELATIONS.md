@@ -40,11 +40,14 @@ profiles.user_id does not exist
 - `public.account_status_events.user_id` → `public.profiles.id`
 - `public.account_username_changes.changed_by` → `public.profiles.id`
 - `public.account_username_changes.user_id` → `public.profiles.id`
+- `public.account_wallets.user_id` → `public.profiles.id`
 - `public.community_bookmarks.post_id` → `public.community_posts.id`
 - `public.community_bookmarks.user_id` → `public.profiles.id`
 - `public.community_comments.author_id` → `public.profiles.id`
 - `public.community_comments.parent_comment_id` → `public.community_comments.id`
 - `public.community_comments.post_id` → `public.community_posts.id`
+- `public.community_follows.followed_id` → `public.profiles.id`
+- `public.community_follows.follower_id` → `public.profiles.id`
 - `public.community_likes.post_id` → `public.community_posts.id`
 - `public.community_likes.user_id` → `public.profiles.id`
 - `public.community_posts.author_id` → `public.profiles.id`
@@ -55,9 +58,11 @@ profiles.user_id does not exist
 - `public.guardian_consents.privacy_document_id` → `public.legal_document_versions.id`
 - `public.guardian_consents.terms_document_id` → `public.legal_document_versions.id`
 - `public.guardian_consents.user_id` → `public.profiles.id`
+- `public.lifetopia_founder_registry.user_id` → `public.profiles.id`
 - `public.profile_badges.badge_code` → `public.badge_catalog.badge_code`
 - `public.profile_badges.user_id` → `public.profiles.id`
 - `public.profile_private.user_id` → `public.profiles.id`
+- `public.wallet_link_challenges.user_id` → `public.profiles.id`
 
 
 ---
@@ -149,6 +154,14 @@ Outgoing relations:
 Incoming relations:
 - None
 
+### `public.account_wallets`
+
+Outgoing relations:
+- `user_id` → `profiles.id`
+
+Incoming relations:
+- None
+
 ### `public.badge_catalog`
 
 Outgoing relations:
@@ -176,6 +189,15 @@ Outgoing relations:
 Incoming relations:
 - `community_comments.parent_comment_id` → `id`
 - `community_reports.comment_id` → `id`
+
+### `public.community_follows`
+
+Outgoing relations:
+- `followed_id` → `profiles.id`
+- `follower_id` → `profiles.id`
+
+Incoming relations:
+- None
 
 ### `public.community_likes`
 
@@ -236,6 +258,14 @@ Incoming relations:
 - `guardian_consents.privacy_document_id` → `id`
 - `guardian_consents.terms_document_id` → `id`
 
+### `public.lifetopia_founder_registry`
+
+Outgoing relations:
+- `user_id` → `profiles.id`
+
+Incoming relations:
+- None
+
 ### `public.lifetopia_role_catalog`
 
 Outgoing relations:
@@ -281,13 +311,50 @@ Incoming relations:
 - `account_status_events.user_id` → `id`
 - `account_username_changes.changed_by` → `id`
 - `account_username_changes.user_id` → `id`
+- `account_wallets.user_id` → `id`
 - `community_bookmarks.user_id` → `id`
 - `community_comments.author_id` → `id`
+- `community_follows.followed_id` → `id`
+- `community_follows.follower_id` → `id`
 - `community_likes.user_id` → `id`
 - `community_posts.author_id` → `id`
 - `community_reports.reporter_id` → `id`
 - `community_reports.reviewed_by` → `id`
 - `guardian_consents.user_id` → `id`
+- `lifetopia_founder_registry.user_id` → `id`
 - `profile_badges.user_id` → `id`
 - `profile_private.user_id` → `id`
+- `wallet_link_challenges.user_id` → `id`
+
+### `public.wallet_link_challenges`
+
+Outgoing relations:
+- `user_id` → `profiles.id`
+
+Incoming relations:
+- None
+
+### `public.wallet_login_challenges`
+
+Outgoing relations:
+- None
+
+Incoming relations:
+- None
+
+### `public.wallet_login_events`
+
+Outgoing relations:
+- None
+
+Incoming relations:
+- None
+
+### `public.wallet_security_events`
+
+Outgoing relations:
+- None
+
+Incoming relations:
+- None
 
