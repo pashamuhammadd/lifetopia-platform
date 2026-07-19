@@ -9,7 +9,7 @@ with checks as (
  union all select 8,'No duplicate quest claims','0',(select count(*)::text from (select user_id,quest_code,period_key from public.community_quest_claims group by 1,2,3 having count(*)>1) x)
  union all select 9,'Quest event recorder exists','true',(to_regprocedure('public.record_community_quest_event(text,uuid)') is not null)::text
  union all select 10,'Quest dashboard RPC exists','true',(to_regprocedure('public.get_my_community_quests()') is not null)::text
- union all select 11,'Daily claim RPC exists','true',(to_regprocedure('public.claim_daily_community_quest()') is not null)::text
+ union all select 11,'Individual quest claim RPC exists','true',(to_regprocedure('public.claim_daily_community_quest(text)') is not null)::text
  union all select 12,'Harmony ledger is private','true',(not exists(select 1 from information_schema.role_table_grants where table_schema='public' and table_name='harmony_ledger' and grantee='anon'))::text
 )
 select check_order,check_name,expected,actual,expected=actual passed from checks order by check_order;

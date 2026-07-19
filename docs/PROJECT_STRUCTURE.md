@@ -4367,7 +4367,9 @@ lifetopia-platform
 │       ├── community-3-verify.sql
 │       ├── community-4-preflight.sql
 │       ├── community-4-quest-harmony.sql
-│       └── community-4-verify.sql
+│       ├── community-4-verify.sql
+│       ├── community-4.1-individual-claims-fix.sql
+│       └── community-4.1-individual-claims.sql
 ├── .gitignore
 ├── .npmrc
 ├── package.json
