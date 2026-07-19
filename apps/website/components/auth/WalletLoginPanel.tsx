@@ -4,7 +4,6 @@ import {
   AlertCircle,
   ArrowLeft,
   CheckCircle2,
-  ExternalLink,
   Link2,
   LoaderCircle,
   ShieldCheck,
@@ -20,16 +19,20 @@ import {
 import {
   bytesToBase64,
   connectWallet,
-  getMobileWalletBrowseLinks,
   hasSupportedInjectedWallet,
   isAndroidDevice,
   isAndroidMobileWalletSupported,
   walletSourceLabel,
 } from "@/lib/auth/wallet-client";
 import type {
-  MobileWalletBrowseLinks,
   WalletSource,
 } from "@/lib/auth/wallet-client";
+import {
+  startMobileWalletDeepLink,
+} from "@/lib/auth/mobile-wallet-deeplink";
+import type {
+  MobileWalletProvider,
+} from "@/lib/auth/mobile-wallet-deeplink";
 
 type WalletLoginPanelProps = {
   next: string;
@@ -76,11 +79,6 @@ export function WalletLoginPanel({
   const [isMwaSupported, setIsMwaSupported] =
     useState(false);
 
-  const [mobileBrowseLinks, setMobileBrowseLinks] =
-    useState<MobileWalletBrowseLinks | null>(
-      null,
-    );
-
   const [message, setMessage] =
     useState("");
 
@@ -103,12 +101,33 @@ export function WalletLoginPanel({
         isAndroidMobileWalletSupported(),
     );
 
-    if (showMobileOptions) {
-      setMobileBrowseLinks(
-        getMobileWalletBrowseLinks(),
+  }, []);
+
+  function loginWithMobileDeepLink(
+    provider: MobileWalletProvider,
+  ) {
+    setMessage("");
+    setError("");
+
+    try {
+      const deepLink =
+        startMobileWalletDeepLink(
+          provider,
+          "login",
+          next,
+        );
+
+      window.location.assign(
+        deepLink,
+      );
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "The mobile wallet flow could not be started.",
       );
     }
-  }, []);
+  }
 
   async function loginWithWallet(
     choice: WalletSource,
@@ -277,7 +296,7 @@ export function WalletLoginPanel({
             </h2>
             <p className="mt-1 max-w-xl text-sm font-semibold leading-6 text-[#76583a]">
               {isAndroid
-                ? "Open the Android wallet chooser, then select Phantom or Solflare for your linked address."
+                ? "Choose Phantom or Solflare. The wallet opens only for approval, then returns here to finish your Lifetopia session."
                 : "Select the extension that owns your linked address. Trust Wallet and unrelated injected providers are never selected automatically."}
             </p>
           </div>
@@ -351,39 +370,41 @@ export function WalletLoginPanel({
             </button>
           ) : null}
 
-          {isAndroid &&
-          mobileBrowseLinks ? (
-            <>
-              <a
-                href={mobileBrowseLinks.phantom}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#4f8124] px-6 text-sm font-black text-white transition hover:bg-[#416d1d]"
-              >
-                <ExternalLink
-                  aria-hidden="true"
-                  className="size-4"
-                />
-                Open in Phantom
-              </a>
-
-              <a
-                href={mobileBrowseLinks.solflare}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#4f8124] px-6 text-sm font-black text-white transition hover:bg-[#416d1d]"
-              >
-                <ExternalLink
-                  aria-hidden="true"
-                  className="size-4"
-                />
-                Open in Solflare
-              </a>
-            </>
-          ) : null}
+          {isAndroid
+            ? (
+                [
+                  "phantom",
+                  "solflare",
+                ] as const
+              ).map((provider) => (
+                <button
+                  key={provider}
+                  type="button"
+                  disabled={isLoading}
+                  onClick={() =>
+                    loginWithMobileDeepLink(
+                      provider,
+                    )
+                  }
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#4f8124] px-6 text-sm font-black text-white transition hover:bg-[#416d1d] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Link2
+                    aria-hidden="true"
+                    className="size-4"
+                  />
+                  Continue with {walletSourceLabel(
+                    provider,
+                  )}
+                </button>
+              ))
+            : null}
         </div>
 
         {isAndroid ? (
           <p className="mt-3 text-xs font-bold leading-5 text-[#76583a]">
             {isMwaSupported
-              ? "Try the Android wallet chooser first. If it cannot find an installed wallet, open this page directly in Phantom or Solflare."
-              : "This browser cannot use the Android wallet chooser. Open this page directly in Phantom or Solflare instead."}
+              ? "Use the Android wallet chooser, or select Phantom/Solflare directly. Direct wallet approval no longer loads the Lifetopia platform inside the wallet browser."
+              : "Select Phantom or Solflare directly. The wallet returns to this secure callback after approval."}
           </p>
         ) : null}
       </div>

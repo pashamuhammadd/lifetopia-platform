@@ -34,39 +34,95 @@ test.describe(
 
         await expect(
           page.getByText(
-            "Try the Android wallet chooser first",
+            "Direct wallet approval no longer loads the Lifetopia platform inside the wallet browser",
           ),
         ).toBeVisible();
 
-        const phantomLink =
-          page.getByRole("link", {
-            name: "Open in Phantom",
-          });
-
-        const solflareLink =
-          page.getByRole("link", {
-            name: "Open in Solflare",
-          });
-
-        await expect(
-          phantomLink,
-        ).toHaveAttribute(
-          "href",
-          /https:\/\/phantom\.app\/ul\/browse\//,
-        );
-
-        await expect(
-          solflareLink,
-        ).toHaveAttribute(
-          "href",
-          /https:\/\/solflare\.com\/ul\/v1\/browse\//,
-        );
-
-        await expect(
+        const phantomButton =
           page.getByRole("button", {
             name: "Continue with Phantom",
-          }),
+          });
+
+        const solflareButton =
+          page.getByRole("button", {
+            name: "Continue with Solflare",
+          });
+
+        await expect(
+          phantomButton,
+        ).toBeVisible();
+
+        await expect(
+          solflareButton,
+        ).toBeVisible();
+
+        await expect(
+          page.locator(
+            'a[href*="/ul/browse/"]',
+          ),
         ).toHaveCount(0);
+
+        await page.route(
+          "https://phantom.app/**",
+          (route) => route.abort(),
+        );
+
+        const requestPromise =
+          page.waitForRequest(
+            (request) =>
+              request.url().startsWith(
+                "https://phantom.app/ul/v1/connect",
+              ),
+          );
+
+        await phantomButton.click();
+
+        const request =
+          await requestPromise;
+
+        const connectUrl = new URL(
+          request.url(),
+        );
+
+        expect(
+          connectUrl.searchParams.get(
+            "cluster",
+          ),
+        ).toBe("mainnet-beta");
+
+        expect(
+          connectUrl.searchParams.get(
+            "redirect_link",
+          ),
+        ).toContain(
+          "/auth/wallet-mobile/callback",
+        );
+
+        expect(
+          connectUrl.searchParams.get(
+            "dapp_encryption_public_key",
+          ),
+        ).toBeTruthy();
+      },
+    );
+
+    test(
+      "an incomplete mobile callback fails closed",
+      async ({ page }) => {
+        await page.goto(
+          "/auth/wallet-mobile/callback",
+        );
+
+        const walletAlert = page
+          .locator('p[role="alert"]')
+          .filter({
+            hasText:
+              "callback is incomplete",
+          });
+
+        await expect(
+          walletAlert,
+        ).toHaveCount(1);
       },
     );
   },

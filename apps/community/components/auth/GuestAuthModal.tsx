@@ -4,10 +4,17 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 const mainAppUrl =
   process.env.NEXT_PUBLIC_MAIN_APP_URL ?? "https://lifetopiaworld.io";
+
+const ANDROID_APP_MARKER =
+  "lifetopia:communityhub-android";
 
 type GuestAuthModalProps = {
   open: boolean;
@@ -22,6 +29,47 @@ export function GuestAuthModal({
 }: GuestAuthModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const [isAndroidApp, setIsAndroidApp] =
+    useState(false);
+
+  useEffect(() => {
+    const explicitlyMarked =
+      new URLSearchParams(
+        window.location.search,
+      ).get("androidApp") === "1";
+
+    const launchedByAndroidApp =
+      document.referrer.startsWith(
+        "android-app://",
+      );
+
+    let storedMarker = false;
+
+    try {
+      if (
+        explicitlyMarked ||
+        launchedByAndroidApp
+      ) {
+        localStorage.setItem(
+          ANDROID_APP_MARKER,
+          "1",
+        );
+      }
+
+      storedMarker =
+        localStorage.getItem(
+          ANDROID_APP_MARKER,
+        ) === "1";
+    } catch {
+      storedMarker = false;
+    }
+
+    setIsAndroidApp(
+      explicitlyMarked ||
+        launchedByAndroidApp ||
+        storedMarker,
+    );
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -76,6 +124,10 @@ export function GuestAuthModal({
   if (!open) return null;
 
   const encodedReturnUrl = encodeURIComponent(returnUrl);
+  const androidAppQuery =
+    isAndroidApp
+      ? "&androidApp=1"
+      : "";
 
   return (
     <div
@@ -139,7 +191,7 @@ export function GuestAuthModal({
           </a>
 
           <a
-            href={`${mainAppUrl}/wallet-login?next=${encodedReturnUrl}`}
+            href={`${mainAppUrl}/wallet-login?next=${encodedReturnUrl}${androidAppQuery}`}
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#d8c79d] bg-[#fff8e9] px-5 py-3 text-center font-black text-[#76583a] transition hover:bg-[#f8edda] hover:text-[#4f8124]"
           >
             <WalletCards

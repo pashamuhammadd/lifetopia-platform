@@ -1,0 +1,34 @@
+<!-- Merge these intent filters into the CommunityHub Android manifest. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application>
+    <activity
+      android:name=".MobileWalletCallbackActivity"
+      android:exported="true"
+      android:noHistory="true">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+          android:scheme="lifetopia-community"
+          android:host="wallet-auth" />
+      </intent-filter>
+    </activity>
+
+    <!-- Add both HTTPS origins to the existing TWA/App Link activity. -->
+    <activity android:name=".LauncherActivity">
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+          android:scheme="https"
+          android:host="community.lifetopiaworld.io" />
+        <data
+          android:scheme="https"
+          android:host="lifetopiaworld.io"
+          android:pathPrefix="/auth/wallet-mobile/callback" />
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>

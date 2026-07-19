@@ -82,11 +82,6 @@ export type WalletMessageSigner = {
   ): Promise<Uint8Array>;
 };
 
-export type MobileWalletBrowseLinks = {
-  phantom: string;
-  solflare: string;
-};
-
 let mobileWalletAdapterRegistered =
   false;
 
@@ -140,22 +135,6 @@ export function hasSupportedInjectedWallet(): boolean {
       walletWindow.solana
         ?.isSolflare,
   );
-}
-
-export function getMobileWalletBrowseLinks(): MobileWalletBrowseLinks {
-  const pageUrl = encodeURIComponent(
-    window.location.href,
-  );
-
-  const referrer =
-    encodeURIComponent(
-      window.location.origin,
-    );
-
-  return {
-    phantom: `https://phantom.app/ul/browse/${pageUrl}?ref=${referrer}`,
-    solflare: `https://solflare.com/ul/v1/browse/${pageUrl}?ref=${referrer}`,
-  };
 }
 
 export function walletSourceLabel(
@@ -339,7 +318,7 @@ async function connectMobileWallet(): Promise<WalletMessageSigner> {
         mobileWalletModule.createDefaultChainSelector(),
       async onWalletNotFound() {
         throw new Error(
-          "Android could not open a compatible MWA wallet. Use Open in Phantom or Open in Solflare below.",
+          "Android could not open a compatible MWA wallet. Choose Phantom or Solflare directly below.",
         );
       },
     });

@@ -1,5 +1,7 @@
 # Auth 20.1 — Mobile Wallet and Android Readiness
 
+> Superseded for provider-specific fallbacks by Auth 20.2. The Wallet Standard/MWA transport remains active, but the wallet-browser `browse` links must be removed after applying `AUTH_MOBILE_WALLET_RETURN.md`.
+
 Auth 20.1 is a supplementary completion package for the existing 21-phase authentication roadmap. It does not create Auth 21 or replace the completed Auth 17–20 wallet security work.
 
 ## Outcome
@@ -8,7 +10,7 @@ Auth 20.1 is a supplementary completion package for the existing 21-phase authen
 - Generic `window.solana` providers, including Trust Wallet injection, are not selected automatically.
 - Android users receive a separate **Continue with a mobile wallet** action.
 - The Android action uses Solana Mobile Wallet Adapter through Wallet Standard.
-- Android also receives explicit **Open in Phantom** and **Open in Solflare** fallbacks. These use each wallet's official browse deeplink and preserve the current login return URL.
+- Auth 20.2 replaces the old wallet-browser fallbacks with direct encrypted Phantom and Solflare connect/signMessage callbacks.
 - Community guests can start wallet login from `community.lifetopiaworld.io` and return to the exact safe Community URL after authentication.
 - Existing one-time challenge, Ed25519 signature verification, internal Supabase session exchange, MFA, rate limits, and audit records remain unchanged.
 
@@ -51,8 +53,8 @@ Official references:
 - <https://docs.solanamobile.com/get-started/web/installation>
 - <https://docs.solanamobile.com/get-started/web/apps>
 - <https://docs.solanamobile.com/recipes/mobile-wallet-adapter/migrating-to-wallet-standard>
-- <https://docs.phantom.com/phantom-deeplinks/other-methods/browse>
-- <https://docs.solflare.com/solflare/technical/deeplinks/other-methods/browse>
+- <https://docs.phantom.com/phantom-deeplinks/provider-methods/signmessage>
+- <https://docs.solflare.com/solflare/technical/deeplinks/provider-methods/signmessage>
 
 ## Automated verification
 
@@ -82,12 +84,13 @@ Use a real Android device with the current Phantom and/or Solflare app installed
 3. Confirm the browser opens `https://lifetopiaworld.io/wallet-login` with a Community `next` URL.
 4. Confirm **Continue with a mobile wallet** is visible.
 5. Tap it and select Phantom or Solflare in the Android wallet chooser.
-6. If Android reports that it cannot find a wallet, close the message and use **Open in Phantom** or **Open in Solflare**. Confirm the same Lifetopia wallet page opens inside the selected wallet's browser.
-7. Approve the human-readable message signature. Reject any unexpected transaction request.
-8. Confirm the existing MFA challenge still appears when the account requires AAL2.
-9. Confirm the flow returns to the original safe Community URL with an authenticated session.
-10. Repeat from `https://lifetopiaworld.io/account/wallet` with an unlinked test account to verify mobile wallet linking.
-11. Re-run desktop Phantom and Solflare login to confirm both explicit provider buttons still work.
+6. If Android reports that it cannot find an MWA wallet, close the message and select **Continue with Phantom** or **Continue with Solflare** directly.
+7. Confirm the wallet opens only for connect/signature approval and does not load Lifetopia inside its browser.
+8. Approve the human-readable message signature. Reject any unexpected transaction request.
+9. Confirm the existing MFA challenge still appears when the account requires AAL2.
+10. Confirm the flow returns to the original safe Community URL with an authenticated session.
+11. Repeat from `https://lifetopiaworld.io/account/wallet` with an unlinked test account to verify mobile wallet linking.
+12. Re-run desktop Phantom and Solflare login to confirm both explicit provider buttons still work.
 
 ## Deployment order
 
