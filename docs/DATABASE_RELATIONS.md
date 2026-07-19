@@ -41,6 +41,8 @@ profiles.user_id does not exist
 - `public.account_username_changes.changed_by` → `public.profiles.id`
 - `public.account_username_changes.user_id` → `public.profiles.id`
 - `public.account_wallets.user_id` → `public.profiles.id`
+- `public.community_account_restrictions.created_by` → `public.profiles.id`
+- `public.community_account_restrictions.user_id` → `public.profiles.id`
 - `public.community_bookmarks.post_id` → `public.community_posts.id`
 - `public.community_bookmarks.user_id` → `public.profiles.id`
 - `public.community_comments.author_id` → `public.profiles.id`
@@ -50,6 +52,9 @@ profiles.user_id does not exist
 - `public.community_follows.follower_id` → `public.profiles.id`
 - `public.community_likes.post_id` → `public.community_posts.id`
 - `public.community_likes.user_id` → `public.profiles.id`
+- `public.community_moderation_events.actor_id` → `public.profiles.id`
+- `public.community_moderation_events.report_id` → `public.community_reports.id`
+- `public.community_moderation_events.target_user_id` → `public.profiles.id`
 - `public.community_posts.author_id` → `public.profiles.id`
 - `public.community_quest_claims.user_id` → `public.profiles.id`
 - `public.community_quest_events.user_id` → `public.profiles.id`
@@ -174,6 +179,15 @@ Outgoing relations:
 Incoming relations:
 - `profile_badges.badge_code` → `badge_code`
 
+### `public.community_account_restrictions`
+
+Outgoing relations:
+- `created_by` → `profiles.id`
+- `user_id` → `profiles.id`
+
+Incoming relations:
+- None
+
 ### `public.community_bookmarks`
 
 Outgoing relations:
@@ -208,6 +222,16 @@ Incoming relations:
 Outgoing relations:
 - `post_id` → `community_posts.id`
 - `user_id` → `profiles.id`
+
+Incoming relations:
+- None
+
+### `public.community_moderation_events`
+
+Outgoing relations:
+- `actor_id` → `profiles.id`
+- `report_id` → `community_reports.id`
+- `target_user_id` → `profiles.id`
 
 Incoming relations:
 - None
@@ -248,7 +272,7 @@ Outgoing relations:
 - `reviewed_by` → `profiles.id`
 
 Incoming relations:
-- None
+- `community_moderation_events.report_id` → `id`
 
 ### `public.development_logs`
 
@@ -348,11 +372,15 @@ Incoming relations:
 - `account_username_changes.changed_by` → `id`
 - `account_username_changes.user_id` → `id`
 - `account_wallets.user_id` → `id`
+- `community_account_restrictions.created_by` → `id`
+- `community_account_restrictions.user_id` → `id`
 - `community_bookmarks.user_id` → `id`
 - `community_comments.author_id` → `id`
 - `community_follows.followed_id` → `id`
 - `community_follows.follower_id` → `id`
 - `community_likes.user_id` → `id`
+- `community_moderation_events.actor_id` → `id`
+- `community_moderation_events.target_user_id` → `id`
 - `community_posts.author_id` → `id`
 - `community_quest_claims.user_id` → `id`
 - `community_quest_events.user_id` → `id`

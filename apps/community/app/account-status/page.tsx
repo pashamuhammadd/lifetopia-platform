@@ -1,0 +1,3 @@
+import type{Metadata}from"next";import{AppLayout}from"@/components/layout/AppLayout";import{AccountRestrictionStatus}from"@/components/moderation/AccountRestrictionStatus";import{requireCurrentProfile}from"@/data/auth/require-current-profile";import{getMyCommunityRestriction}from"@/data/moderation/restriction";
+export const metadata:Metadata={title:"Community Account Status",robots:{index:false,follow:false}};
+export default async function AccountStatusPage(){await requireCurrentProfile("/account-status");const restriction=await getMyCommunityRestriction();return <AppLayout showRightSidebar={false}><AccountRestrictionStatus restriction={restriction}/></AppLayout>}

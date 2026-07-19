@@ -153,6 +153,16 @@ export type BadgeCatalog = {
   created_at: string;
 };
 
+export type CommunityAccountRestriction = {
+  user_id: string;
+  status: string;
+  reason: string;
+  expires_at: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type CommunityBookmark = {
   post_id: string;
   user_id: string;
@@ -167,6 +177,8 @@ export type CommunityComment = {
   created_at: string;
   updated_at: string;
   parent_comment_id: string | null;
+  moderation_status: string;
+  moderation_reason: string | null;
 };
 
 export type CommunityFollow = {
@@ -181,6 +193,19 @@ export type CommunityLike = {
   created_at: string;
 };
 
+export type CommunityModerationEvent = {
+  id: string;
+  actor_id: string | null;
+  target_user_id: string | null;
+  report_id: string | null;
+  target_type: string | null;
+  target_id: string | null;
+  action: string;
+  reason: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
 export type CommunityPost = {
   id: string;
   author_id: string;
@@ -188,6 +213,8 @@ export type CommunityPost = {
   category: string;
   created_at: string;
   updated_at: string;
+  moderation_status: string;
+  moderation_reason: string | null;
 };
 
 export type CommunityQuestClaim = {

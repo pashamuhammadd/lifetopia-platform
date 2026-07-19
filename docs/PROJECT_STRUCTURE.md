@@ -19,6 +19,8 @@ lifetopia-platform
 │   │   │   ├── .well-known
 │   │   │   │   └── assetlinks.json
 │   │   │   │       └── route.ts
+│   │   │   ├── account-status
+│   │   │   │   └── page.tsx
 │   │   │   ├── actions
 │   │   │   │   ├── community
 │   │   │   │   │   ├── bookmarks.ts
@@ -115,6 +117,8 @@ lifetopia-platform
 │   │   │   │   ├── ConversationList.tsx
 │   │   │   │   ├── MessageBubble.tsx
 │   │   │   │   └── Messages.tsx
+│   │   │   ├── moderation
+│   │   │   │   └── AccountRestrictionStatus.tsx
 │   │   │   ├── my-world
 │   │   │   │   ├── MyWorld.tsx
 │   │   │   │   ├── MyWorldCommunityStats.tsx
@@ -185,6 +189,8 @@ lifetopia-platform
 │   │   │   │   ├── comments.ts
 │   │   │   │   ├── likes.ts
 │   │   │   │   └── posts.ts
+│   │   │   ├── moderation
+│   │   │   │   └── restriction.ts
 │   │   │   ├── profile
 │   │   │   │   ├── connections.ts
 │   │   │   │   ├── current-profile.ts
@@ -4118,7 +4124,8 @@ lifetopia-platform
 │   │   ├── AUTH_WALLET_LOGIN.md
 │   │   ├── COMMUNITY_PHASE_3_PROFILE_FOLLOW_SEARCH.md
 │   │   ├── COMMUNITY_PHASE_4_QUEST_HARMONY.md
-│   │   └── COMMUNITY_PHASE_5_WALLET_SOLANA.md
+│   │   ├── COMMUNITY_PHASE_5_WALLET_SOLANA.md
+│   │   └── COMMUNITY_PHASE_6_MODERATION_ADMIN.md
 │   ├── design-system
 │   ├── releases
 │   │   └── AUTH_RELEASE_SIGNOFF_TEMPLATE.md
@@ -4295,7 +4302,8 @@ lifetopia-platform
 │   ├── sync-public.mjs
 │   ├── verify-community-phase-3.mjs
 │   ├── verify-community-phase-4.mjs
-│   └── verify-community-phase-5.mjs
+│   ├── verify-community-phase-5.mjs
+│   └── verify-community-phase-6.mjs
 ├── supabase
 │   ├── auth
 │   │   ├── AUTH_0_5C.md
@@ -4381,7 +4389,10 @@ lifetopia-platform
 │       ├── community-4.1-individual-claims.sql
 │       ├── community-5-preflight.sql
 │       ├── community-5-verify.sql
-│       └── community-5-wallet-solana.sql
+│       ├── community-5-wallet-solana.sql
+│       ├── community-6-moderation-admin.sql
+│       ├── community-6-preflight.sql
+│       └── community-6-verify.sql
 ├── .gitignore
 ├── .npmrc
 ├── package.json

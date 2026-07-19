@@ -197,6 +197,18 @@ Incorrect:
 | `priority` | `integer` | NO |  | `` |
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 
+## Table: `public.community_account_restrictions`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `user_id` | `uuid` | NO | PK, FK → profiles.id | `` |
+| `status` | `text` | NO |  | `` |
+| `reason` | `text` | NO |  | `` |
+| `expires_at` | `timestamp with time zone` | YES |  | `` |
+| `created_by` | `uuid` | NO | FK → profiles.id | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+| `updated_at` | `timestamp with time zone` | NO |  | `now()` |
+
 ## Table: `public.community_bookmarks`
 
 | Column | Type | Nullable | Key | Default |
@@ -216,6 +228,8 @@ Incorrect:
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 | `updated_at` | `timestamp with time zone` | NO |  | `now()` |
 | `parent_comment_id` | `uuid` | YES | FK → community_comments.id | `` |
+| `moderation_status` | `text` | NO |  | `'visible'::text` |
+| `moderation_reason` | `text` | YES |  | `` |
 
 ## Table: `public.community_follows`
 
@@ -233,6 +247,21 @@ Incorrect:
 | `user_id` | `uuid` | NO | PK, FK → profiles.id | `` |
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 
+## Table: `public.community_moderation_events`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `gen_random_uuid()` |
+| `actor_id` | `uuid` | YES | FK → profiles.id | `` |
+| `target_user_id` | `uuid` | YES | FK → profiles.id | `` |
+| `report_id` | `uuid` | YES | FK → community_reports.id | `` |
+| `target_type` | `text` | YES |  | `` |
+| `target_id` | `uuid` | YES |  | `` |
+| `action` | `text` | NO |  | `` |
+| `reason` | `text` | NO |  | `` |
+| `metadata` | `jsonb` | NO |  | `'{}'::jsonb` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+
 ## Table: `public.community_posts`
 
 | Column | Type | Nullable | Key | Default |
@@ -243,6 +272,8 @@ Incorrect:
 | `category` | `text` | NO |  | `'General'::text` |
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 | `updated_at` | `timestamp with time zone` | NO |  | `now()` |
+| `moderation_status` | `text` | NO |  | `'visible'::text` |
+| `moderation_reason` | `text` | YES |  | `` |
 
 ## Table: `public.community_quest_claims`
 
