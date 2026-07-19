@@ -1,4 +1,5 @@
-import { ShieldCheck, UserRound } from "lucide-react";
+import Link from "next/link";
+import { ShieldCheck, Trash2, UserRound } from "lucide-react";
 
 import type { CurrentProfile } from "@/data/profile/current-profile";
 
@@ -81,6 +82,28 @@ export function Settings({ profile }: SettingsProps) {
           Solana wallet verification is coming later with a one-time +500 Harmony
           bonus and a minimum verified Harmony Level of 5.
         </p>
+      </SectionCard>
+
+      <SectionCard
+        title="Danger Zone"
+        description="Permanently remove your CommunityHub account and associated personal data."
+        icon={Trash2}
+      >
+        <div className="rounded-[20px] border border-[#f1aaaa] bg-[#fff7f7] p-4 sm:flex sm:items-center sm:justify-between sm:gap-5">
+          <div>
+            <p className="font-black text-[#8f1e1e]">Delete CommunityHub account</p>
+            <p className="mt-1 text-sm font-bold leading-6 text-[#9f4b4b]">
+              This action permanently removes your login, profile, posts, messages,
+              linked wallet record, and CommunityHub progress.
+            </p>
+          </div>
+          <Link
+            href="/account-deletion"
+            className="mt-4 inline-flex min-h-12 w-full shrink-0 items-center justify-center rounded-full bg-[#c12626] px-5 font-black text-white transition hover:bg-[#a51616] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c12626] focus-visible:ring-offset-2 sm:mt-0 sm:w-auto"
+          >
+            Delete account
+          </Link>
+        </div>
       </SectionCard>
 
       <LogoutSection />
