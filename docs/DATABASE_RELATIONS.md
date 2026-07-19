@@ -51,6 +51,8 @@ profiles.user_id does not exist
 - `public.community_likes.post_id` → `public.community_posts.id`
 - `public.community_likes.user_id` → `public.profiles.id`
 - `public.community_posts.author_id` → `public.profiles.id`
+- `public.community_quest_claims.user_id` → `public.profiles.id`
+- `public.community_quest_events.user_id` → `public.profiles.id`
 - `public.community_reports.comment_id` → `public.community_comments.id`
 - `public.community_reports.post_id` → `public.community_posts.id`
 - `public.community_reports.reporter_id` → `public.profiles.id`
@@ -58,6 +60,8 @@ profiles.user_id does not exist
 - `public.guardian_consents.privacy_document_id` → `public.legal_document_versions.id`
 - `public.guardian_consents.terms_document_id` → `public.legal_document_versions.id`
 - `public.guardian_consents.user_id` → `public.profiles.id`
+- `public.harmony_accounts.user_id` → `public.profiles.id`
+- `public.harmony_ledger.user_id` → `public.profiles.id`
 - `public.lifetopia_founder_registry.user_id` → `public.profiles.id`
 - `public.profile_badges.badge_code` → `public.badge_catalog.badge_code`
 - `public.profile_badges.user_id` → `public.profiles.id`
@@ -219,6 +223,22 @@ Incoming relations:
 - `community_likes.post_id` → `id`
 - `community_reports.post_id` → `id`
 
+### `public.community_quest_claims`
+
+Outgoing relations:
+- `user_id` → `profiles.id`
+
+Incoming relations:
+- None
+
+### `public.community_quest_events`
+
+Outgoing relations:
+- `user_id` → `profiles.id`
+
+Incoming relations:
+- None
+
 ### `public.community_reports`
 
 Outgoing relations:
@@ -243,6 +263,22 @@ Incoming relations:
 Outgoing relations:
 - `privacy_document_id` → `legal_document_versions.id`
 - `terms_document_id` → `legal_document_versions.id`
+- `user_id` → `profiles.id`
+
+Incoming relations:
+- None
+
+### `public.harmony_accounts`
+
+Outgoing relations:
+- `user_id` → `profiles.id`
+
+Incoming relations:
+- None
+
+### `public.harmony_ledger`
+
+Outgoing relations:
 - `user_id` → `profiles.id`
 
 Incoming relations:
@@ -318,9 +354,13 @@ Incoming relations:
 - `community_follows.follower_id` → `id`
 - `community_likes.user_id` → `id`
 - `community_posts.author_id` → `id`
+- `community_quest_claims.user_id` → `id`
+- `community_quest_events.user_id` → `id`
 - `community_reports.reporter_id` → `id`
 - `community_reports.reviewed_by` → `id`
 - `guardian_consents.user_id` → `id`
+- `harmony_accounts.user_id` → `id`
+- `harmony_ledger.user_id` → `id`
 - `lifetopia_founder_registry.user_id` → `id`
 - `profile_badges.user_id` → `id`
 - `profile_private.user_id` → `id`

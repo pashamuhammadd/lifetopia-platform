@@ -190,6 +190,24 @@ export type CommunityPost = {
   updated_at: string;
 };
 
+export type CommunityQuestClaim = {
+  id: number;
+  user_id: string;
+  quest_code: string;
+  period_key: string;
+  reward: number;
+  claimed_at: string;
+};
+
+export type CommunityQuestEvent = {
+  id: number;
+  user_id: string;
+  event_type: string;
+  subject_id: string | null;
+  event_date: string;
+  created_at: string;
+};
+
 export type CommunityReport = {
   id: string;
   reporter_id: string;
@@ -240,6 +258,25 @@ export type GuardianConsent = {
   delivery_status: string;
   delivered_at: string | null;
   delivery_error_code: string | null;
+};
+
+export type HarmonyAccount = {
+  user_id: string;
+  points: number;
+  level_floor: number;
+  updated_at: string;
+};
+
+export type HarmonyLedger = {
+  id: number;
+  user_id: string;
+  amount: number;
+  balance_after: number;
+  source_type: string;
+  source_key: string;
+  description: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
 };
 
 export type LegalDocumentVersion = {

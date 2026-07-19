@@ -244,6 +244,28 @@ Incorrect:
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 | `updated_at` | `timestamp with time zone` | NO |  | `now()` |
 
+## Table: `public.community_quest_claims`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `bigint` | NO | PK | `` |
+| `user_id` | `uuid` | NO | FK → profiles.id | `` |
+| `quest_code` | `text` | NO |  | `` |
+| `period_key` | `date` | NO |  | `` |
+| `reward` | `integer` | NO |  | `` |
+| `claimed_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.community_quest_events`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `bigint` | NO | PK | `` |
+| `user_id` | `uuid` | NO | FK → profiles.id | `` |
+| `event_type` | `text` | NO |  | `` |
+| `subject_id` | `uuid` | YES |  | `` |
+| `event_date` | `date` | NO |  | `(timezone('utc'::text, now()))::date` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+
 ## Table: `public.community_reports`
 
 | Column | Type | Nullable | Key | Default |
@@ -301,6 +323,29 @@ Incorrect:
 | `delivery_status` | `text` | NO |  | `'pending'::text` |
 | `delivered_at` | `timestamp with time zone` | YES |  | `` |
 | `delivery_error_code` | `text` | YES |  | `` |
+
+## Table: `public.harmony_accounts`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `user_id` | `uuid` | NO | PK, FK → profiles.id | `` |
+| `points` | `bigint` | NO |  | `0` |
+| `level_floor` | `integer` | NO |  | `1` |
+| `updated_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.harmony_ledger`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `bigint` | NO | PK | `` |
+| `user_id` | `uuid` | NO | FK → profiles.id | `` |
+| `amount` | `integer` | NO |  | `` |
+| `balance_after` | `bigint` | NO |  | `` |
+| `source_type` | `text` | NO |  | `` |
+| `source_key` | `text` | NO |  | `` |
+| `description` | `text` | NO |  | `` |
+| `metadata` | `jsonb` | NO |  | `'{}'::jsonb` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
 
 ## Table: `public.legal_document_versions`
 

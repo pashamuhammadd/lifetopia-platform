@@ -27,6 +27,7 @@ lifetopia-platform
 │   │   │   │   │   ├── likes.ts
 │   │   │   │   │   ├── moderation.ts
 │   │   │   │   │   ├── posts.ts
+│   │   │   │   │   ├── quests.ts
 │   │   │   │   │   └── reports.ts
 │   │   │   │   └── auth.ts
 │   │   │   ├── admin
@@ -140,6 +141,9 @@ lifetopia-platform
 │   │   │   │   ├── CompletedQuestSection.tsx
 │   │   │   │   ├── DailyQuestSection.tsx
 │   │   │   │   ├── Quest.tsx
+│   │   │   │   ├── QuestActions.tsx
+│   │   │   │   ├── QuestBoard.tsx
+│   │   │   │   ├── QuestPostViewTracker.tsx
 │   │   │   │   ├── SeasonQuestSection.tsx
 │   │   │   │   └── WeeklyQuestSection.tsx
 │   │   │   ├── report
@@ -190,6 +194,7 @@ lifetopia-platform
 │   │   │   ├── navigation.ts
 │   │   │   ├── notifications.ts
 │   │   │   ├── quest.ts
+│   │   │   ├── quests.ts
 │   │   │   └── sidebar.ts
 │   │   ├── public
 │   │   │   ├── audio
@@ -4104,7 +4109,8 @@ lifetopia-platform
 │   │   ├── AUTH_VALIDATION.md
 │   │   ├── AUTH_WALLET_LINKING.md
 │   │   ├── AUTH_WALLET_LOGIN.md
-│   │   └── COMMUNITY_PHASE_3_PROFILE_FOLLOW_SEARCH.md
+│   │   ├── COMMUNITY_PHASE_3_PROFILE_FOLLOW_SEARCH.md
+│   │   └── COMMUNITY_PHASE_4_QUEST_HARMONY.md
 │   ├── design-system
 │   ├── releases
 │   │   └── AUTH_RELEASE_SIGNOFF_TEMPLATE.md
@@ -4279,7 +4285,8 @@ lifetopia-platform
 │   ├── project-status.mjs
 │   ├── project-update.mjs
 │   ├── sync-public.mjs
-│   └── verify-community-phase-3.mjs
+│   ├── verify-community-phase-3.mjs
+│   └── verify-community-phase-4.mjs
 ├── supabase
 │   ├── auth
 │   │   ├── AUTH_0_5C.md
@@ -4357,7 +4364,10 @@ lifetopia-platform
 │   └── community
 │       ├── community-3-preflight.sql
 │       ├── community-3-profile-follow-search.sql
-│       └── community-3-verify.sql
+│       ├── community-3-verify.sql
+│       ├── community-4-preflight.sql
+│       ├── community-4-quest-harmony.sql
+│       └── community-4-verify.sql
 ├── .gitignore
 ├── .npmrc
 ├── package.json

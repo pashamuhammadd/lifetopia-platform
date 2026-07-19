@@ -1,27 +1,3 @@
-import type { Metadata } from "next";
-
-import { AppLayout } from "@/components/layout/AppLayout";
-import { Quest } from "@/components/quest/Quest";
-import { requireCurrentProfile } from "@/data/auth/require-current-profile";
-
-export const metadata: Metadata = {
-  title: "Community Quests",
-  description: "Private Lifetopia Community quest and Harmony progression.",
-  alternates: {
-    canonical: "/quest",
-  },
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
-
-export default async function QuestPage() {
-  await requireCurrentProfile("/quest");
-
-  return (
-    <AppLayout>
-      <Quest />
-    </AppLayout>
-  );
-}
+import type{Metadata}from"next";import{AppLayout}from"@/components/layout/AppLayout";import{QuestBoard}from"@/components/quest/QuestBoard";import{requireCurrentProfile}from"@/data/auth/require-current-profile";import{getMyQuestDashboard}from"@/data/quests";
+export const metadata:Metadata={title:"Daily Community Quest",description:"Complete CommunityHub quests and earn Harmony Points.",robots:{index:false,follow:false}};
+export default async function QuestPage(){await requireCurrentProfile("/quest");const dashboard=await getMyQuestDashboard();if(!dashboard)throw new Error("Quest dashboard is unavailable. Run Community Phase 4 SQL first.");return <AppLayout><QuestBoard {...dashboard}/></AppLayout>}
