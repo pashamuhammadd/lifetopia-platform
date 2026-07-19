@@ -1,0 +1,3 @@
+import type{Metadata}from"next";import{AppLayout}from"@/components/layout/AppLayout";import{WalletHub}from"@/components/wallet/WalletHub";import{requireCurrentProfile}from"@/data/auth/require-current-profile";import{getMyCommunityWallet}from"@/data/wallet";
+export const metadata:Metadata={title:"Wallet & Solana",description:"View your verified Lifetopia Solana wallet and Harmony reward.",robots:{index:false,follow:false}};
+export default async function WalletPage(){await requireCurrentProfile("/wallet");const status=await getMyCommunityWallet();return <AppLayout><WalletHub status={status}/></AppLayout>}

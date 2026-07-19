@@ -28,7 +28,8 @@ lifetopia-platform
 │   │   │   │   │   ├── moderation.ts
 │   │   │   │   │   ├── posts.ts
 │   │   │   │   │   ├── quests.ts
-│   │   │   │   │   └── reports.ts
+│   │   │   │   │   ├── reports.ts
+│   │   │   │   │   └── wallet.ts
 │   │   │   │   └── auth.ts
 │   │   │   ├── admin
 │   │   │   │   └── reports
@@ -60,6 +61,8 @@ lifetopia-platform
 │   │   │   │       ├── following
 │   │   │   │       │   └── page.tsx
 │   │   │   │       └── page.tsx
+│   │   │   ├── wallet
+│   │   │   │   └── page.tsx
 │   │   │   ├── error.tsx
 │   │   │   ├── favicon.ico
 │   │   │   ├── global-error.tsx
@@ -157,17 +160,20 @@ lifetopia-platform
 │   │   │   │   └── Settings.tsx
 │   │   │   ├── system
 │   │   │   │   └── FeaturePreparation.tsx
-│   │   │   └── ui
-│   │   │       ├── Avatar.tsx
-│   │   │       ├── Badge.tsx
-│   │   │       ├── Button.tsx
-│   │   │       ├── Card.tsx
-│   │   │       ├── EmptyState.tsx
-│   │   │       ├── InfoCard.tsx
-│   │   │       ├── PageHeader.tsx
-│   │   │       ├── Progress.tsx
-│   │   │       ├── SectionCard.tsx
-│   │   │       └── StatCard.tsx
+│   │   │   ├── ui
+│   │   │   │   ├── Avatar.tsx
+│   │   │   │   ├── Badge.tsx
+│   │   │   │   ├── Button.tsx
+│   │   │   │   ├── Card.tsx
+│   │   │   │   ├── EmptyState.tsx
+│   │   │   │   ├── InfoCard.tsx
+│   │   │   │   ├── PageHeader.tsx
+│   │   │   │   ├── Progress.tsx
+│   │   │   │   ├── SectionCard.tsx
+│   │   │   │   └── StatCard.tsx
+│   │   │   └── wallet
+│   │   │       ├── WalletBonusButton.tsx
+│   │   │       └── WalletHub.tsx
 │   │   ├── data
 │   │   │   ├── admin
 │   │   │   │   └── reports.ts
@@ -195,7 +201,8 @@ lifetopia-platform
 │   │   │   ├── notifications.ts
 │   │   │   ├── quest.ts
 │   │   │   ├── quests.ts
-│   │   │   └── sidebar.ts
+│   │   │   ├── sidebar.ts
+│   │   │   └── wallet.ts
 │   │   ├── public
 │   │   │   ├── audio
 │   │   │   ├── fonts
@@ -4110,7 +4117,8 @@ lifetopia-platform
 │   │   ├── AUTH_WALLET_LINKING.md
 │   │   ├── AUTH_WALLET_LOGIN.md
 │   │   ├── COMMUNITY_PHASE_3_PROFILE_FOLLOW_SEARCH.md
-│   │   └── COMMUNITY_PHASE_4_QUEST_HARMONY.md
+│   │   ├── COMMUNITY_PHASE_4_QUEST_HARMONY.md
+│   │   └── COMMUNITY_PHASE_5_WALLET_SOLANA.md
 │   ├── design-system
 │   ├── releases
 │   │   └── AUTH_RELEASE_SIGNOFF_TEMPLATE.md
@@ -4286,7 +4294,8 @@ lifetopia-platform
 │   ├── project-update.mjs
 │   ├── sync-public.mjs
 │   ├── verify-community-phase-3.mjs
-│   └── verify-community-phase-4.mjs
+│   ├── verify-community-phase-4.mjs
+│   └── verify-community-phase-5.mjs
 ├── supabase
 │   ├── auth
 │   │   ├── AUTH_0_5C.md
@@ -4369,7 +4378,10 @@ lifetopia-platform
 │       ├── community-4-quest-harmony.sql
 │       ├── community-4-verify.sql
 │       ├── community-4.1-individual-claims-fix.sql
-│       └── community-4.1-individual-claims.sql
+│       ├── community-4.1-individual-claims.sql
+│       ├── community-5-preflight.sql
+│       ├── community-5-verify.sql
+│       └── community-5-wallet-solana.sql
 ├── .gitignore
 ├── .npmrc
 ├── package.json
