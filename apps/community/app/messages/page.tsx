@@ -1,24 +1,3 @@
-import type { Metadata } from "next";
-
-import { AppLayout } from "@/components/layout/AppLayout";
-import { Messages } from "@/components/messages/Messages";
-
-export const metadata: Metadata = {
-  title: "Messages",
-  description: "Private messaging for Lifetopia Community is in preparation.",
-  alternates: {
-    canonical: "/messages",
-  },
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
-
-export default function MessagesPage() {
-  return (
-    <AppLayout>
-      <Messages />
-    </AppLayout>
-  );
-}
+import type{Metadata}from"next";import{AppLayout}from"@/components/layout/AppLayout";import{MessageInbox}from"@/components/messages/MessageInbox";import{requireCurrentProfile}from"@/data/auth/require-current-profile";import{getMessageInbox}from"@/data/messages";
+export const metadata:Metadata={title:"Messages",description:"Private Lifetopia CommunityHub conversations.",robots:{index:false,follow:false}};
+export default async function MessagesPage(){await requireCurrentProfile("/messages");const conversations=await getMessageInbox();return <AppLayout><MessageInbox conversations={conversations}/></AppLayout>}

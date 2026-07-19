@@ -1,44 +1,10 @@
-export const conversations = [
-  {
-    id: "1",
-    name: "Sky Farmer",
-    avatar: "/images/avatars/avatar-02.jpg",
-    lastMessage: "Ready for today's guild quest?",
-    time: "09:42",
-    unread: 2,
-  },
-  {
-    id: "2",
-    name: "Luna",
-    avatar: "/images/avatars/avatar-03.jpg",
-    lastMessage: "I love the new community update!",
-    time: "Yesterday",
-    unread: 0,
-  },
-  {
-    id: "3",
-    name: "Raven",
-    avatar: "/images/avatars/avatar-04.jpg",
-    lastMessage: "Let's build something awesome.",
-    time: "Mon",
-    unread: 0,
-  },
-];
+import { createClient } from "@repo/lib/supabase/server";
 
-export const messages = [
-  {
-    id: "1",
-    sender: "them",
-    text: "Hey Pasha! Ready for today's guild quest?",
-  },
-  {
-    id: "2",
-    sender: "me",
-    text: "Absolutely! I'll finish it after publishing today's devlog.",
-  },
-  {
-    id: "3",
-    sender: "them",
-    text: "Awesome. See you in Lifetopia!",
-  },
-];
+type ConversationRow = { conversation_id:string;other_user_id:string;other_username:string;other_display_name:string;other_avatar_id:string;last_body:string|null;last_message_at:string;unread_count:number|string };
+type MessageRow = { message_id:number|string;sender_id:string;sender_username:string;sender_display_name:string;sender_avatar_id:string;body:string;created_at:string;is_mine:boolean };
+export type DirectConversation = { id:string;person:{id:string;username:string;displayName:string;avatarSrc:string};lastBody:string|null;lastMessageAt:string;unreadCount:number };
+export type DirectMessage = { id:number;senderId:string;senderUsername:string;senderDisplayName:string;senderAvatarSrc:string;body:string;createdAt:string;isMine:boolean };
+
+export async function getMessageInbox():Promise<DirectConversation[]>{const supabase=await createClient();const{data,error}=await supabase.rpc("get_my_community_direct_conversations");if(error||!data)return[];return(data as ConversationRow[]).map(row=>({id:row.conversation_id,person:{id:row.other_user_id,username:row.other_username,displayName:row.other_display_name,avatarSrc:`/images/avatars/${row.other_avatar_id}.jpg`},lastBody:row.last_body,lastMessageAt:row.last_message_at,unreadCount:Number(row.unread_count)}));}
+export async function getMessageThread(conversationId:string){const supabase=await createClient();const[{data,error},inbox]=await Promise.all([supabase.rpc("get_community_direct_messages",{p_conversation_id:conversationId}),getMessageInbox()]);if(error)return null;const conversation=inbox.find(item=>item.id===conversationId);if(!conversation)return null;const messages=((data??[])as MessageRow[]).map(row=>({id:Number(row.message_id),senderId:row.sender_id,senderUsername:row.sender_username,senderDisplayName:row.sender_display_name,senderAvatarSrc:`/images/avatars/${row.sender_avatar_id}.jpg`,body:row.body,createdAt:row.created_at,isMine:Boolean(row.is_mine)}))satisfies DirectMessage[];return{conversation,messages};}
+export async function getUnreadMessageCount(){const supabase=await createClient();const{data}=await supabase.rpc("get_unread_community_direct_message_count");return Number(data??0);}
