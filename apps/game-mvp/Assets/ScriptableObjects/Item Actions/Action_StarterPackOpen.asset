@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a871eb77fca6742bdda8ad7eb52b14, type: 3}
+  m_Name: Action_StarterPackOpen
+  m_EditorClassIdentifier: 
+  goldReward: 30
+  goldItem: {fileID: 11400000, guid: 01f8d174962102c4d8c5cf00c70f82e5, type: 2}
+  itemRewards:
+  - item: {fileID: 11400000, guid: 016edfc8f64d7bf45ae0faadd5054ac7, type: 2}
+    amount: 3
+  - item: {fileID: 11400000, guid: 30108016fe37eed40af4f5226ea077a7, type: 2}
+    amount: 3
+  - item: {fileID: 11400000, guid: 8f159389efefe8f4b9bab0e975d88d9b, type: 2}
+    amount: 3
+  - item: {fileID: 11400000, guid: d3b56c44606ed754790905642893e855, type: 2}
+    amount: 3

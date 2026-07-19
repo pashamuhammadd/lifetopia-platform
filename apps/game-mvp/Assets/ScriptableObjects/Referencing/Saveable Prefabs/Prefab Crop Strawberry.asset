@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f0c84163a0ac6e419cd5ae8dc6ef280, type: 3}
+  m_Name: Prefab Crop Strawberry
+  m_EditorClassIdentifier: 
+  guid: ac01f6b4-2849-4d9b-9899-2faecef32309
+  prefab: {fileID: 1045093368802096, guid: 4de10f4d54e1efb47a3d7cb72d555a87, type: 3}

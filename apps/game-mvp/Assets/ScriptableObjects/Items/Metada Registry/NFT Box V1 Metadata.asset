@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44d509ec7cf0e7c4dbec3b7bbe9bc4a6, type: 3}
+  m_Name: NFT Box V1 Metadata
+  m_EditorClassIdentifier: 
+  entries:
+  - metadataID: starter_box_base
+    item: {fileID: 11400000, guid: 807ce78fd0b699f44891b78b48e2e1e5, type: 2}

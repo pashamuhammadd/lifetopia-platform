@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f58b7715f91074746a607529a135c2bb, type: 3}
+  m_Name: Item_Seed_Onion
+  m_EditorClassIdentifier: 
+  guid: 86340aeb-a02c-4eb4-9022-d06c242ea15a
+  icon: {fileID: 4206968556728965966, guid: b56c764529c92c44fb762cc4ee53e1c0, type: 3}
+  itemName: Onion Seed
+  description: Used to grow a onion plant
+  canStack: 1
+  hasSlot: 1
+  hasEnergy: 0
+  energyStartValue:
+    min: 0
+    max: 0
+    current: 0
+  isRemoveable: 1
+  price: 15
+  action: {fileID: 11400000, guid: 958a1045b5654944db4922edca4a3d83, type: 2}
