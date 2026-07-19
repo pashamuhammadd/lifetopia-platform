@@ -1,0 +1,59 @@
+name: Authentication production smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: auth-production-smoke
+  cancel-in-progress: false
+
+jobs:
+  production-smoke:
+    name: Lifetopia production auth
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@v4
+
+      - name: Enable pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.10.0
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium runtime
+        run: pnpm --filter website exec playwright install --with-deps chromium
+
+      - name: Run production authentication smoke tests
+        env:
+          AUTH_QA_BASE_URL: https://lifetopiaworld.io
+        run: >-
+          pnpm --filter website exec playwright test
+          --config=playwright.auth.config.ts
+          --workers=1
+          --reporter=list
+
+      - name: Preserve failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auth-production-smoke-evidence
+          if-no-files-found: ignore
+          retention-days: 14
+          path: |
+            apps/website/playwright-report/auth
+            apps/website/test-results/auth
