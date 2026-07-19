@@ -1,3 +1,34 @@
-import{NextResponse}from"next/server";
-export const runtime="nodejs";export const dynamic="force-dynamic";const PACKAGE_PATTERN=/^[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z][a-zA-Z0-9_]*)+$/;const FINGERPRINT_PATTERN=/^(?:[0-9A-F]{2}:){31}[0-9A-F]{2}$/;
-export function GET(){const packageName=process.env.ANDROID_APP_PACKAGE_NAME?.trim();const fingerprint=process.env.ANDROID_APP_SHA256_CERT_FINGERPRINT?.trim().toUpperCase();if(!packageName||!PACKAGE_PATTERN.test(packageName)||!fingerprint||!FINGERPRINT_PATTERN.test(fingerprint))return NextResponse.json({error:"Android App Links are not configured."},{status:503,headers:{"Cache-Control":"no-store, max-age=0"}});return NextResponse.json([{relation:["delegate_permission/common.handle_all_urls"],target:{namespace:"android_app",package_name:packageName,sha256_cert_fingerprints:[fingerprint]}}],{headers:{"Cache-Control":"public, max-age=300, s-maxage=3600"}});}
+import { NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const PACKAGE_NAME = "io.lifetopiaworld.community";
+const DEBUG_FINGERPRINT =
+  "66:0E:14:31:BF:5C:A9:91:02:5B:1F:9F:0E:31:50:79:E3:D1:14:0C:E3:9F:94:F6:D5:61:A3:33:1D:26:E6:CD";
+const FINGERPRINT_PATTERN = /^(?:[0-9A-F]{2}:){31}[0-9A-F]{2}$/;
+
+function configuredFingerprints() {
+  const configured = [
+    process.env.ANDROID_APP_SHA256_CERT_FINGERPRINT,
+    ...(process.env.ANDROID_APP_SHA256_CERT_FINGERPRINTS?.split(",") ?? []),
+  ];
+
+  return [...new Set([DEBUG_FINGERPRINT, ...configured]
+    .map((value) => value?.trim().toUpperCase())
+    .filter((value): value is string => Boolean(value && FINGERPRINT_PATTERN.test(value))))];
+}
+
+export function GET() {
+  return NextResponse.json(
+    [{
+      relation: ["delegate_permission/common.handle_all_urls"],
+      target: {
+        namespace: "android_app",
+        package_name: PACKAGE_NAME,
+        sha256_cert_fingerprints: configuredFingerprints(),
+      },
+    }],
+    { headers: { "Cache-Control": "public, max-age=300, s-maxage=3600" } },
+  );
+}
