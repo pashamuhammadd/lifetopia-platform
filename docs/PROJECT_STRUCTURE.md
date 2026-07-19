@@ -29,6 +29,7 @@ lifetopia-platform
 │   │   │   │   │   ├── follows.ts
 │   │   │   │   │   ├── guilds.ts
 │   │   │   │   │   ├── likes.ts
+│   │   │   │   │   ├── messages.ts
 │   │   │   │   │   ├── moderation.ts
 │   │   │   │   │   ├── notifications.ts
 │   │   │   │   │   ├── posts.ts
@@ -53,14 +54,21 @@ lifetopia-platform
 │   │   │   │   │   └── page.tsx
 │   │   │   │   └── page.tsx
 │   │   │   ├── messages
+│   │   │   │   ├── [conversationId]
+│   │   │   │   │   └── page.tsx
 │   │   │   │   └── page.tsx
 │   │   │   ├── my-world
 │   │   │   │   └── page.tsx
 │   │   │   ├── notifications
 │   │   │   │   └── page.tsx
+│   │   │   ├── offline
+│   │   │   │   └── page.tsx
 │   │   │   ├── post
 │   │   │   │   └── [postId]
 │   │   │   │       └── page.tsx
+│   │   │   ├── pwa-icon
+│   │   │   │   └── [size]
+│   │   │   │       └── route.tsx
 │   │   │   ├── quest
 │   │   │   │   └── page.tsx
 │   │   │   ├── settings
@@ -125,10 +133,12 @@ lifetopia-platform
 │   │   │   │   ├── SidebarNav.tsx
 │   │   │   │   └── TopNavbar.tsx
 │   │   │   ├── messages
-│   │   │   │   ├── ChatWindow.tsx
-│   │   │   │   ├── ConversationList.tsx
 │   │   │   │   ├── MessageBubble.tsx
-│   │   │   │   └── Messages.tsx
+│   │   │   │   ├── MessageComposer.tsx
+│   │   │   │   ├── MessageInbox.tsx
+│   │   │   │   ├── Messages.tsx
+│   │   │   │   ├── MessageThread.tsx
+│   │   │   │   └── NewConversationForm.tsx
 │   │   │   ├── moderation
 │   │   │   │   └── AccountRestrictionStatus.tsx
 │   │   │   ├── my-world
@@ -159,6 +169,8 @@ lifetopia-platform
 │   │   │   │   ├── ProfilePosts.tsx
 │   │   │   │   ├── ProfileStats.tsx
 │   │   │   │   └── PublicProfile.tsx
+│   │   │   ├── pwa
+│   │   │   │   └── PwaClient.tsx
 │   │   │   ├── quest
 │   │   │   │   ├── CompletedQuestSection.tsx
 │   │   │   │   ├── DailyQuestSection.tsx
@@ -281,6 +293,7 @@ lifetopia-platform
 │   │   │   ├── file.svg
 │   │   │   ├── globe.svg
 │   │   │   ├── next.svg
+│   │   │   ├── sw.js
 │   │   │   ├── vercel.svg
 │   │   │   └── window.svg
 │   │   ├── types
@@ -4114,6 +4127,9 @@ lifetopia-platform
 │   └── project.json
 ├── docs
 │   ├── android
+│   │   ├── communityhub
+│   │   │   ├── AndroidManifest.app-links.xml
+│   │   │   └── play-store-data-safety.md
 │   │   └── communityhub-mobile-wallet
 │   │       ├── AndroidManifest.mobile-wallet.xml
 │   │       └── MobileWalletCallbackActivity.kt.template
@@ -4138,12 +4154,14 @@ lifetopia-platform
 │   │   ├── AUTH_VALIDATION.md
 │   │   ├── AUTH_WALLET_LINKING.md
 │   │   ├── AUTH_WALLET_LOGIN.md
+│   │   ├── COMMUNITY_PHASE_10_PWA_ANDROID.md
 │   │   ├── COMMUNITY_PHASE_3_PROFILE_FOLLOW_SEARCH.md
 │   │   ├── COMMUNITY_PHASE_4_QUEST_HARMONY.md
 │   │   ├── COMMUNITY_PHASE_5_WALLET_SOLANA.md
 │   │   ├── COMMUNITY_PHASE_6_MODERATION_ADMIN.md
 │   │   ├── COMMUNITY_PHASE_7_NOTIFICATIONS_GUILD.md
-│   │   └── COMMUNITY_PHASE_8_MY_WORLD.md
+│   │   ├── COMMUNITY_PHASE_8_MY_WORLD.md
+│   │   └── COMMUNITY_PHASE_9_MESSAGES.md
 │   ├── design-system
 │   ├── releases
 │   │   └── AUTH_RELEASE_SIGNOFF_TEMPLATE.md
@@ -4302,6 +4320,7 @@ lifetopia-platform
 ├── scripts
 │   ├── auth
 │   │   └── auth-20-release-gate.mjs
+│   ├── check-community-pwa.mjs
 │   ├── generate-ai-context.mjs
 │   ├── generate-ai-instructions.mjs
 │   ├── generate-api-reference.mjs
@@ -4318,12 +4337,14 @@ lifetopia-platform
 │   ├── project-status.mjs
 │   ├── project-update.mjs
 │   ├── sync-public.mjs
+│   ├── verify-community-phase-10.mjs
 │   ├── verify-community-phase-3.mjs
 │   ├── verify-community-phase-4.mjs
 │   ├── verify-community-phase-5.mjs
 │   ├── verify-community-phase-6.mjs
 │   ├── verify-community-phase-7.mjs
-│   └── verify-community-phase-8.mjs
+│   ├── verify-community-phase-8.mjs
+│   └── verify-community-phase-9.mjs
 ├── supabase
 │   ├── auth
 │   │   ├── AUTH_0_5C.md
@@ -4418,7 +4439,10 @@ lifetopia-platform
 │       ├── community-7-verify.sql
 │       ├── community-8-my-world.sql
 │       ├── community-8-preflight.sql
-│       └── community-8-verify.sql
+│       ├── community-8-verify.sql
+│       ├── community-9-messages.sql
+│       ├── community-9-preflight.sql
+│       └── community-9-verify.sql
 ├── .gitignore
 ├── .npmrc
 ├── package.json

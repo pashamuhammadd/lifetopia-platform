@@ -49,6 +49,13 @@ profiles.user_id does not exist
 - `public.community_comments.author_id` → `public.profiles.id`
 - `public.community_comments.parent_comment_id` → `public.community_comments.id`
 - `public.community_comments.post_id` → `public.community_posts.id`
+- `public.community_direct_conversations.member_high` → `public.profiles.id`
+- `public.community_direct_conversations.member_low` → `public.profiles.id`
+- `public.community_direct_messages.conversation_id` → `public.community_direct_conversations.id`
+- `public.community_direct_messages.sender_id` → `public.profiles.id`
+- `public.community_direct_reads.conversation_id` → `public.community_direct_conversations.id`
+- `public.community_direct_reads.last_read_message_id` → `public.community_direct_messages.id`
+- `public.community_direct_reads.user_id` → `public.profiles.id`
 - `public.community_follows.followed_id` → `public.profiles.id`
 - `public.community_follows.follower_id` → `public.profiles.id`
 - `public.community_guild_members.guild_id` → `public.community_guilds.id`
@@ -225,6 +232,35 @@ Incoming relations:
 - `community_comments.parent_comment_id` → `id`
 - `community_notifications.comment_id` → `id`
 - `community_reports.comment_id` → `id`
+
+### `public.community_direct_conversations`
+
+Outgoing relations:
+- `member_high` → `profiles.id`
+- `member_low` → `profiles.id`
+
+Incoming relations:
+- `community_direct_messages.conversation_id` → `id`
+- `community_direct_reads.conversation_id` → `id`
+
+### `public.community_direct_messages`
+
+Outgoing relations:
+- `conversation_id` → `community_direct_conversations.id`
+- `sender_id` → `profiles.id`
+
+Incoming relations:
+- `community_direct_reads.last_read_message_id` → `id`
+
+### `public.community_direct_reads`
+
+Outgoing relations:
+- `conversation_id` → `community_direct_conversations.id`
+- `last_read_message_id` → `community_direct_messages.id`
+- `user_id` → `profiles.id`
+
+Incoming relations:
+- None
 
 ### `public.community_follows`
 
@@ -425,6 +461,10 @@ Incoming relations:
 - `community_announcements.published_by` → `id`
 - `community_bookmarks.user_id` → `id`
 - `community_comments.author_id` → `id`
+- `community_direct_conversations.member_high` → `id`
+- `community_direct_conversations.member_low` → `id`
+- `community_direct_messages.sender_id` → `id`
+- `community_direct_reads.user_id` → `id`
 - `community_follows.followed_id` → `id`
 - `community_follows.follower_id` → `id`
 - `community_guild_members.user_id` → `id`

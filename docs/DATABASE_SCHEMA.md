@@ -242,6 +242,35 @@ Incorrect:
 | `moderation_status` | `text` | NO |  | `'visible'::text` |
 | `moderation_reason` | `text` | YES |  | `` |
 
+## Table: `public.community_direct_conversations`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `gen_random_uuid()` |
+| `member_low` | `uuid` | NO | FK → profiles.id | `` |
+| `member_high` | `uuid` | NO | FK → profiles.id | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+| `last_message_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.community_direct_messages`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `bigint` | NO | PK | `` |
+| `conversation_id` | `uuid` | NO | FK → community_direct_conversations.id | `` |
+| `sender_id` | `uuid` | NO | FK → profiles.id | `` |
+| `body` | `text` | NO |  | `` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.community_direct_reads`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `conversation_id` | `uuid` | NO | PK, FK → community_direct_conversations.id | `` |
+| `user_id` | `uuid` | NO | PK, FK → profiles.id | `` |
+| `last_read_message_id` | `bigint` | YES | FK → community_direct_messages.id | `` |
+| `read_at` | `timestamp with time zone` | NO |  | `now()` |
+
 ## Table: `public.community_follows`
 
 | Column | Type | Nullable | Key | Default |

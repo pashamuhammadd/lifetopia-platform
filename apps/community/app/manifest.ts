@@ -1,24 +1,2 @@
-import type { MetadataRoute } from "next";
-
-export default function manifest(): MetadataRoute.Manifest {
-  return {
-    name: "Lifetopia Community",
-    short_name: "Lifetopia",
-    description:
-      "The official social platform for Lifetopians to share, connect, and grow their player identity.",
-    start_url: "/",
-    scope: "/",
-    display: "standalone",
-    background_color: "#fff7e8",
-    theme_color: "#6fa83a",
-    lang: "en",
-    categories: ["social", "games", "entertainment"],
-    icons: [
-      {
-        src: "/favicon.ico",
-        sizes: "48x48",
-        type: "image/x-icon",
-      },
-    ],
-  };
-}
+import type{MetadataRoute}from"next";
+export default function manifest():MetadataRoute.Manifest{return{id:"/",name:"Lifetopia World CommunityHub",short_name:"CommunityHub",description:"The official social home for Lifetopians: community posts, quests, Harmony, guilds, messages, and player identity.",start_url:"/?source=pwa",scope:"/",display:"standalone",orientation:"portrait-primary",background_color:"#fff7e8",theme_color:"#4f8124",lang:"en",categories:["social","games","entertainment"],icons:[{src:"/pwa-icon/192",sizes:"192x192",type:"image/png",purpose:"any"},{src:"/pwa-icon/512",sizes:"512x512",type:"image/png",purpose:"any"},{src:"/pwa-icon/512",sizes:"512x512",type:"image/png",purpose:"maskable"}],shortcuts:[{name:"Create post",short_name:"Post",url:"/?source=pwa#create-post",icons:[{src:"/pwa-icon/192",sizes:"192x192",type:"image/png"}]},{name:"My World",short_name:"My World",url:"/my-world?source=pwa",icons:[{src:"/pwa-icon/192",sizes:"192x192",type:"image/png"}]},{name:"Messages",short_name:"Messages",url:"/messages?source=pwa",icons:[{src:"/pwa-icon/192",sizes:"192x192",type:"image/png"}]}]};}

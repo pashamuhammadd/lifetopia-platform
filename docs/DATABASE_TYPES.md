@@ -190,6 +190,29 @@ export type CommunityComment = {
   moderation_reason: string | null;
 };
 
+export type CommunityDirectConversation = {
+  id: string;
+  member_low: string;
+  member_high: string;
+  created_at: string;
+  last_message_at: string;
+};
+
+export type CommunityDirectMessage = {
+  id: number;
+  conversation_id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+};
+
+export type CommunityDirectRead = {
+  conversation_id: string;
+  user_id: string;
+  last_read_message_id: number | null;
+  read_at: string;
+};
+
 export type CommunityFollow = {
   follower_id: string;
   followed_id: string;
