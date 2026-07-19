@@ -209,6 +209,17 @@ Incorrect:
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 | `updated_at` | `timestamp with time zone` | NO |  | `now()` |
 
+## Table: `public.community_announcements`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `gen_random_uuid()` |
+| `title` | `text` | NO |  | `` |
+| `body` | `text` | NO |  | `` |
+| `published_by` | `uuid` | NO | FK → profiles.id | `` |
+| `published_at` | `timestamp with time zone` | NO |  | `now()` |
+| `is_active` | `boolean` | NO |  | `true` |
+
 ## Table: `public.community_bookmarks`
 
 | Column | Type | Nullable | Key | Default |
@@ -239,6 +250,29 @@ Incorrect:
 | `followed_id` | `uuid` | NO | PK, FK → profiles.id | `` |
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 
+## Table: `public.community_guild_members`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `guild_id` | `uuid` | NO | PK, FK → community_guilds.id | `` |
+| `user_id` | `uuid` | NO | PK, FK → profiles.id | `` |
+| `role` | `text` | NO |  | `'member'::text` |
+| `status` | `text` | NO |  | `'active'::text` |
+| `joined_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.community_guilds`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `gen_random_uuid()` |
+| `slug` | `text` | NO |  | `` |
+| `name` | `text` | NO |  | `` |
+| `description` | `text` | NO |  | `` |
+| `owner_id` | `uuid` | NO | FK → profiles.id | `` |
+| `join_policy` | `text` | NO |  | `'open'::text` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+| `updated_at` | `timestamp with time zone` | NO |  | `now()` |
+
 ## Table: `public.community_likes`
 
 | Column | Type | Nullable | Key | Default |
@@ -260,6 +294,23 @@ Incorrect:
 | `action` | `text` | NO |  | `` |
 | `reason` | `text` | NO |  | `` |
 | `metadata` | `jsonb` | NO |  | `'{}'::jsonb` |
+| `created_at` | `timestamp with time zone` | NO |  | `now()` |
+
+## Table: `public.community_notifications`
+
+| Column | Type | Nullable | Key | Default |
+|---|---|---|---|---|
+| `id` | `uuid` | NO | PK | `gen_random_uuid()` |
+| `recipient_id` | `uuid` | NO | FK → profiles.id | `` |
+| `type` | `text` | NO |  | `` |
+| `actor_id` | `uuid` | YES | FK → profiles.id | `` |
+| `announcement_id` | `uuid` | YES | FK → community_announcements.id | `` |
+| `post_id` | `uuid` | YES | FK → community_posts.id | `` |
+| `comment_id` | `uuid` | YES | FK → community_comments.id | `` |
+| `title` | `text` | NO |  | `` |
+| `body` | `text` | NO |  | `` |
+| `dedupe_key` | `text` | NO |  | `` |
+| `read_at` | `timestamp with time zone` | YES |  | `` |
 | `created_at` | `timestamp with time zone` | NO |  | `now()` |
 
 ## Table: `public.community_posts`

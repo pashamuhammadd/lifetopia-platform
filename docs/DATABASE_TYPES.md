@@ -163,6 +163,15 @@ export type CommunityAccountRestriction = {
   updated_at: string;
 };
 
+export type CommunityAnnouncement = {
+  id: string;
+  title: string;
+  body: string;
+  published_by: string;
+  published_at: string;
+  is_active: boolean;
+};
+
 export type CommunityBookmark = {
   post_id: string;
   user_id: string;
@@ -187,6 +196,25 @@ export type CommunityFollow = {
   created_at: string;
 };
 
+export type CommunityGuildMember = {
+  guild_id: string;
+  user_id: string;
+  role: string;
+  status: string;
+  joined_at: string;
+};
+
+export type CommunityGuild = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  owner_id: string;
+  join_policy: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type CommunityLike = {
   post_id: string;
   user_id: string;
@@ -203,6 +231,21 @@ export type CommunityModerationEvent = {
   action: string;
   reason: string;
   metadata: Record<string, unknown>;
+  created_at: string;
+};
+
+export type CommunityNotification = {
+  id: string;
+  recipient_id: string;
+  type: string;
+  actor_id: string | null;
+  announcement_id: string | null;
+  post_id: string | null;
+  comment_id: string | null;
+  title: string;
+  body: string;
+  dedupe_key: string;
+  read_at: string | null;
   created_at: string;
 };
 

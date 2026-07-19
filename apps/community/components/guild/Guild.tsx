@@ -1,21 +1,2 @@
-import { Shield } from "lucide-react";
-
-import { FeaturePreparation } from "@/components/system/FeaturePreparation";
-
-export function Guild() {
-  return (
-    <FeaturePreparation
-      title="Guilds"
-      description="Shared groups that will connect Lifetopia Community with the game world."
-      eyebrow="Community + Game"
-      icon={Shield}
-      note="Guilds will be implemented with real membership, roles, join requests, shared activity, and game synchronization. No fictional guild statistics are shown while that backend is being prepared."
-      features={[
-        "Public guild profiles and real member lists",
-        "Guild roles and join-request management",
-        "Community and game activity synchronization",
-        "Guild quests after the Harmony system is stable",
-      ]}
-    />
-  );
-}
+import{Shield,Users}from"lucide-react";import Link from"next/link";import{Card}from"@/components/ui/Card";import{EmptyState}from"@/components/ui/EmptyState";import{PageHeader}from"@/components/ui/PageHeader";import type{CommunityGuild}from"@/data/guilds";import{GuildMembershipButton}from"./GuildActions";
+export function Guild({guilds}:{guilds:CommunityGuild[]}){return <div className="space-y-5 pb-24 md:pb-0"><PageHeader title="Guilds" description="Discover real Lifetopia groups and connect community membership with the future game world."/><Card className="p-5"><h2 className="font-black text-[#2f2418]">Create a guild</h2><p className="mt-1 text-sm font-bold text-[#7a5635]">Authenticated accounts may own one guild. Guild names and activity must follow Community rules.</p><Link href="/guild/create" className="mt-4 inline-flex min-h-11 items-center rounded-full bg-[#4f8124] px-5 font-black text-white">Create guild</Link></Card>{guilds.length?<div className="grid gap-4 lg:grid-cols-2">{guilds.map(guild=><Card key={guild.id} className="p-5"><div className="flex items-start gap-3"><div className="grid size-12 shrink-0 place-items-center rounded-[18px] bg-[#edf7df] text-[#4f8124]"><Shield size={24}/></div><div className="min-w-0 flex-1"><Link href={`/guild/${guild.slug}`} className="text-xl font-black text-[#2f2418] hover:text-[#4f8124]">{guild.name}</Link><p className="mt-1 line-clamp-3 text-sm font-bold leading-6 text-[#7a5635]">{guild.description}</p><p className="mt-3 inline-flex items-center gap-1 text-xs font-black text-[#9b6635]"><Users size={14}/>{guild.memberCount} members · {guild.joinPolicy}</p></div></div><div className="mt-4"><GuildMembershipButton guildId={guild.id} status={guild.viewerStatus}/></div></Card>)}</div>:<EmptyState title="No guilds yet" description="The first real Lifetopia guild can be created now." icon={Shield}/>}</div>}

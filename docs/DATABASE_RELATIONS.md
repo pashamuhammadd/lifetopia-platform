@@ -43,6 +43,7 @@ profiles.user_id does not exist
 - `public.account_wallets.user_id` → `public.profiles.id`
 - `public.community_account_restrictions.created_by` → `public.profiles.id`
 - `public.community_account_restrictions.user_id` → `public.profiles.id`
+- `public.community_announcements.published_by` → `public.profiles.id`
 - `public.community_bookmarks.post_id` → `public.community_posts.id`
 - `public.community_bookmarks.user_id` → `public.profiles.id`
 - `public.community_comments.author_id` → `public.profiles.id`
@@ -50,11 +51,19 @@ profiles.user_id does not exist
 - `public.community_comments.post_id` → `public.community_posts.id`
 - `public.community_follows.followed_id` → `public.profiles.id`
 - `public.community_follows.follower_id` → `public.profiles.id`
+- `public.community_guild_members.guild_id` → `public.community_guilds.id`
+- `public.community_guild_members.user_id` → `public.profiles.id`
+- `public.community_guilds.owner_id` → `public.profiles.id`
 - `public.community_likes.post_id` → `public.community_posts.id`
 - `public.community_likes.user_id` → `public.profiles.id`
 - `public.community_moderation_events.actor_id` → `public.profiles.id`
 - `public.community_moderation_events.report_id` → `public.community_reports.id`
 - `public.community_moderation_events.target_user_id` → `public.profiles.id`
+- `public.community_notifications.actor_id` → `public.profiles.id`
+- `public.community_notifications.announcement_id` → `public.community_announcements.id`
+- `public.community_notifications.comment_id` → `public.community_comments.id`
+- `public.community_notifications.post_id` → `public.community_posts.id`
+- `public.community_notifications.recipient_id` → `public.profiles.id`
 - `public.community_posts.author_id` → `public.profiles.id`
 - `public.community_quest_claims.user_id` → `public.profiles.id`
 - `public.community_quest_events.user_id` → `public.profiles.id`
@@ -188,6 +197,14 @@ Outgoing relations:
 Incoming relations:
 - None
 
+### `public.community_announcements`
+
+Outgoing relations:
+- `published_by` → `profiles.id`
+
+Incoming relations:
+- `community_notifications.announcement_id` → `id`
+
 ### `public.community_bookmarks`
 
 Outgoing relations:
@@ -206,6 +223,7 @@ Outgoing relations:
 
 Incoming relations:
 - `community_comments.parent_comment_id` → `id`
+- `community_notifications.comment_id` → `id`
 - `community_reports.comment_id` → `id`
 
 ### `public.community_follows`
@@ -216,6 +234,23 @@ Outgoing relations:
 
 Incoming relations:
 - None
+
+### `public.community_guild_members`
+
+Outgoing relations:
+- `guild_id` → `community_guilds.id`
+- `user_id` → `profiles.id`
+
+Incoming relations:
+- None
+
+### `public.community_guilds`
+
+Outgoing relations:
+- `owner_id` → `profiles.id`
+
+Incoming relations:
+- `community_guild_members.guild_id` → `id`
 
 ### `public.community_likes`
 
@@ -236,6 +271,18 @@ Outgoing relations:
 Incoming relations:
 - None
 
+### `public.community_notifications`
+
+Outgoing relations:
+- `actor_id` → `profiles.id`
+- `announcement_id` → `community_announcements.id`
+- `comment_id` → `community_comments.id`
+- `post_id` → `community_posts.id`
+- `recipient_id` → `profiles.id`
+
+Incoming relations:
+- None
+
 ### `public.community_posts`
 
 Outgoing relations:
@@ -245,6 +292,7 @@ Incoming relations:
 - `community_bookmarks.post_id` → `id`
 - `community_comments.post_id` → `id`
 - `community_likes.post_id` → `id`
+- `community_notifications.post_id` → `id`
 - `community_reports.post_id` → `id`
 
 ### `public.community_quest_claims`
@@ -374,13 +422,18 @@ Incoming relations:
 - `account_wallets.user_id` → `id`
 - `community_account_restrictions.created_by` → `id`
 - `community_account_restrictions.user_id` → `id`
+- `community_announcements.published_by` → `id`
 - `community_bookmarks.user_id` → `id`
 - `community_comments.author_id` → `id`
 - `community_follows.followed_id` → `id`
 - `community_follows.follower_id` → `id`
+- `community_guild_members.user_id` → `id`
+- `community_guilds.owner_id` → `id`
 - `community_likes.user_id` → `id`
 - `community_moderation_events.actor_id` → `id`
 - `community_moderation_events.target_user_id` → `id`
+- `community_notifications.actor_id` → `id`
+- `community_notifications.recipient_id` → `id`
 - `community_posts.author_id` → `id`
 - `community_quest_claims.user_id` → `id`
 - `community_quest_events.user_id` → `id`

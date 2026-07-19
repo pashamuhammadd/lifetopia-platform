@@ -23,17 +23,22 @@ lifetopia-platform
 │   │   │   │   └── page.tsx
 │   │   │   ├── actions
 │   │   │   │   ├── community
+│   │   │   │   │   ├── announcements.ts
 │   │   │   │   │   ├── bookmarks.ts
 │   │   │   │   │   ├── comments.ts
 │   │   │   │   │   ├── follows.ts
+│   │   │   │   │   ├── guilds.ts
 │   │   │   │   │   ├── likes.ts
 │   │   │   │   │   ├── moderation.ts
+│   │   │   │   │   ├── notifications.ts
 │   │   │   │   │   ├── posts.ts
 │   │   │   │   │   ├── quests.ts
 │   │   │   │   │   ├── reports.ts
 │   │   │   │   │   └── wallet.ts
 │   │   │   │   └── auth.ts
 │   │   │   ├── admin
+│   │   │   │   ├── announcements
+│   │   │   │   │   └── page.tsx
 │   │   │   │   └── reports
 │   │   │   │       └── page.tsx
 │   │   │   ├── explore
@@ -42,6 +47,10 @@ lifetopia-platform
 │   │   │   │   ├── GeistMonoVF.woff
 │   │   │   │   └── GeistVF.woff
 │   │   │   ├── guild
+│   │   │   │   ├── [slug]
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── create
+│   │   │   │   │   └── page.tsx
 │   │   │   │   └── page.tsx
 │   │   │   ├── messages
 │   │   │   │   └── page.tsx
@@ -78,6 +87,7 @@ lifetopia-platform
 │   │   │   └── sitemap.ts
 │   │   ├── components
 │   │   │   ├── admin
+│   │   │   │   ├── AnnouncementPublisher.tsx
 │   │   │   │   ├── ReportModerationActions.tsx
 │   │   │   │   └── ReportsDashboard.tsx
 │   │   │   ├── auth
@@ -99,7 +109,9 @@ lifetopia-platform
 │   │   │   │   └── PostCard.tsx
 │   │   │   ├── guild
 │   │   │   │   ├── Guild.tsx
+│   │   │   │   ├── GuildActions.tsx
 │   │   │   │   ├── GuildActivity.tsx
+│   │   │   │   ├── GuildCreateForm.tsx
 │   │   │   │   ├── GuildHero.tsx
 │   │   │   │   ├── GuildLeaderboard.tsx
 │   │   │   │   └── GuildMembers.tsx
@@ -129,7 +141,9 @@ lifetopia-platform
 │   │   │   │   ├── MyWorldSectionCard.tsx
 │   │   │   │   └── MyWorldStatCard.tsx
 │   │   │   ├── notifications
+│   │   │   │   ├── NotificationActions.tsx
 │   │   │   │   ├── NotificationItem.tsx
+│   │   │   │   ├── NotificationLink.tsx
 │   │   │   │   └── Notifications.tsx
 │   │   │   ├── post
 │   │   │   │   ├── CommentComposer.tsx
@@ -199,6 +213,7 @@ lifetopia-platform
 │   │   │   ├── explore-search.ts
 │   │   │   ├── explore.ts
 │   │   │   ├── guild.ts
+│   │   │   ├── guilds.ts
 │   │   │   ├── identity.ts
 │   │   │   ├── messages.ts
 │   │   │   ├── my-world-layout.ts
@@ -4125,7 +4140,8 @@ lifetopia-platform
 │   │   ├── COMMUNITY_PHASE_3_PROFILE_FOLLOW_SEARCH.md
 │   │   ├── COMMUNITY_PHASE_4_QUEST_HARMONY.md
 │   │   ├── COMMUNITY_PHASE_5_WALLET_SOLANA.md
-│   │   └── COMMUNITY_PHASE_6_MODERATION_ADMIN.md
+│   │   ├── COMMUNITY_PHASE_6_MODERATION_ADMIN.md
+│   │   └── COMMUNITY_PHASE_7_NOTIFICATIONS_GUILD.md
 │   ├── design-system
 │   ├── releases
 │   │   └── AUTH_RELEASE_SIGNOFF_TEMPLATE.md
@@ -4303,7 +4319,8 @@ lifetopia-platform
 │   ├── verify-community-phase-3.mjs
 │   ├── verify-community-phase-4.mjs
 │   ├── verify-community-phase-5.mjs
-│   └── verify-community-phase-6.mjs
+│   ├── verify-community-phase-6.mjs
+│   └── verify-community-phase-7.mjs
 ├── supabase
 │   ├── auth
 │   │   ├── AUTH_0_5C.md
@@ -4392,7 +4409,10 @@ lifetopia-platform
 │       ├── community-5-wallet-solana.sql
 │       ├── community-6-moderation-admin.sql
 │       ├── community-6-preflight.sql
-│       └── community-6-verify.sql
+│       ├── community-6-verify.sql
+│       ├── community-7-notifications-guild.sql
+│       ├── community-7-preflight.sql
+│       └── community-7-verify.sql
 ├── .gitignore
 ├── .npmrc
 ├── package.json

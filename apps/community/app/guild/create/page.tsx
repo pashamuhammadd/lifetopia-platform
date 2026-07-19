@@ -1,0 +1,3 @@
+import type{Metadata}from"next";import{GuildCreateForm}from"@/components/guild/GuildCreateForm";import{AppLayout}from"@/components/layout/AppLayout";import{PageHeader}from"@/components/ui/PageHeader";import{requireCurrentProfile}from"@/data/auth/require-current-profile";
+export const metadata:Metadata={title:"Create Guild",robots:{index:false,follow:false}};
+export default async function CreateGuildPage(){await requireCurrentProfile("/guild/create");return <AppLayout showRightSidebar={false}><div className="space-y-5 pb-24 md:pb-0"><PageHeader title="Create a Guild" description="Build one real Lifetopia group with a public identity and membership policy."/><GuildCreateForm/></div></AppLayout>}
