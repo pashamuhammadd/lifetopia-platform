@@ -1,2 +1,43 @@
-import type{MetadataRoute}from"next";
-export default function manifest():MetadataRoute.Manifest{return{id:"/",name:"Lifetopia World CommunityHub",short_name:"CommunityHub",description:"The official social home for Lifetopians: community posts, quests, Harmony, guilds, messages, and player identity.",start_url:"/?source=pwa",scope:"/",display:"standalone",orientation:"portrait-primary",background_color:"#fff7e8",theme_color:"#4f8124",lang:"en",categories:["social","games","entertainment"],icons:[{src:"/pwa-icon/192",sizes:"192x192",type:"image/png",purpose:"any"},{src:"/pwa-icon/512",sizes:"512x512",type:"image/png",purpose:"any"},{src:"/pwa-icon/512",sizes:"512x512",type:"image/png",purpose:"maskable"}],shortcuts:[{name:"Create post",short_name:"Post",url:"/?source=pwa#create-post",icons:[{src:"/pwa-icon/192",sizes:"192x192",type:"image/png"}]},{name:"My World",short_name:"My World",url:"/my-world?source=pwa",icons:[{src:"/pwa-icon/192",sizes:"192x192",type:"image/png"}]},{name:"Messages",short_name:"Messages",url:"/messages?source=pwa",icons:[{src:"/pwa-icon/192",sizes:"192x192",type:"image/png"}]}]};}
+import type { MetadataRoute } from "next";
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    id: "/",
+    name: "Lifetopia World CommunityHub",
+    short_name: "CommunityHub",
+    description:
+      "The official social home for Lifetopians: community posts, quests, Harmony, guilds, messages, and player identity.",
+    start_url: "/?source=pwa",
+    scope: "/",
+    display: "standalone",
+    orientation: "portrait-primary",
+    background_color: "#fff7e8",
+    theme_color: "#4f8124",
+    lang: "en",
+    categories: ["social", "games", "entertainment"],
+    icons: [
+      { src: "/pwa-icon/192", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/pwa-icon/512", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/pwa-icon/512", sizes: "512x512", type: "image/png", purpose: "maskable" },
+    ],
+    shortcuts: [
+      {
+        name: "Create post",
+        short_name: "Post",
+        url: "/?source=pwa#create-post",
+        icons: [{ src: "/pwa-icon/192", sizes: "192x192", type: "image/png" }],
+      },
+      {
+        name: "My World",
+        short_name: "My World",
+        url: "/my-world?source=pwa",
+        icons: [{ src: "/pwa-icon/192", sizes: "192x192", type: "image/png" }],
+      },
+      {
+        name: "Messages",
+        short_name: "Messages",
+        url: "/messages?source=pwa",
+        icons: [{ src: "/pwa-icon/192", sizes: "192x192", type: "image/png" }],
+      },
+    ],
+  };
+}

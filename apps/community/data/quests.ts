@@ -1,7 +1,81 @@
 import { createClient } from "@repo/lib/supabase/server";
-export type CommunityQuest={code:string;title:string;description:string;target:number;progress:number;completed:boolean;reward:number;claimed:boolean;periodEndsAt:string};
-export type HarmonySummary={points:number;level:number;levelProgress:number;levelTarget:number};
-export type HarmonyHistoryItem={id:number;amount:number;description:string;createdAt:string};
-type HarmonyHistoryRow={id:number;amount:number;description:string;created_at:string};
-type QuestRow={quest_code:string;title:string;description:string;target:number;progress:number;completed:boolean;reward:number;claimed:boolean;period_ends_at:string;harmony_points:number|string;harmony_level:number;level_progress:number;level_target:number};
-export async function getMyQuestDashboard(){const supabase=await createClient();const[{data,error},{data:historyData}]=await Promise.all([supabase.rpc("get_my_community_quests"),supabase.from("harmony_ledger").select("id, amount, description, created_at").order("created_at",{ascending:false}).limit(10)]);if(error||!data)return null;const rows=data as QuestRow[];const first=rows[0];if(!first)return null;const history=(historyData??[])as HarmonyHistoryRow[];return{quests:rows.map(row=>({code:row.quest_code,title:row.title,description:row.description,target:Number(row.target),progress:Number(row.progress),completed:Boolean(row.completed),reward:Number(row.reward),claimed:Boolean(row.claimed),periodEndsAt:row.period_ends_at})) satisfies CommunityQuest[],harmony:{points:Number(first.harmony_points),level:Number(first.harmony_level),levelProgress:Number(first.level_progress),levelTarget:Number(first.level_target)} satisfies HarmonySummary,history:history.map(item=>({id:item.id,amount:Number(item.amount),description:item.description,createdAt:item.created_at})) satisfies HarmonyHistoryItem[]};}
+export type CommunityQuest = {
+  code: string;
+  title: string;
+  description: string;
+  target: number;
+  progress: number;
+  completed: boolean;
+  reward: number;
+  claimed: boolean;
+  periodEndsAt: string;
+};
+export type HarmonySummary = {
+  points: number;
+  level: number;
+  levelProgress: number;
+  levelTarget: number;
+};
+export type HarmonyHistoryItem = {
+  id: number;
+  amount: number;
+  description: string;
+  createdAt: string;
+};
+type HarmonyHistoryRow = { id: number; amount: number; description: string; created_at: string };
+type QuestRow = {
+  quest_code: string;
+  title: string;
+  description: string;
+  target: number;
+  progress: number;
+  completed: boolean;
+  reward: number;
+  claimed: boolean;
+  period_ends_at: string;
+  harmony_points: number | string;
+  harmony_level: number;
+  level_progress: number;
+  level_target: number;
+};
+export async function getMyQuestDashboard() {
+  const supabase = await createClient();
+  const [{ data, error }, { data: historyData }] = await Promise.all([
+    supabase.rpc("get_my_community_quests"),
+    supabase
+      .from("harmony_ledger")
+      .select("id, amount, description, created_at")
+      .order("created_at", { ascending: false })
+      .limit(10),
+  ]);
+  if (error || !data) return null;
+  const rows = data as QuestRow[];
+  const first = rows[0];
+  if (!first) return null;
+  const history = (historyData ?? []) as HarmonyHistoryRow[];
+  return {
+    quests: rows.map((row) => ({
+      code: row.quest_code,
+      title: row.title,
+      description: row.description,
+      target: Number(row.target),
+      progress: Number(row.progress),
+      completed: Boolean(row.completed),
+      reward: Number(row.reward),
+      claimed: Boolean(row.claimed),
+      periodEndsAt: row.period_ends_at,
+    })) satisfies CommunityQuest[],
+    harmony: {
+      points: Number(first.harmony_points),
+      level: Number(first.harmony_level),
+      levelProgress: Number(first.level_progress),
+      levelTarget: Number(first.level_target),
+    } satisfies HarmonySummary,
+    history: history.map((item) => ({
+      id: item.id,
+      amount: Number(item.amount),
+      description: item.description,
+      createdAt: item.created_at,
+    })) satisfies HarmonyHistoryItem[],
+  };
+}

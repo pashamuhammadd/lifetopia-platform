@@ -1,2 +1,70 @@
-import{ArrowLeft}from"lucide-react";import Image from"next/image";import Link from"next/link";import{Card}from"@/components/ui/Card";import type{DirectConversation,DirectMessage}from"@/data/messages";import{MessageComposer}from"./MessageComposer";
-export function MessageThread({conversation,messages}:{conversation:DirectConversation;messages:DirectMessage[]}){return <div className="space-y-4 pb-24 md:pb-0"><Card className="sticky top-3 z-20 flex items-center gap-3 p-4 md:top-4"><Link href="/messages" aria-label="Back to messages" className="grid size-10 place-items-center rounded-full bg-[#fff7e8] text-[#7a5635]"><ArrowLeft size={19}/></Link><Image src={conversation.person.avatarSrc} alt={conversation.person.displayName} width={46} height={46} className="size-11 rounded-full object-cover"/><div className="min-w-0"><Link href={`/user/${conversation.person.username}`} className="truncate font-black text-[#2f2418]">{conversation.person.displayName}</Link><p className="truncate text-sm font-bold text-[#7a5635]">@{conversation.person.username}</p></div></Card><div className="min-h-[42vh] space-y-3 rounded-[24px] border border-[#ead9b8] bg-[#fffdf8] p-4 sm:p-6">{messages.length?messages.map(item=><div key={item.id} className={`flex ${item.isMine?"justify-end":"justify-start"}`}><div className={`max-w-[86%] rounded-[20px] px-4 py-3 sm:max-w-[72%] ${item.isMine?"rounded-br-md bg-[#4f8124] text-white":"rounded-bl-md bg-[#fff2dc] text-[#2f2418]"}`}><p className="whitespace-pre-wrap break-words text-sm font-bold leading-6">{item.body}</p><time className={`mt-1 block text-[10px] font-bold ${item.isMine?"text-white/70":"text-[#9b6635]"}`}>{new Date(item.createdAt).toLocaleString("en")}</time></div></div>):<p className="text-center text-sm font-bold text-[#7a5635]">This conversation has no messages yet.</p>}</div><MessageComposer conversationId={conversation.id}/></div>}
+import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { Card } from "@/components/ui/Card";
+import type { DirectConversation, DirectMessage } from "@/data/messages";
+import { MessageComposer } from "./MessageComposer";
+export function MessageThread({
+  conversation,
+  messages,
+}: {
+  conversation: DirectConversation;
+  messages: DirectMessage[];
+}) {
+  return (
+    <div className="space-y-4 pb-24 md:pb-0">
+      <Card className="sticky top-3 z-20 flex items-center gap-3 p-4 md:top-4">
+        <Link
+          href="/messages"
+          aria-label="Back to messages"
+          className="grid size-10 place-items-center rounded-full bg-[#fff7e8] text-[#7a5635]"
+        >
+          <ArrowLeft size={19} />
+        </Link>
+        <Image
+          src={conversation.person.avatarSrc}
+          alt={conversation.person.displayName}
+          width={46}
+          height={46}
+          className="size-11 rounded-full object-cover"
+        />
+        <div className="min-w-0">
+          <Link
+            href={`/user/${conversation.person.username}`}
+            className="truncate font-black text-[#2f2418]"
+          >
+            {conversation.person.displayName}
+          </Link>
+          <p className="truncate text-sm font-bold text-[#7a5635]">
+            @{conversation.person.username}
+          </p>
+        </div>
+      </Card>
+      <div className="min-h-[42vh] space-y-3 rounded-[24px] border border-[#ead9b8] bg-[#fffdf8] p-4 sm:p-6">
+        {messages.length ? (
+          messages.map((item) => (
+            <div key={item.id} className={`flex ${item.isMine ? "justify-end" : "justify-start"}`}>
+              <div
+                className={`max-w-[86%] rounded-[20px] px-4 py-3 sm:max-w-[72%] ${item.isMine ? "rounded-br-md bg-[#4f8124] text-white" : "rounded-bl-md bg-[#fff2dc] text-[#2f2418]"}`}
+              >
+                <p className="whitespace-pre-wrap break-words text-sm font-bold leading-6">
+                  {item.body}
+                </p>
+                <time
+                  className={`mt-1 block text-[10px] font-bold ${item.isMine ? "text-white/70" : "text-[#9b6635]"}`}
+                >
+                  {new Date(item.createdAt).toLocaleString("en")}
+                </time>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-sm font-bold text-[#7a5635]">
+            This conversation has no messages yet.
+          </p>
+        )}
+      </div>
+      <MessageComposer conversationId={conversation.id} />
+    </div>
+  );
+}

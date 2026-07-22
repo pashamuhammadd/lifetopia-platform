@@ -1,3 +1,51 @@
 "use client";
-import{LoaderCircle,Send}from"lucide-react";import{useRouter}from"next/navigation";import{useRef,useState,useTransition}from"react";import{sendDirectMessage}from"@/app/actions/community/messages";
-export function MessageComposer({conversationId}:{conversationId:string}){const[pending,startTransition]=useTransition();const[message,setMessage]=useState("");const formRef=useRef<HTMLFormElement>(null);const router=useRouter();return <form ref={formRef} action={formData=>startTransition(async()=>{const result=await sendDirectMessage(conversationId,formData);setMessage(result.ok?"":result.message);if(result.ok){formRef.current?.reset();router.refresh();}})} className="sticky bottom-20 rounded-[22px] border border-[#ead9b8] bg-white/95 p-3 shadow-lg backdrop-blur md:bottom-4"><div className="flex items-end gap-2"><textarea name="body" required minLength={1} maxLength={2000} rows={2} placeholder="Write a private message..." className="max-h-36 min-h-12 min-w-0 flex-1 resize-y rounded-[16px] border border-[#ead9b8] bg-[#fffaf0] px-4 py-3 font-bold"/><button disabled={pending} aria-label="Send message" className="grid size-12 shrink-0 place-items-center rounded-full bg-[#4f8124] text-white disabled:bg-[#b8c8a8]">{pending?<LoaderCircle size={19} className="animate-spin"/>:<Send size={19}/>}</button></div>{message?<p role="alert" className="mt-2 text-sm font-bold text-[#c12626]">{message}</p>:null}</form>}
+import { LoaderCircle, Send } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useRef, useState, useTransition } from "react";
+import { sendDirectMessage } from "@/app/actions/community/messages";
+export function MessageComposer({ conversationId }: { conversationId: string }) {
+  const [pending, startTransition] = useTransition();
+  const [message, setMessage] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
+  return (
+    <form
+      ref={formRef}
+      action={(formData) =>
+        startTransition(async () => {
+          const result = await sendDirectMessage(conversationId, formData);
+          setMessage(result.ok ? "" : result.message);
+          if (result.ok) {
+            formRef.current?.reset();
+            router.refresh();
+          }
+        })
+      }
+      className="sticky bottom-20 rounded-[22px] border border-[#ead9b8] bg-white/95 p-3 shadow-lg backdrop-blur md:bottom-4"
+    >
+      <div className="flex items-end gap-2">
+        <textarea
+          name="body"
+          required
+          minLength={1}
+          maxLength={2000}
+          rows={2}
+          placeholder="Write a private message..."
+          className="max-h-36 min-h-12 min-w-0 flex-1 resize-y rounded-[16px] border border-[#ead9b8] bg-[#fffaf0] px-4 py-3 font-bold"
+        />
+        <button
+          disabled={pending}
+          aria-label="Send message"
+          className="grid size-12 shrink-0 place-items-center rounded-full bg-[#4f8124] text-white disabled:bg-[#b8c8a8]"
+        >
+          {pending ? <LoaderCircle size={19} className="animate-spin" /> : <Send size={19} />}
+        </button>
+      </div>
+      {message ? (
+        <p role="alert" className="mt-2 text-sm font-bold text-[#c12626]">
+          {message}
+        </p>
+      ) : null}
+    </form>
+  );
+}

@@ -1,9 +1,106 @@
-import{CheckCircle2,ExternalLink,ShieldCheck,WalletCards}from"lucide-react";import Link from"next/link";import{Card}from"@/components/ui/Card";import{PageHeader}from"@/components/ui/PageHeader";import type{CommunityWalletStatus}from"@/data/wallet";import{WalletBonusButton}from"./WalletBonusButton";
-const MAIN_APP_URL=process.env.NEXT_PUBLIC_MAIN_APP_URL??"https://lifetopiaworld.io";
-function shortAddress(value:string){return `${value.slice(0,6)}…${value.slice(-6)}`;}
-export function WalletHub({status}:{status:CommunityWalletStatus}){const manageUrl=new URL("/account/wallet",MAIN_APP_URL).toString();return <div className="space-y-5 pb-24 md:pb-0"><PageHeader title="Wallet & Solana" description="View the verified Solana identity shared with your Lifetopia account and unlock its one-time Harmony reward."/>
- <Card className="overflow-hidden"><div className="bg-gradient-to-br from-[#dff7ff] via-[#fff7e8] to-[#edf7df] p-5 sm:p-7"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-[0.16em] text-[#4f8124]">Shared Account Identity</p><h2 className="mt-2 text-2xl font-black text-[#2f2418]">{status.wallet?"Solana wallet verified":"No wallet linked"}</h2><p className="mt-2 max-w-2xl font-bold leading-7 text-[#7a5635]">CommunityHub never requests a seed phrase, private key, funds, or transaction. Linking and unlinking remain protected by the main Lifetopia account security flow.</p></div><WalletCards className="shrink-0 text-[#4f8124]" size={44}/></div></div></Card>
- {status.wallet?<Card className="p-5 sm:p-6"><div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"><div><div className="flex items-center gap-2"><CheckCircle2 className="text-[#4f8124]" size={20}/><h2 className="font-black text-[#2f2418]">Verified Solana wallet</h2></div><p className="mt-3 font-mono text-lg font-black text-[#2f2418]" title={status.wallet.address}>{shortAddress(status.wallet.address)}</p><p className="mt-2 text-sm font-bold text-[#7a5635]">Verified {new Date(status.wallet.lastVerifiedAt).toLocaleString("en")}</p></div><Link href={manageUrl} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#b8d89e] bg-[#edf7df] px-5 font-black text-[#4f8124]">Manage wallet <ExternalLink size={16}/></Link></div></Card>:<Card className="p-5 sm:p-6"><h2 className="font-black text-[#2f2418]">Link a wallet securely</h2><p className="mt-2 font-bold leading-7 text-[#7a5635]">Use Phantom or Solflare on the main account site, approve one human-readable signature, then return here.</p><Link href={manageUrl} className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#4f8124] px-6 font-black text-white sm:w-auto">Open wallet linking <ExternalLink size={16}/></Link></Card>}
- {status.wallet?<Card className="p-5 sm:p-6"><div className="flex items-start gap-3"><ShieldCheck className="mt-1 shrink-0 text-[#4f8124]"/><div><h2 className="text-xl font-black text-[#2f2418]">Verified-wallet reward</h2><p className="mt-2 font-bold leading-7 text-[#7a5635]">Claim once per Lifetopia account. You receive +500 Harmony and a minimum Harmony Level 5. Existing Level 5+ accounts keep their higher level.</p><div className="mt-5"><WalletBonusButton claimed={status.bonusClaimed}/></div></div></div></Card>:null}
- <Card className="p-5 sm:p-6"><p className="text-xs font-black uppercase tracking-[0.14em] text-[#4f8124]">Current Harmony</p><p className="mt-2 text-2xl font-black text-[#2f2418]">{status.harmonyPoints.toLocaleString()} points · Level {status.harmonyLevel}</p></Card>
- </div>}
+import { CheckCircle2, ExternalLink, ShieldCheck, WalletCards } from "lucide-react";
+import Link from "next/link";
+import { Card } from "@/components/ui/Card";
+import { PageHeader } from "@/components/ui/PageHeader";
+import type { CommunityWalletStatus } from "@/data/wallet";
+import { WalletBonusButton } from "./WalletBonusButton";
+const MAIN_APP_URL = process.env.NEXT_PUBLIC_MAIN_APP_URL ?? "https://lifetopiaworld.io";
+function shortAddress(value: string) {
+  return `${value.slice(0, 6)}…${value.slice(-6)}`;
+}
+export function WalletHub({ status }: { status: CommunityWalletStatus }) {
+  const manageUrl = new URL("/account/wallet", MAIN_APP_URL).toString();
+  return (
+    <div className="space-y-5 pb-24 md:pb-0">
+      <PageHeader
+        title="Wallet & Solana"
+        description="View the verified Solana identity shared with your Lifetopia account and unlock its one-time Harmony reward."
+      />
+      <Card className="overflow-hidden">
+        <div className="bg-gradient-to-br from-[#dff7ff] via-[#fff7e8] to-[#edf7df] p-5 sm:p-7">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#4f8124]">
+                Shared Account Identity
+              </p>
+              <h2 className="mt-2 text-2xl font-black text-[#2f2418]">
+                {status.wallet ? "Solana wallet verified" : "No wallet linked"}
+              </h2>
+              <p className="mt-2 max-w-2xl font-bold leading-7 text-[#7a5635]">
+                CommunityHub never requests a seed phrase, private key, funds, or transaction.
+                Linking and unlinking remain protected by the main Lifetopia account security flow.
+              </p>
+            </div>
+            <WalletCards className="shrink-0 text-[#4f8124]" size={44} />
+          </div>
+        </div>
+      </Card>
+      {status.wallet ? (
+        <Card className="p-5 sm:p-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="text-[#4f8124]" size={20} />
+                <h2 className="font-black text-[#2f2418]">Verified Solana wallet</h2>
+              </div>
+              <p
+                className="mt-3 font-mono text-lg font-black text-[#2f2418]"
+                title={status.wallet.address}
+              >
+                {shortAddress(status.wallet.address)}
+              </p>
+              <p className="mt-2 text-sm font-bold text-[#7a5635]">
+                Verified {new Date(status.wallet.lastVerifiedAt).toLocaleString("en")}
+              </p>
+            </div>
+            <Link
+              href={manageUrl}
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#b8d89e] bg-[#edf7df] px-5 font-black text-[#4f8124]"
+            >
+              Manage wallet <ExternalLink size={16} />
+            </Link>
+          </div>
+        </Card>
+      ) : (
+        <Card className="p-5 sm:p-6">
+          <h2 className="font-black text-[#2f2418]">Link a wallet securely</h2>
+          <p className="mt-2 font-bold leading-7 text-[#7a5635]">
+            Use Phantom or Solflare on the main account site, approve one human-readable signature,
+            then return here.
+          </p>
+          <Link
+            href={manageUrl}
+            className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#4f8124] px-6 font-black text-white sm:w-auto"
+          >
+            Open wallet linking <ExternalLink size={16} />
+          </Link>
+        </Card>
+      )}
+      {status.wallet ? (
+        <Card className="p-5 sm:p-6">
+          <div className="flex items-start gap-3">
+            <ShieldCheck className="mt-1 shrink-0 text-[#4f8124]" />
+            <div>
+              <h2 className="text-xl font-black text-[#2f2418]">Verified-wallet reward</h2>
+              <p className="mt-2 font-bold leading-7 text-[#7a5635]">
+                Claim once per Lifetopia account. You receive +500 Harmony and a minimum Harmony
+                Level 5. Existing Level 5+ accounts keep their higher level.
+              </p>
+              <div className="mt-5">
+                <WalletBonusButton claimed={status.bonusClaimed} />
+              </div>
+            </div>
+          </div>
+        </Card>
+      ) : null}
+      <Card className="p-5 sm:p-6">
+        <p className="text-xs font-black uppercase tracking-[0.14em] text-[#4f8124]">
+          Current Harmony
+        </p>
+        <p className="mt-2 text-2xl font-black text-[#2f2418]">
+          {status.harmonyPoints.toLocaleString()} points · Level {status.harmonyLevel}
+        </p>
+      </Card>
+    </div>
+  );
+}

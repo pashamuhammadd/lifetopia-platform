@@ -1,3 +1,45 @@
-import{ImageResponse}from"next/og";
-export const runtime="edge";
-export async function GET(_request:Request,{params}:{params:Promise<{size:string}>}){const{size:raw}=await params;const size=raw==="192"?192:raw==="512"?512:null;if(!size)return new Response("Not found",{status:404});return new ImageResponse(<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(145deg,#fff7e8,#dff4c9)",color:"#315b16",fontSize:size*.17,fontWeight:900,fontFamily:"sans-serif",letterSpacing:-size*.012}}><div style={{width:"78%",height:"78%",display:"flex",alignItems:"center",justifyContent:"center",borderRadius:size*.22,background:"#4f8124",color:"white",boxShadow:`0 ${size*.04}px ${size*.1}px rgba(49,91,22,.25)`}}>LT</div></div>,{width:size,height:size,headers:{"Cache-Control":"public, max-age=86400, s-maxage=604800"}});}
+import { ImageResponse } from "next/og";
+export const runtime = "edge";
+export async function GET(_request: Request, { params }: { params: Promise<{ size: string }> }) {
+  const { size: raw } = await params;
+  const size = raw === "192" ? 192 : raw === "512" ? 512 : null;
+  if (!size) return new Response("Not found", { status: 404 });
+  return new ImageResponse(
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(145deg,#fff7e8,#dff4c9)",
+        color: "#315b16",
+        fontSize: size * 0.17,
+        fontWeight: 900,
+        fontFamily: "sans-serif",
+        letterSpacing: -size * 0.012,
+      }}
+    >
+      <div
+        style={{
+          width: "78%",
+          height: "78%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: size * 0.22,
+          background: "#4f8124",
+          color: "white",
+          boxShadow: `0 ${size * 0.04}px ${size * 0.1}px rgba(49,91,22,.25)`,
+        }}
+      >
+        LT
+      </div>
+    </div>,
+    {
+      width: size,
+      height: size,
+      headers: { "Cache-Control": "public, max-age=86400, s-maxage=604800" },
+    },
+  );
+}

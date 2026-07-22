@@ -1,10 +1,83 @@
 import { createClient } from "@repo/lib/supabase/server";
 
-type ConversationRow = { conversation_id:string;other_user_id:string;other_username:string;other_display_name:string;other_avatar_id:string;last_body:string|null;last_message_at:string;unread_count:number|string };
-type MessageRow = { message_id:number|string;sender_id:string;sender_username:string;sender_display_name:string;sender_avatar_id:string;body:string;created_at:string;is_mine:boolean };
-export type DirectConversation = { id:string;person:{id:string;username:string;displayName:string;avatarSrc:string};lastBody:string|null;lastMessageAt:string;unreadCount:number };
-export type DirectMessage = { id:number;senderId:string;senderUsername:string;senderDisplayName:string;senderAvatarSrc:string;body:string;createdAt:string;isMine:boolean };
+type ConversationRow = {
+  conversation_id: string;
+  other_user_id: string;
+  other_username: string;
+  other_display_name: string;
+  other_avatar_id: string;
+  last_body: string | null;
+  last_message_at: string;
+  unread_count: number | string;
+};
+type MessageRow = {
+  message_id: number | string;
+  sender_id: string;
+  sender_username: string;
+  sender_display_name: string;
+  sender_avatar_id: string;
+  body: string;
+  created_at: string;
+  is_mine: boolean;
+};
+export type DirectConversation = {
+  id: string;
+  person: { id: string; username: string; displayName: string; avatarSrc: string };
+  lastBody: string | null;
+  lastMessageAt: string;
+  unreadCount: number;
+};
+export type DirectMessage = {
+  id: number;
+  senderId: string;
+  senderUsername: string;
+  senderDisplayName: string;
+  senderAvatarSrc: string;
+  body: string;
+  createdAt: string;
+  isMine: boolean;
+};
 
-export async function getMessageInbox():Promise<DirectConversation[]>{const supabase=await createClient();const{data,error}=await supabase.rpc("get_my_community_direct_conversations");if(error||!data)return[];return(data as ConversationRow[]).map(row=>({id:row.conversation_id,person:{id:row.other_user_id,username:row.other_username,displayName:row.other_display_name,avatarSrc:`/images/avatars/${row.other_avatar_id}.jpg`},lastBody:row.last_body,lastMessageAt:row.last_message_at,unreadCount:Number(row.unread_count)}));}
-export async function getMessageThread(conversationId:string){const supabase=await createClient();const[{data,error},inbox]=await Promise.all([supabase.rpc("get_community_direct_messages",{p_conversation_id:conversationId}),getMessageInbox()]);if(error)return null;const conversation=inbox.find(item=>item.id===conversationId);if(!conversation)return null;const messages=((data??[])as MessageRow[]).map(row=>({id:Number(row.message_id),senderId:row.sender_id,senderUsername:row.sender_username,senderDisplayName:row.sender_display_name,senderAvatarSrc:`/images/avatars/${row.sender_avatar_id}.jpg`,body:row.body,createdAt:row.created_at,isMine:Boolean(row.is_mine)}))satisfies DirectMessage[];return{conversation,messages};}
-export async function getUnreadMessageCount(){const supabase=await createClient();const{data}=await supabase.rpc("get_unread_community_direct_message_count");return Number(data??0);}
+export async function getMessageInbox(): Promise<DirectConversation[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("get_my_community_direct_conversations");
+  if (error || !data) return [];
+  return (data as ConversationRow[]).map((row) => ({
+    id: row.conversation_id,
+    person: {
+      id: row.other_user_id,
+      username: row.other_username,
+      displayName: row.other_display_name,
+      avatarSrc: `/images/avatars/${row.other_avatar_id}.jpg`,
+    },
+    lastBody: row.last_body,
+    lastMessageAt: row.last_message_at,
+    unreadCount: Number(row.unread_count),
+  }));
+}
+export async function getMessageThread(conversationId: string) {
+  const supabase = await createClient();
+  const [{ data, error }, inbox] = await Promise.all([
+    supabase.rpc("get_community_direct_messages", { p_conversation_id: conversationId }),
+    getMessageInbox(),
+  ]);
+  if (error) return null;
+  const conversation = inbox.find((item) => item.id === conversationId);
+  if (!conversation) return null;
+  const messages = ((data ?? []) as MessageRow[]).map((row) => ({
+    id: Number(row.message_id),
+    senderId: row.sender_id,
+    senderUsername: row.sender_username,
+    senderDisplayName: row.sender_display_name,
+    senderAvatarSrc: `/images/avatars/${row.sender_avatar_id}.jpg`,
+    body: row.body,
+    createdAt: row.created_at,
+    isMine: Boolean(row.is_mine),
+  })) satisfies DirectMessage[];
+  return { conversation, messages };
+}
+export async function getUnreadMessageCount() {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("get_unread_community_direct_message_count");
+  return Number(data ?? 0);
+}

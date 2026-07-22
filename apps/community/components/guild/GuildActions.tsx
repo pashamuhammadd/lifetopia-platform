@@ -1,4 +1,91 @@
 "use client";
-import{LoaderCircle,LogIn,LogOut}from"lucide-react";import{useRouter}from"next/navigation";import{useState,useTransition}from"react";import{joinCommunityGuild,leaveCommunityGuild,reviewGuildJoinRequest}from"@/app/actions/community/guilds";import{useGuestAuth}from"@/components/auth/GuestAuthProvider";
-export function GuildMembershipButton({guildId,status}:{guildId:string;status:"owner"|"active"|"pending"|null}){const{isAuthenticated,requestAuth}=useGuestAuth();const[pending,startTransition]=useTransition();const[message,setMessage]=useState("");const router=useRouter();if(status==="owner")return <span className="rounded-full bg-[#fff4dc] px-4 py-2 text-sm font-black text-[#9b6a12]">Owner</span>;function act(){if(!isAuthenticated)return requestAuth();startTransition(async()=>{const result=status==="active"?await leaveCommunityGuild(guildId):await joinCommunityGuild(guildId);setMessage(result.message);if(result.ok)router.refresh();});}return <div><button type="button" disabled={pending||status==="pending"} onClick={act} className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#4f8124] px-5 text-sm font-black text-white disabled:bg-[#b8c8a8] sm:w-auto">{pending?<LoaderCircle className="animate-spin" size={17}/>:status==="active"?<LogOut size={17}/>:<LogIn size={17}/>} {status==="active"?"Leave":status==="pending"?"Request pending":"Join guild"}</button>{message?<p role="status" className="mt-2 text-xs font-bold text-[#7a5635]">{message}</p>:null}</div>}
-export function GuildRequestActions({guildId,userId}:{guildId:string;userId:string}){const[pending,startTransition]=useTransition();const router=useRouter();function review(approve:boolean){startTransition(async()=>{await reviewGuildJoinRequest(guildId,userId,approve);router.refresh();});}return <div className="flex gap-2"><button disabled={pending} onClick={()=>review(true)} className="min-h-10 rounded-full bg-[#4f8124] px-4 text-xs font-black text-white">Approve</button><button disabled={pending} onClick={()=>review(false)} className="min-h-10 rounded-full bg-[#fff0f0] px-4 text-xs font-black text-[#c12626]">Decline</button></div>}
+import { LoaderCircle, LogIn, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import {
+  joinCommunityGuild,
+  leaveCommunityGuild,
+  reviewGuildJoinRequest,
+} from "@/app/actions/community/guilds";
+import { useGuestAuth } from "@/components/auth/GuestAuthProvider";
+export function GuildMembershipButton({
+  guildId,
+  status,
+}: {
+  guildId: string;
+  status: "owner" | "active" | "pending" | null;
+}) {
+  const { isAuthenticated, requestAuth } = useGuestAuth();
+  const [pending, startTransition] = useTransition();
+  const [message, setMessage] = useState("");
+  const router = useRouter();
+  if (status === "owner")
+    return (
+      <span className="rounded-full bg-[#fff4dc] px-4 py-2 text-sm font-black text-[#9b6a12]">
+        Owner
+      </span>
+    );
+  function act() {
+    if (!isAuthenticated) return requestAuth();
+    startTransition(async () => {
+      const result =
+        status === "active"
+          ? await leaveCommunityGuild(guildId)
+          : await joinCommunityGuild(guildId);
+      setMessage(result.message);
+      if (result.ok) router.refresh();
+    });
+  }
+  return (
+    <div>
+      <button
+        type="button"
+        disabled={pending || status === "pending"}
+        onClick={act}
+        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#4f8124] px-5 text-sm font-black text-white disabled:bg-[#b8c8a8] sm:w-auto"
+      >
+        {pending ? (
+          <LoaderCircle className="animate-spin" size={17} />
+        ) : status === "active" ? (
+          <LogOut size={17} />
+        ) : (
+          <LogIn size={17} />
+        )}{" "}
+        {status === "active" ? "Leave" : status === "pending" ? "Request pending" : "Join guild"}
+      </button>
+      {message ? (
+        <p role="status" className="mt-2 text-xs font-bold text-[#7a5635]">
+          {message}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+export function GuildRequestActions({ guildId, userId }: { guildId: string; userId: string }) {
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
+  function review(approve: boolean) {
+    startTransition(async () => {
+      await reviewGuildJoinRequest(guildId, userId, approve);
+      router.refresh();
+    });
+  }
+  return (
+    <div className="flex gap-2">
+      <button
+        disabled={pending}
+        onClick={() => review(true)}
+        className="min-h-10 rounded-full bg-[#4f8124] px-4 text-xs font-black text-white"
+      >
+        Approve
+      </button>
+      <button
+        disabled={pending}
+        onClick={() => review(false)}
+        className="min-h-10 rounded-full bg-[#fff0f0] px-4 text-xs font-black text-[#c12626]"
+      >
+        Decline
+      </button>
+    </div>
+  );
+}

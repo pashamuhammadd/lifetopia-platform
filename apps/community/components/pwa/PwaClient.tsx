@@ -1,4 +1,59 @@
 "use client";
-import{Download,X}from"lucide-react";import{useEffect,useState}from"react";
-type InstallPromptEvent=Event&{prompt:()=>Promise<void>;userChoice:Promise<{outcome:"accepted"|"dismissed"}>};
-export function PwaClient(){const[prompt,setPrompt]=useState<InstallPromptEvent|null>(null);const[visible,setVisible]=useState(false);useEffect(()=>{if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(()=>undefined);const handler=(event:Event)=>{event.preventDefault();if(localStorage.getItem("lifetopia-pwa-install-dismissed")!=="1"){setPrompt(event as InstallPromptEvent);setVisible(true);}};window.addEventListener("beforeinstallprompt",handler);return()=>window.removeEventListener("beforeinstallprompt",handler);},[]);if(!visible||!prompt)return null;return <aside className="fixed inset-x-3 bottom-24 z-50 mx-auto flex max-w-md items-center gap-3 rounded-[22px] border border-[#b8d89e] bg-white p-4 shadow-2xl md:bottom-5"><div className="grid size-11 shrink-0 place-items-center rounded-full bg-[#edf7df] text-[#4f8124]"><Download size={20}/></div><div className="min-w-0 flex-1"><p className="font-black text-[#2f2418]">Install CommunityHub</p><p className="text-xs font-bold text-[#7a5635]">Open Lifetopia like an app from your home screen.</p></div><button className="rounded-full bg-[#4f8124] px-4 py-2 text-sm font-black text-white" onClick={async()=>{await prompt.prompt();await prompt.userChoice;setVisible(false);setPrompt(null);}}>Install</button><button aria-label="Dismiss install prompt" className="text-[#7a5635]" onClick={()=>{localStorage.setItem("lifetopia-pwa-install-dismissed","1");setVisible(false);}}><X size={18}/></button></aside>}
+import { Download, X } from "lucide-react";
+import { useEffect, useState } from "react";
+type InstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
+export function PwaClient() {
+  const [prompt, setPrompt] = useState<InstallPromptEvent | null>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if ("serviceWorker" in navigator)
+      navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => undefined);
+    const handler = (event: Event) => {
+      event.preventDefault();
+      if (localStorage.getItem("lifetopia-pwa-install-dismissed") !== "1") {
+        setPrompt(event as InstallPromptEvent);
+        setVisible(true);
+      }
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+  if (!visible || !prompt) return null;
+  return (
+    <aside className="fixed inset-x-3 bottom-24 z-50 mx-auto flex max-w-md items-center gap-3 rounded-[22px] border border-[#b8d89e] bg-white p-4 shadow-2xl md:bottom-5">
+      <div className="grid size-11 shrink-0 place-items-center rounded-full bg-[#edf7df] text-[#4f8124]">
+        <Download size={20} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="font-black text-[#2f2418]">Install CommunityHub</p>
+        <p className="text-xs font-bold text-[#7a5635]">
+          Open Lifetopia like an app from your home screen.
+        </p>
+      </div>
+      <button
+        className="rounded-full bg-[#4f8124] px-4 py-2 text-sm font-black text-white"
+        onClick={async () => {
+          await prompt.prompt();
+          await prompt.userChoice;
+          setVisible(false);
+          setPrompt(null);
+        }}
+      >
+        Install
+      </button>
+      <button
+        aria-label="Dismiss install prompt"
+        className="text-[#7a5635]"
+        onClick={() => {
+          localStorage.setItem("lifetopia-pwa-install-dismissed", "1");
+          setVisible(false);
+        }}
+      >
+        <X size={18} />
+      </button>
+    </aside>
+  );
+}

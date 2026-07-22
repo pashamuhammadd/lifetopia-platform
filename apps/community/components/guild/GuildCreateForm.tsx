@@ -1,2 +1,75 @@
-"use client";import{LoaderCircle}from"lucide-react";import{useRouter}from"next/navigation";import{useState,useTransition}from"react";import{createCommunityGuild}from"@/app/actions/community/guilds";import{Card}from"@/components/ui/Card";
-export function GuildCreateForm(){const[pending,startTransition]=useTransition();const[message,setMessage]=useState("");const router=useRouter();function submit(formData:FormData){startTransition(async()=>{const result=await createCommunityGuild(formData);setMessage(result.message);if(result.ok&&result.slug)router.push(`/guild/${result.slug}`);});}return <Card className="p-5 sm:p-6"><form action={submit} className="space-y-4"><label className="block"><span className="text-sm font-black text-[#2f2418]">Guild name</span><input name="name" required minLength={3} maxLength={40} className="mt-2 w-full rounded-[16px] border border-[#ead9b8] bg-[#fffaf0] p-3 font-bold"/></label><label className="block"><span className="text-sm font-black text-[#2f2418]">Slug</span><input name="slug" required pattern="[a-z0-9][a-z0-9-]{2,31}" placeholder="cozy-farmers" className="mt-2 w-full rounded-[16px] border border-[#ead9b8] bg-[#fffaf0] p-3 font-bold"/></label><label className="block"><span className="text-sm font-black text-[#2f2418]">Description</span><textarea name="description" required minLength={10} maxLength={500} className="mt-2 min-h-28 w-full rounded-[16px] border border-[#ead9b8] bg-[#fffaf0] p-3 font-bold"/></label><label className="block"><span className="text-sm font-black text-[#2f2418]">Join policy</span><select name="joinPolicy" className="mt-2 w-full rounded-[16px] border border-[#ead9b8] bg-[#fffaf0] p-3 font-bold"><option value="open">Open membership</option><option value="approval">Owner approval</option></select></label><button disabled={pending} className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#4f8124] px-6 font-black text-white sm:w-auto">{pending?<LoaderCircle className="mr-2 animate-spin" size={18}/>:null}Create guild</button>{message?<p role="status" className="font-bold text-[#7a5635]">{message}</p>:null}</form></Card>}
+"use client";
+import { LoaderCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { createCommunityGuild } from "@/app/actions/community/guilds";
+import { Card } from "@/components/ui/Card";
+export function GuildCreateForm() {
+  const [pending, startTransition] = useTransition();
+  const [message, setMessage] = useState("");
+  const router = useRouter();
+  function submit(formData: FormData) {
+    startTransition(async () => {
+      const result = await createCommunityGuild(formData);
+      setMessage(result.message);
+      if (result.ok && result.slug) router.push(`/guild/${result.slug}`);
+    });
+  }
+  return (
+    <Card className="p-5 sm:p-6">
+      <form action={submit} className="space-y-4">
+        <label className="block">
+          <span className="text-sm font-black text-[#2f2418]">Guild name</span>
+          <input
+            name="name"
+            required
+            minLength={3}
+            maxLength={40}
+            className="mt-2 w-full rounded-[16px] border border-[#ead9b8] bg-[#fffaf0] p-3 font-bold"
+          />
+        </label>
+        <label className="block">
+          <span className="text-sm font-black text-[#2f2418]">Slug</span>
+          <input
+            name="slug"
+            required
+            pattern="[a-z0-9][a-z0-9-]{2,31}"
+            placeholder="cozy-farmers"
+            className="mt-2 w-full rounded-[16px] border border-[#ead9b8] bg-[#fffaf0] p-3 font-bold"
+          />
+        </label>
+        <label className="block">
+          <span className="text-sm font-black text-[#2f2418]">Description</span>
+          <textarea
+            name="description"
+            required
+            minLength={10}
+            maxLength={500}
+            className="mt-2 min-h-28 w-full rounded-[16px] border border-[#ead9b8] bg-[#fffaf0] p-3 font-bold"
+          />
+        </label>
+        <label className="block">
+          <span className="text-sm font-black text-[#2f2418]">Join policy</span>
+          <select
+            name="joinPolicy"
+            className="mt-2 w-full rounded-[16px] border border-[#ead9b8] bg-[#fffaf0] p-3 font-bold"
+          >
+            <option value="open">Open membership</option>
+            <option value="approval">Owner approval</option>
+          </select>
+        </label>
+        <button
+          disabled={pending}
+          className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#4f8124] px-6 font-black text-white sm:w-auto"
+        >
+          {pending ? <LoaderCircle className="mr-2 animate-spin" size={18} /> : null}Create guild
+        </button>
+        {message ? (
+          <p role="status" className="font-bold text-[#7a5635]">
+            {message}
+          </p>
+        ) : null}
+      </form>
+    </Card>
+  );
+}

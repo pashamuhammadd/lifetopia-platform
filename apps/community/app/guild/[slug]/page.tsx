@@ -1,3 +1,56 @@
-import type{Metadata}from"next";import{notFound}from"next/navigation";import{Shield,Users}from"lucide-react";import{GuildMembershipButton,GuildRequestActions}from"@/components/guild/GuildActions";import{AppLayout}from"@/components/layout/AppLayout";import{Card}from"@/components/ui/Card";import{PageHeader}from"@/components/ui/PageHeader";import{getCommunityGuild,getGuildPendingRequests}from"@/data/guilds";
-export const metadata:Metadata={title:"Guild"};
-export default async function GuildDetailPage({params}:{params:Promise<{slug:string}>}){const{slug}=await params;const guild=await getCommunityGuild(slug);if(!guild)notFound();const requests=guild.viewerStatus==="owner"?await getGuildPendingRequests(guild.id):[];return <AppLayout><div className="space-y-5 pb-24 md:pb-0"><PageHeader title={guild.name} description={guild.description}/><Card className="p-5 sm:p-7"><Shield className="text-[#4f8124]" size={44}/><p className="mt-4 inline-flex items-center gap-2 font-black text-[#7a5635]"><Users size={18}/>{guild.memberCount} active members</p><p className="mt-2 text-sm font-bold text-[#9b6635]">Join policy: {guild.joinPolicy}</p><div className="mt-5"><GuildMembershipButton guildId={guild.id} status={guild.viewerStatus}/></div></Card>{guild.viewerStatus==="owner"?<Card className="p-5"><h2 className="text-xl font-black text-[#2f2418]">Pending requests</h2>{requests.length?<div className="mt-4 space-y-3">{requests.map(person=><div key={person.id} className="flex flex-col gap-3 rounded-[16px] bg-[#fffaf0] p-4 sm:flex-row sm:items-center sm:justify-between"><p className="font-black text-[#2f2418]">{person.displayName} <span className="text-sm text-[#7a5635]">@{person.username}</span></p><GuildRequestActions guildId={guild.id} userId={person.id}/></div>)}</div>:<p className="mt-3 text-sm font-bold text-[#7a5635]">No pending requests.</p>}</Card>:null}</div></AppLayout>}
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { Shield, Users } from "lucide-react";
+import { GuildMembershipButton, GuildRequestActions } from "@/components/guild/GuildActions";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { Card } from "@/components/ui/Card";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { getCommunityGuild, getGuildPendingRequests } from "@/data/guilds";
+export const metadata: Metadata = { title: "Guild" };
+export default async function GuildDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const guild = await getCommunityGuild(slug);
+  if (!guild) notFound();
+  const requests = guild.viewerStatus === "owner" ? await getGuildPendingRequests(guild.id) : [];
+  return (
+    <AppLayout>
+      <div className="space-y-5 pb-24 md:pb-0">
+        <PageHeader title={guild.name} description={guild.description} />
+        <Card className="p-5 sm:p-7">
+          <Shield className="text-[#4f8124]" size={44} />
+          <p className="mt-4 inline-flex items-center gap-2 font-black text-[#7a5635]">
+            <Users size={18} />
+            {guild.memberCount} active members
+          </p>
+          <p className="mt-2 text-sm font-bold text-[#9b6635]">Join policy: {guild.joinPolicy}</p>
+          <div className="mt-5">
+            <GuildMembershipButton guildId={guild.id} status={guild.viewerStatus} />
+          </div>
+        </Card>
+        {guild.viewerStatus === "owner" ? (
+          <Card className="p-5">
+            <h2 className="text-xl font-black text-[#2f2418]">Pending requests</h2>
+            {requests.length ? (
+              <div className="mt-4 space-y-3">
+                {requests.map((person) => (
+                  <div
+                    key={person.id}
+                    className="flex flex-col gap-3 rounded-[16px] bg-[#fffaf0] p-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <p className="font-black text-[#2f2418]">
+                      {person.displayName}{" "}
+                      <span className="text-sm text-[#7a5635]">@{person.username}</span>
+                    </p>
+                    <GuildRequestActions guildId={guild.id} userId={person.id} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-3 text-sm font-bold text-[#7a5635]">No pending requests.</p>
+            )}
+          </Card>
+        ) : null}
+      </div>
+    </AppLayout>
+  );
+}
