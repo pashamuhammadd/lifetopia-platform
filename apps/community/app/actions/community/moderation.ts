@@ -1,5 +1,47 @@
 "use server";
-import{revalidatePath}from"next/cache";import{createClient}from"@repo/lib/supabase/server";import{getCurrentProfile}from"@/data/profile/current-profile";
-export type ModerationActionState={success:boolean;message:string};
-const ACTIONS=new Set(["review","dismiss","hide","restore","mute","suspend","ban","restriction_lifted"]);
-export async function moderateCommunityReport(formData:FormData):Promise<ModerationActionState>{const reportId=String(formData.get("reportId")??"").trim();const action=String(formData.get("action")??"").trim();const reason=String(formData.get("resolutionNote")??"").trim();const duration=Number.parseInt(String(formData.get("durationHours")??"0"),10);if(!/^[0-9a-f-]{36}$/i.test(reportId)||!ACTIONS.has(action))return{success:false,message:"This moderation action is invalid."};if(reason.length<4||reason.length>500)return{success:false,message:"Add a clear internal reason between 4 and 500 characters."};const profile=await getCurrentProfile();if(!profile||!["founder","admin","moderator"].includes(profile.role.trim().toLowerCase()))return{success:false,message:"You do not have moderation access."};const supabase=await createClient();const{error}=await supabase.rpc("moderate_community_report",{p_report_id:reportId,p_action:action,p_reason:reason,p_duration_hours:Number.isFinite(duration)&&duration>0?duration:null});if(error){const protectedTarget=/founder|staff_target|admin_target/i.test(error.message);return{success:false,message:protectedTarget?"This protected staff account requires a higher authority.":"The moderation decision could not be saved."};}revalidatePath("/");revalidatePath("/admin/reports");return{success:true,message:`Moderation action “${action}” was recorded.`};}
+import { revalidatePath } from "next/cache";
+import { createClient } from "@repo/lib/supabase/server";
+import { getCurrentProfile } from "@/data/profile/current-profile";
+export type ModerationActionState = { success: boolean; message: string };
+const ACTIONS = new Set([
+  "review",
+  "dismiss",
+  "hide",
+  "restore",
+  "mute",
+  "suspend",
+  "ban",
+  "restriction_lifted",
+]);
+export async function moderateCommunityReport(formData: FormData): Promise<ModerationActionState> {
+  const reportId = String(formData.get("reportId") ?? "").trim();
+  const action = String(formData.get("action") ?? "").trim();
+  const reason = String(formData.get("resolutionNote") ?? "").trim();
+  const duration = Number.parseInt(String(formData.get("durationHours") ?? "0"), 10);
+  if (!/^[0-9a-f-]{36}$/i.test(reportId) || !ACTIONS.has(action))
+    return { success: false, message: "This moderation action is invalid." };
+  if (reason.length < 4 || reason.length > 500)
+    return { success: false, message: "Add a clear internal reason between 4 and 500 characters." };
+  const profile = await getCurrentProfile();
+  if (!profile || !["founder", "admin", "moderator"].includes(profile.role.trim().toLowerCase()))
+    return { success: false, message: "You do not have moderation access." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("moderate_community_report", {
+    p_report_id: reportId,
+    p_action: action,
+    p_reason: reason,
+    p_duration_hours: Number.isFinite(duration) && duration > 0 ? duration : null,
+  });
+  if (error) {
+    const protectedTarget = /founder|staff_target|admin_target/i.test(error.message);
+    return {
+      success: false,
+      message: protectedTarget
+        ? "This protected staff account requires a higher authority."
+        : "The moderation decision could not be saved.",
+    };
+  }
+  revalidatePath("/");
+  revalidatePath("/admin/reports");
+  return { success: true, message: `Moderation action “${action}” was recorded.` };
+}

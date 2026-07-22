@@ -12,6 +12,17 @@ type SendGuardianConsentEmailInput = {
   requestUrl: string;
 };
 
+function escapeHtml(
+  value: string,
+): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function getWebsiteOrigin(
   requestUrl: string,
 ): string {
@@ -88,6 +99,15 @@ export async function sendGuardianConsentEmail({
   const expiresDate =
     new Date(expiresAt);
 
+  const safeChildDisplayName =
+    escapeHtml(childDisplayName);
+
+  const safeChildUsername =
+    escapeHtml(childUsername);
+
+  const safeConfirmationUrl =
+    escapeHtml(confirmationUrl.toString());
+
   const transport = getTransport();
 
   await transport.sendMail({
@@ -113,8 +133,8 @@ export async function sendGuardianConsentEmail({
         <h2 style="margin-bottom:8px">Guardian approval requested</h2>
         <p>
           A Lifetopia World account for
-          <strong>${childDisplayName}</strong>
-          (<strong>@${childUsername}</strong>)
+          <strong>${safeChildDisplayName}</strong>
+          (<strong>@${safeChildUsername}</strong>)
           requires parent or guardian approval.
         </p>
         <p>
@@ -122,7 +142,7 @@ export async function sendGuardianConsentEmail({
         </p>
         <p style="margin:28px 0">
           <a
-            href="${confirmationUrl.toString()}"
+            href="${safeConfirmationUrl}"
             style="display:inline-block;background:#4f8124;color:white;text-decoration:none;padding:12px 20px;border-radius:999px;font-weight:700"
           >
             Review guardian request

@@ -38,6 +38,31 @@ type WalletLoginChallengeRow = {
   consumed_at: string | null;
 };
 
+type AccountStateRow = {
+  account_status:
+    | "active"
+    | "suspended"
+    | "banned"
+    | "deleted";
+  suspended_until:
+    string | null;
+  restriction_reason:
+    string | null;
+};
+
+type RequiredActionRow = {
+  next_action:
+    string | null;
+  can_read:
+    boolean;
+  can_interact:
+    boolean;
+  can_receive_rewards:
+    boolean;
+  can_link_wallet:
+    boolean;
+};
+
 function isRecord(
   value: unknown,
 ): value is UnknownRecord {
@@ -46,6 +71,16 @@ function isRecord(
     value !== null &&
     !Array.isArray(value)
   );
+}
+
+function firstRow<T>(
+  value: T[] | T | null,
+): T | null {
+  if (Array.isArray(value)) {
+    return value[0] ?? null;
+  }
+
+  return value;
 }
 
 function noStoreHeaders() {
@@ -472,6 +507,130 @@ export async function POST(
     );
   }
 
+  // Wallet login uses the same account-state gate as password login
+  // (app/api/auth/login/route.ts) so that suspended/banned accounts are
+  // handled identically across both sign-in paths: they are allowed to
+  // establish a session and are reported as `restricted`, while deleted
+  // or unreadable accounts are rejected here.
+  const [
+    accountStateResult,
+    requiredActionsResult,
+  ] = await Promise.all([
+    supabase.rpc(
+      "get_my_account_state",
+    ),
+    supabase.rpc(
+      "get_my_required_account_actions",
+    ),
+  ]);
+
+  if (
+    accountStateResult.error ||
+    requiredActionsResult.error
+  ) {
+    await supabase.auth.signOut({
+      scope: "local",
+    });
+
+    await recordResult(
+      false,
+      "account_state_unavailable",
+    );
+
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "account_state_unavailable",
+        error:
+          "Wallet login succeeded, but the account state could not be verified.",
+        requestId,
+      },
+      {
+        status: 503,
+        headers:
+          noStoreHeaders(),
+      },
+    );
+  }
+
+  const accountState =
+    firstRow<AccountStateRow>(
+      accountStateResult.data,
+    );
+
+  const requiredActions =
+    firstRow<RequiredActionRow>(
+      requiredActionsResult.data,
+    );
+
+  if (
+    !accountState ||
+    !requiredActions
+  ) {
+    await supabase.auth.signOut({
+      scope: "local",
+    });
+
+    await recordResult(
+      false,
+      "account_state_unavailable",
+    );
+
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "account_state_unavailable",
+        error:
+          "Wallet login succeeded, but the account state could not be verified.",
+        requestId,
+      },
+      {
+        status: 503,
+        headers:
+          noStoreHeaders(),
+      },
+    );
+  }
+
+  if (
+    accountState.account_status ===
+      "deleted" ||
+    !requiredActions.can_read
+  ) {
+    await supabase.auth.signOut({
+      scope: "local",
+    });
+
+    await recordResult(
+      false,
+      "account_unavailable",
+    );
+
+    return NextResponse.json(
+      {
+        success: false,
+        code:
+          "account_unavailable",
+        error:
+          "This Lifetopia account is unavailable.",
+        requestId,
+      },
+      {
+        status: 403,
+        headers:
+          noStoreHeaders(),
+      },
+    );
+  }
+
+  const restricted =
+    accountState.account_status ===
+      "suspended" ||
+    accountState.account_status ===
+      "banned";
+
   const resultAudit =
     await recordResult(true, null);
 
@@ -513,7 +672,28 @@ export async function POST(
     {
       success: true,
       status:
-        "wallet_session_created",
+        accountState.account_status,
+      restricted,
+      restrictionReason:
+        accountState
+          .restriction_reason,
+      suspendedUntil:
+        accountState
+          .suspended_until,
+      nextAction:
+        requiredActions.next_action,
+      permissions: {
+        canRead:
+          requiredActions.can_read,
+        canInteract:
+          requiredActions.can_interact,
+        canReceiveRewards:
+          requiredActions
+            .can_receive_rewards,
+        canLinkWallet:
+          requiredActions
+            .can_link_wallet,
+      },
       requiresMfa,
       next: destination,
       requestId,

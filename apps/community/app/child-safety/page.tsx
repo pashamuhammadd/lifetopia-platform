@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
 };
 
-const safetyEmail = "mochnuribrahimpasha@gmail.com";
+const safetyEmail = "contact@lifetopiaworld.io";
 
 export default function ChildSafetyPage() {
   return (
